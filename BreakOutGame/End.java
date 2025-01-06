@@ -1,6 +1,7 @@
 package BreakOutGame;
 public class End {
-    public static void End() {
+    public End() {
+        GameLoop.scannerInput.close();
         System.out.println("Game Over!");
     }
     
