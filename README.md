@@ -21,7 +21,7 @@ Block Class
 Hp = 1
 
 Platform()
-Size = 
+Size = width, heigth
 Position = x,y
 
 Score() [Advanced placeholder]

@@ -15,7 +15,7 @@ public class Main {
 
         
         
-        Setup.Setup(arg1, arg2);
+        Setup(arg1, arg2);
         GameLoop.GameLoop();
         End.End();
 

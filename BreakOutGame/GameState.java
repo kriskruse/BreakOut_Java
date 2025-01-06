@@ -3,8 +3,8 @@ package BreakOutGame;
 public class GameState {
 
 	public GameState(int n, int m) {
-        Ball ball = new Ball();
         Platform platform = new Platform();
+        Ball ball = new Ball(platform.x);
         Blockcluster blockcluster = new Blockcluster(n, m);
         
     }
@@ -43,12 +43,31 @@ public class GameState {
 
 
     public class Ball {
+        public double x;
+        public double y;
+        public vec2 direction;
     
+        public Ball(double x) {
+            this.x = x;
+            this.y = 0.1;
+        }
+    }
     
+    public class vec2 {
+        public double x;
+        public double y;
+        public double scalar;
     }
     
     public class Platform {
-    
+        public double height;
+        public double width;
+        public double x;
+
+        public void move(double direction) {
+            this.x += direction;
+        }
+
     }
     
 }
