@@ -1,4 +1,4 @@
-package BreakOutGame;
+package dk.group12.breakout.BreakOutGame;
 
 
 public class Main {
@@ -15,9 +15,9 @@ public class Main {
 
         
         
-        Setup(arg1, arg2);
-        GameLoop.GameLoop();
-        End.End();
+        //Setup(arg1, arg2);
+        //GameLoop.GameLoop();
+        //End.End();
 
     }
 }

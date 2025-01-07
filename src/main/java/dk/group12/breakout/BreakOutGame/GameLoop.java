@@ -1,4 +1,4 @@
-package BreakOutGame;
+package dk.group12.breakout.BreakOutGame;
 
 import java.util.Scanner;
 
@@ -14,7 +14,7 @@ public class GameLoop {
 
     public void update() {
         
-        gameState.update(getInput(), getCollision());
+        //gameState.update(getInput(), getCollision());
 
         
     }
