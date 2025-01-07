@@ -11,13 +11,6 @@ public class Main {
         } catch (Exception e) {
             System.out.println("Default to 8x8, use 2 arguments to change the size of the game board.");
         }
-        
-
-        
-        
-        //Setup(arg1, arg2);
-        //GameLoop.GameLoop();
-        //End.End();
 
     }
 }

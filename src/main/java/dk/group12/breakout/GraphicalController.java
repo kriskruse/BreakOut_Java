@@ -3,7 +3,7 @@ package dk.group12.breakout;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
-public class HelloController {
+public class GraphicalController {
     @FXML
     private Label welcomeText;
 
