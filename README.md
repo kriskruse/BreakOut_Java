@@ -26,11 +26,21 @@ Position = x,y
 
 Score() [Advanced placeholder]
 
-
 Ball()
 Position =
 Vector =
-BounceSpeedAdd = 
+BounceSpeedAdd =
+
+# Collsions
+An idea is to have a collision function in the game loop class look through collsions
+
+It would be performant to have the desired collision enabled objects colledted in one list. 
+
+The collisions should be checked using the ball as the moving part.
+
+The collision function should update the ball vector to fit the collision.
+With any specific collision rules some parts like the platform has.
+
 
 
 
