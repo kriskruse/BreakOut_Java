@@ -23,6 +23,7 @@ public class BreakoutGraphical extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         gameLoop = new GameLoop(8, 8);
+
         Group root = new Group();
         Scene scene = new Scene(root);
         stage.setScene(scene);
@@ -40,7 +41,26 @@ public class BreakoutGraphical extends Application {
             public void handle(long currentNanoTime){
                 double t = (currentNanoTime - startNanoTime) / 1000000000.0;
 
+                // Update what to draw
                 gameState = gameLoop.update();
+
+
+                // DRAW ----
+
+                // Draw platform
+                // drawPlatform(gameState)
+                // ||
+                // drawController.drawPlatform(x,y,width,Height)
+
+                // draw ball
+                // drawBall(x,y,width,Height, Color)
+
+                // draw Boxes
+                // for all boxes
+                // drawBox(x, y, width, height, color)
+
+
+
 
                 // used to clear the screen from the previous frame
                 graphicsContext.clearRect(0, 0, windowx, windowy);
@@ -59,4 +79,5 @@ public class BreakoutGraphical extends Application {
         stage.show();
 
     }
+
 }

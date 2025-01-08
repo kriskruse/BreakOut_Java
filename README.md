@@ -1,10 +1,6 @@
 # BreakOut_Java
 
 
-
-
-
-
 main -> Setup(), GameLoop(), End()
 GameLoop() -> inputHandle(), Update(), Draw() 
 
@@ -42,6 +38,10 @@ The collision function should update the ball vector to fit the collision.
 With any specific collision rules some parts like the platform has.
 
 
+
+# TODO
+AH -> Collision
+Draw gamestate to screen
 
 
 
