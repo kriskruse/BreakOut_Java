@@ -7,7 +7,7 @@ public class GameState {
     int platformX , platformY ,platformWidth, platformHeight, clusterWidth, clusterHeight;
 
     public GameState(int n, int m, int gameWidth, int gameHeight) {
-        platformWidth = gameWidth / 7;
+        platformWidth = gameWidth / 10;
         platformX = gameWidth / 2 - platformWidth / 2;
         platformHeight = 10;
         platformY = (int) (gameHeight - platformHeight - gameHeight*0.05);

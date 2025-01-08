@@ -6,9 +6,9 @@ public class GameLoop {
     public static GameState gameState;
     public static Scanner scannerInput;
 
-    public GameLoop(int n, int m) {
+    public GameLoop(int n, int m, int gameWidth, int gameHeight) {
         scannerInput = new Scanner(System.in);
-        gameState = new GameState(n, m);
+        gameState = new GameState(n, m, gameWidth, gameHeight);
     }
 
     public GameState update() {

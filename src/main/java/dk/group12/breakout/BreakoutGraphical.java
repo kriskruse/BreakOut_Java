@@ -22,8 +22,7 @@ public class BreakoutGraphical extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        gameLoop = new GameLoop(8, 8);
-
+        gameLoop = new GameLoop(8, 8, windowx, windowy);
         Group root = new Group();
         Scene scene = new Scene(root);
         stage.setScene(scene);
@@ -79,5 +78,4 @@ public class BreakoutGraphical extends Application {
         stage.show();
 
     }
-
 }
