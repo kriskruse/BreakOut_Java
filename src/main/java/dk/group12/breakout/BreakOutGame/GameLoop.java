@@ -1,23 +1,25 @@
 package dk.group12.breakout.BreakOutGame;
 
-import java.util.Scanner;
+import java.util.Set;
 
 public class GameLoop {
-    public static GameState gameState;
-    public static Scanner scannerInput;
+    private GameState gameState;
 
     public GameLoop(int n, int m, int gameWidth, int gameHeight) {
-        scannerInput = new Scanner(System.in);
         gameState = new GameState(n, m, gameWidth, gameHeight);
     }
 
-    public GameState update() {
-        if (scannerInput.hasNext()){
-            char input = scannerInput.next().charAt(0);
-            gameState.update(input);
+    public void handleInput(Set<String> activeKeys) {
+        if (activeKeys.contains("A") || activeKeys.contains("LEFT")) {
+            gameState.platform.move(-10);
         }
+        if (activeKeys.contains("D") || activeKeys.contains("RIGHT")) {
+            gameState.platform.move(10);
+        }
+    }
+
+    public GameState update() {
         gameState.update();
         return gameState;
     }
-
 }

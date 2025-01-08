@@ -8,17 +8,21 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import java.io.IOException;
 
-
-
+import java.util.HashSet;
+import java.util.Set;
 
 public class BreakoutGraphical extends Application {
     private int windowx = 400;
     private int windowy = 700;
     private GameLoop gameLoop;
     private GameState gameState;
+
+    // Track pressed keys
+    private Set<String> activeKeys = new HashSet<>();
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -35,14 +39,21 @@ public class BreakoutGraphical extends Application {
 
         final long startNanoTime = System.nanoTime();
 
+        // Input handling
+        scene.setOnKeyPressed(event -> activeKeys.add(event.getCode().toString()));
+        scene.setOnKeyReleased(event -> activeKeys.remove(event.getCode().toString()));
+
         // Animation loop running at 60 FPS
         new AnimationTimer(){
             public void handle(long currentNanoTime){
                 double t = (currentNanoTime - startNanoTime) / 1000000000.0;
+                System.out.println("Animation loop running...");
+
+                // Pass active keys to game loop
+                gameLoop.handleInput(activeKeys);
 
                 // Update what to draw
                 gameState = gameLoop.update();
-
 
                 // DRAW ----
 
@@ -65,18 +76,14 @@ public class BreakoutGraphical extends Application {
                 // used to clear the screen from the previous frame
                 graphicsContext.clearRect(0, 0, windowx, windowy);
                 // set color black
-                graphicsContext.setFill(javafx.scene.paint.Color.BLACK);
-                graphicsContext.fillRect(10, 0, windowx*0.015, windowy);
-                graphicsContext.fillRect(windowx-10-windowx*0.015, 0, windowx*0.015, windowy);
-                graphicsContext.fillRect(0,windowy*0.10, windowx, windowy*0.008);
-
-
+                graphicsContext.setFill(Color.BLACK);
+                graphicsContext.fillRect(10, 0, windowx * 0.015, windowy);
+                graphicsContext.fillRect(windowx - 10 - windowx * 0.015, 0, windowx * 0.015, windowy);
+                graphicsContext.fillRect(0, windowy * 0.10, windowx, windowy * 0.008);
+                System.out.println("Drawing graphics...");
             }
-
         }.start();
 
-
         stage.show();
-
     }
 }
