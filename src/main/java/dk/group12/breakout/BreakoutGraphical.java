@@ -52,14 +52,15 @@ public class BreakoutGraphical extends Application {
                 // drawController.drawPlatform(x,y,width,Height)
 
                 // draw ball
+                // drawBall(gameState)
+                // ||
                 // drawBall(x,y,width,Height, Color)
 
                 // draw Boxes
                 // for all boxes
+                // drawBoxes(gameState)
+                // ||
                 // drawBox(x, y, width, height, color)
-
-
-
 
                 // used to clear the screen from the previous frame
                 graphicsContext.clearRect(0, 0, windowx, windowy);
