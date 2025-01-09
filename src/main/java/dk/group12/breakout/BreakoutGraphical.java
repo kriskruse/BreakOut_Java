@@ -10,7 +10,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import java.io.IOException;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,10 +20,10 @@ public class BreakoutGraphical extends Application {
     private GameLoop gameLoop;
 
     // Track pressed keys
-    private Set<String> activeKeys = new HashSet<>();
+    private final Set<String> activeKeys = new HashSet<>();
 
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage stage) {
         gameLoop = new GameLoop(8, 8, windowX, windowY);
         Group root = new Group();
         Scene scene = new Scene(root);
@@ -46,18 +45,28 @@ public class BreakoutGraphical extends Application {
         new AnimationTimer(){
             private long lastTime = System.nanoTime();
             private int frameCount = 0;
+            long previousTime = 0;
             public void handle(long currentNanoTime){
-                double t = (currentNanoTime - startNanoTime) / 1000000000.0;
+                if (previousTime == 0){
+                    previousTime = currentNanoTime;
+                }
+                long elapsedTime = (currentNanoTime - previousTime) / 1_000_000;
 
-                frameCount ++;
+                if (elapsedTime >= 13){ // 13 ms about 60 fps
+                    frameCount ++;
+                    gameLoop.update();
+                    gameLoop.handleInput(activeKeys);
+                    previousTime = currentNanoTime;
+                }
+
                 if ((currentNanoTime - lastTime) >= 1000000000) {
                     System.out.println("FPS: " + frameCount);
                     frameCount = 0;
                     lastTime = currentNanoTime;
                 }
 
-                gameLoop.handleInput(activeKeys);
-                gameLoop.update();
+
+
 
 
                 // This is here to clear the screen from the previous frame
