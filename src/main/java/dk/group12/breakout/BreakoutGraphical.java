@@ -124,15 +124,15 @@ public class BreakoutGraphical extends Application {
         Color[] rainbow = new Color[]{
                 Color.RED,
                 Color.ORANGE,
-                Color.YELLOW,
                 Color.GREEN,
+                Color.YELLOW,
                 Color.BLUE,
                 Color.INDIGO,
                 Color.VIOLET
         };
         GameState.BlockCluster cluster = gameLoop.gameState.blockcluster;
         for (int i = 0; i < cluster.cluster.length; i++) {
-            gc.setFill(rainbow[i % rainbow.length]);
+            gc.setFill(rainbow[(i / 2) % rainbow.length]);
             for (int j = 0; j < cluster.cluster[i].length; j++) {
                 GameState.Block block = cluster.cluster[i][j];
                 if (block.hp > 0) {
