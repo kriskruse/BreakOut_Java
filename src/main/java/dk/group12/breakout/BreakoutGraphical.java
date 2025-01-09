@@ -18,9 +18,21 @@ public class BreakoutGraphical extends Application {
     private final int windowX = 400;
     private final int windowY = 700;
     private GameLoop gameLoop;
+    private static int n;
+    private static int m;
 
     public static void main(String[] args) {
-        launch(args);
+        int arg1 = 8;
+        int arg2 = 8;
+        try {
+            arg1 = Integer.parseInt(args[0]);
+            arg2 = Integer.parseInt(args[1]);
+        } catch (Exception e) {
+            System.out.println("Default to 8x8, use 2 arguments to change the size of the game board.");
+        }
+        n = arg1;
+        m = arg2;
+        launch();
     }
 
     // Track pressed keys
@@ -28,7 +40,7 @@ public class BreakoutGraphical extends Application {
 
     @Override
     public void start(Stage stage) {
-        gameLoop = new GameLoop(8, 8, windowX, windowY);
+        gameLoop = new GameLoop(n, m, windowX, windowY);
         Group root = new Group();
         Scene scene = new Scene(root);
         stage.setScene(scene);
@@ -38,8 +50,6 @@ public class BreakoutGraphical extends Application {
         root.getChildren().add(canvas);
 
         GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
-
-        final long startNanoTime = System.nanoTime();
 
         // Input handling
         scene.setOnKeyPressed(event -> activeKeys.add(event.getCode().toString()));
@@ -56,7 +66,7 @@ public class BreakoutGraphical extends Application {
                 }
                 long elapsedTime = (currentNanoTime - previousTime) / 1_000_000;
 
-                if (elapsedTime >= 13){ // 13 ms about 60 fps
+                if (elapsedTime >= 13){ // 13 ms about 60 fps cap
                     frameCount ++;
                     gameLoop.update();
                     gameLoop.handleInput(activeKeys);
@@ -68,10 +78,6 @@ public class BreakoutGraphical extends Application {
                     frameCount = 0;
                     lastTime = currentNanoTime;
                 }
-
-
-
-
 
                 // This is here to clear the screen from the previous frame
                 graphicsContext.clearRect(0, 0, windowX, windowY);
