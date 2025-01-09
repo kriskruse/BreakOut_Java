@@ -95,13 +95,13 @@ public class BreakoutGraphical extends Application {
         stage.show();
     }
     private void drawPlatform(GraphicsContext gc) {
-        gc.setFill(Color.LIGHTBLUE);
+        gc.setFill(Color.DEEPSKYBLUE);
         GameState.Platform p = gameLoop.gameState.platform;
         gc.fillRect(p.x, p.y, p.width, p.height);
     }
 
     private void drawBall(GraphicsContext gc) {
-        gc.setFill(Color.RED);
+        gc.setFill(Color.WHITE);
         GameState.Ball b = gameLoop.gameState.ball;
         gc.fillOval(
                 b.x - b.radius,
@@ -111,7 +111,7 @@ public class BreakoutGraphical extends Application {
         );
     }
     private void drawStaticElements(GraphicsContext gc) {
-        gc.setFill(Color.WHITE);
+        gc.setFill(Color.LIGHTGREY);
         GameState.StaticElements topWall = gameLoop.gameState.topWall;
         GameState.StaticElements leftWall = gameLoop.gameState.leftWall;
         GameState.StaticElements rightWall = gameLoop.gameState.rightWall;
