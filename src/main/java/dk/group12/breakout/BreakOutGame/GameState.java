@@ -6,6 +6,7 @@ public class GameState {
     public BlockCluster blockcluster;
     public StaticElements topWall, leftWall, rightWall;
     public boolean gameRunning = false;
+    public boolean gameEnded = false;
     private final int gameHeight;
 
     public GameState(int n, int m, int gameWidth, int gameHeight) {
@@ -29,7 +30,13 @@ public class GameState {
     }
     public void startGame() {
         gameRunning = true;
-        ball.direction = new Ball.vec2((Math.random() - 0.5) * 2, -1, 1);
+        ball.direction = new Ball.vec2((Math.random() - 0.5) * 2, -1, 3);
+    }
+    public void endGame() {
+        ball.direction = new Ball.vec2(0, 0, 0);
+        System.out.println("Game Over!");
+        gameRunning = false;
+        gameEnded = true;
     }
 
     public void update() {
@@ -141,5 +148,4 @@ public class GameState {
             this.height = height;
         }
     }
-
 }

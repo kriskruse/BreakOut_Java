@@ -13,6 +13,9 @@ public class GameLoop {
         if (!gameState.gameRunning && !activeKeys.isEmpty()) {
             gameState.startGame();
         }
+        if (gameState.gameEnded && !activeKeys.isEmpty()) {
+            System.exit(0);
+        }
 
         if (activeKeys.contains("A") || activeKeys.contains("LEFT")) {
             gameState.platform.move(-10);
