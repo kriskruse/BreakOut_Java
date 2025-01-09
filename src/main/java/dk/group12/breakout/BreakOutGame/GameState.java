@@ -30,11 +30,11 @@ public class GameState {
     }
     public void startGame() {
         gameRunning = true;
-        ball.direction = new Ball.vec2((Math.random() - 0.5) * 2, -1, 3);
+        ball.direction = new Ball.Vec2((Math.random() - 0.5) * 2, -1, 3);
     }
     public void endGame() {
-        ball.direction = new Ball.vec2(0, 0, 0);
-        System.out.println("Game Over!");
+        ball.direction = new Ball.Vec2(0, 0, 0);
+        System.out.println("Game Ended");
         gameRunning = false;
         gameEnded = true;
     }
@@ -94,14 +94,14 @@ public class GameState {
 
     public static class Ball {
         public double x, y;
-        public vec2 direction;
+        public Vec2 direction;
         public int radius;
 
         public Ball(double x, double y, int radius) {
             this.x = x;
             this.y = y;
             this.radius=radius;
-            direction = new vec2(0, 0, 0);
+            direction = new Vec2(0, 0, 0);
         }
 
         public void move() {
@@ -109,11 +109,11 @@ public class GameState {
             this.y += direction.y * direction.scalar;
         }
 
-        public static class vec2 {
+        public static class Vec2 {
             public double x, y;
             public double scalar;
 
-            public vec2(double x, double y, double scalar) {
+            public Vec2(double x, double y, double scalar) {
                 this.x = x;
                 this.y = y;
                 this.scalar = scalar;
