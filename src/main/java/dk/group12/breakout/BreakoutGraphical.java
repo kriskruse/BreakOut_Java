@@ -15,8 +15,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class BreakoutGraphical extends Application {
-    private final int windowx = 400;
-    private final int windowy = 700;
+    private final int windowX = 400;
+    private final int windowY = 700;
     private GameLoop gameLoop;
 
     // Track pressed keys
@@ -24,13 +24,13 @@ public class BreakoutGraphical extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        gameLoop = new GameLoop(8, 8, windowx, windowy);
+        gameLoop = new GameLoop(8, 8, windowX, windowY);
         Group root = new Group();
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Breakout");
 
-        Canvas canvas = new Canvas(windowx, windowy);
+        Canvas canvas = new Canvas(windowX, windowY);
         root.getChildren().add(canvas);
 
         GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
@@ -49,7 +49,6 @@ public class BreakoutGraphical extends Application {
                 double t = (currentNanoTime - startNanoTime) / 1000000000.0;
 
                 frameCount ++;
-                // using frames count how many we had in one secound
                 if ((currentNanoTime - lastTime) >= 1000000000) {
                     System.out.println("FPS: " + frameCount);
                     frameCount = 0;
@@ -65,7 +64,7 @@ public class BreakoutGraphical extends Application {
                 */
 
                 // This is here to clear the screen from the previous frame
-                graphicsContext.clearRect(0, 0, windowx, windowy);
+                graphicsContext.clearRect(0, 0, windowX, windowY);
 
                 drawStaticElements(graphicsContext);
                 drawPlatform(graphicsContext);
@@ -106,7 +105,6 @@ public class BreakoutGraphical extends Application {
 
     private void drawBlocks(GraphicsContext gc) {
         gc.setFill(javafx.scene.paint.Color.GREEN);
-        // Loop through the 2D array of blocks
         GameState.BlockCluster cluster = gameLoop.gameState.blockcluster;
         for (int i = 0; i < cluster.cluster.length; i++) {
             for (int j = 0; j < cluster.cluster[i].length; j++) {

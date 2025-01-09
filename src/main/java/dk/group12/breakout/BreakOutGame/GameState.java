@@ -13,6 +13,7 @@ public class GameState {
         int platformHeight = 10;
         int platformY = (int) (gameHeight - platformHeight - gameHeight * 0.05);
         platform = new Platform(platformX, platformY, platformWidth, platformHeight);
+
         topWall = new StaticElements(0, 0, gameWidth, 10);
         leftWall = new StaticElements(0, 0, 10, gameHeight);
         rightWall = new StaticElements(gameWidth - 10, 0, 10, gameHeight);
@@ -20,10 +21,8 @@ public class GameState {
         // we want to add the ball right on top of the platform
         ball = new Ball(platform.x + platform.width / 2, platform.y - 10, 5);
 
-
         int clusterWidth = (int) (gameWidth*0.95 - leftWall.width - rightWall.width);
         int clusterHeight = (int) (gameHeight * 0.20 - topWall.y + topWall.height);
-
         blockcluster = new BlockCluster(n, m, clusterWidth, clusterHeight);
     }
     public void startGame() {

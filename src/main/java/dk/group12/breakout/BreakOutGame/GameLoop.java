@@ -22,8 +22,7 @@ public class GameLoop {
         }
     }
 
-    public GameState update() {
+    public void update() {
         gameState.update();
-        return gameState;
     }
 }
