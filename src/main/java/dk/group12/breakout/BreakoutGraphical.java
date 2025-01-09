@@ -130,7 +130,7 @@ public class BreakoutGraphical extends Application {
                 Color.INDIGO,
                 Color.VIOLET
         };
-        GameState.BlockCluster cluster = gameLoop.gameState.blockcluster;
+        GameState.BlockCluster cluster = gameLoop.gameState.blockCluster;
         for (int i = 0; i < cluster.cluster.length; i++) {
             gc.setFill(rainbow[(i / 2) % rainbow.length]);
             for (int j = 0; j < cluster.cluster[i].length; j++) {
