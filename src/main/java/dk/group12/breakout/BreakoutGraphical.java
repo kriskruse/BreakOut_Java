@@ -8,6 +8,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import java.io.IOException;
 
@@ -58,13 +59,11 @@ public class BreakoutGraphical extends Application {
                 gameLoop.handleInput(activeKeys);
                 gameLoop.update();
 
-                /* setting the background to BLACK
-                graphicsContext.setFill(Color.BLACK);
-                graphicsContext.fillRect(0, 0, windowx, windowy);
-                */
 
                 // This is here to clear the screen from the previous frame
                 graphicsContext.clearRect(0, 0, windowX, windowY);
+                graphicsContext.setFill(Color.BLACK);
+                graphicsContext.fillRect(0, 0, windowX, windowY);
 
                 drawStaticElements(graphicsContext);
                 drawPlatform(graphicsContext);
@@ -77,14 +76,13 @@ public class BreakoutGraphical extends Application {
         stage.show();
     }
     private void drawPlatform(GraphicsContext gc) {
-        // gameLoop.gameState.platform is your platform
-        gc.setFill(javafx.scene.paint.Color.DARKBLUE);
+        gc.setFill(Color.LIGHTBLUE);
         GameState.Platform p = gameLoop.gameState.platform;
         gc.fillRect(p.x, p.y, p.width, p.height);
     }
 
     private void drawBall(GraphicsContext gc) {
-        gc.setFill(javafx.scene.paint.Color.RED);
+        gc.setFill(Color.RED);
         GameState.Ball b = gameLoop.gameState.ball;
         gc.fillOval(
                 b.x - b.radius,
@@ -94,7 +92,7 @@ public class BreakoutGraphical extends Application {
         );
     }
     private void drawStaticElements(GraphicsContext gc) {
-        gc.setFill(javafx.scene.paint.Color.BLACK);
+        gc.setFill(Color.WHITE);
         GameState.StaticElements topWall = gameLoop.gameState.topWall;
         GameState.StaticElements leftWall = gameLoop.gameState.leftWall;
         GameState.StaticElements rightWall = gameLoop.gameState.rightWall;
@@ -104,9 +102,18 @@ public class BreakoutGraphical extends Application {
     }
 
     private void drawBlocks(GraphicsContext gc) {
-        gc.setFill(javafx.scene.paint.Color.GREEN);
+        Color[] rainbow = new Color[]{
+                Color.RED,
+                Color.ORANGE,
+                Color.YELLOW,
+                Color.GREEN,
+                Color.BLUE,
+                Color.INDIGO,
+                Color.VIOLET
+        };
         GameState.BlockCluster cluster = gameLoop.gameState.blockcluster;
         for (int i = 0; i < cluster.cluster.length; i++) {
+            gc.setFill(rainbow[i % rainbow.length]);
             for (int j = 0; j < cluster.cluster[i].length; j++) {
                 GameState.Block block = cluster.cluster[i][j];
                 if (block.hp > 0) {

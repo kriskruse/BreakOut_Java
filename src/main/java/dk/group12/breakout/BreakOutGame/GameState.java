@@ -6,23 +6,25 @@ public class GameState {
     public BlockCluster blockcluster;
     public StaticElements topWall, leftWall, rightWall;
     public boolean gameRunning = false;
+    private final int gameHeight;
 
     public GameState(int n, int m, int gameWidth, int gameHeight) {
+        this.gameHeight = gameHeight;
         int platformWidth = gameWidth / 10;
         int platformX = gameWidth / 2 - platformWidth / 2;
         int platformHeight = 10;
         int platformY = (int) (gameHeight - platformHeight - gameHeight * 0.05);
         platform = new Platform(platformX, platformY, platformWidth, platformHeight);
 
-        topWall = new StaticElements(0, 0, gameWidth, 10);
+        topWall = new StaticElements(0, 150, gameWidth, 10);
         leftWall = new StaticElements(0, 0, 10, gameHeight);
         rightWall = new StaticElements(gameWidth - 10, 0, 10, gameHeight);
 
         // we want to add the ball right on top of the platform
         ball = new Ball(platform.x + platform.width / 2, platform.y - 10, 5);
 
-        int clusterWidth = (int) (gameWidth*0.95 - leftWall.width - rightWall.width);
-        int clusterHeight = (int) (gameHeight * 0.20 - topWall.y + topWall.height);
+        int clusterWidth = (int) (gameWidth - leftWall.width - rightWall.width);
+        int clusterHeight = (int) ((gameHeight - (topWall.x + topWall.height)) * 0.25);
         blockcluster = new BlockCluster(n, m, clusterWidth, clusterHeight);
     }
     public void startGame() {
@@ -33,7 +35,6 @@ public class GameState {
     public void update() {
         ball.move();
         blockcluster.update(getCollision(ball));
-        // update blockcluster
     }
 
     public Collision getCollision(Ball ball) {
@@ -53,27 +54,27 @@ public class GameState {
         }
     }
 
-    public static class BlockCluster {
+    public class BlockCluster {
         public Block[][] cluster;
         double width,height;
         double spacing;
-        final int offsetHeight = 10;
-        final int offsetWidth = 20;
-        final double spacingOffset = 0.02;
+        final double spacingOffset = 0.01;
 
         public BlockCluster(int n, int m, double clusterWidth, double clusterHeight) {
             cluster = new Block[n][m];
 
             // Calculate block dimensions
-            spacing = Math.min(clusterWidth, clusterHeight) * spacingOffset;
-            width = (clusterWidth - (m - 1) * spacing) / m;
-            height = (clusterHeight - (n - 1) * spacing) / n;
+            spacing = clusterWidth * spacingOffset;
+            width = (clusterWidth - (m + 1) * spacing) / m;
+            height = (clusterHeight - (n + 1) * spacing) / n;
 
             // Populate the cluster with blocks
             for (int i = 0; i < n; i++) {
-                double y = i * (height + spacing) + clusterHeight / offsetHeight; // Add vertical spacing
+                double top = topWall.y + topWall.height;
+                double offset = (gameHeight - top) * 0.15;
+                double y = top + offset + i * (height + spacing) + spacing; // Add vertical spacing
                 for (int j = 0; j < m; j++) {
-                    double x = j * (width + spacing) + clusterWidth / offsetWidth; // Add horizontal spacing
+                    double x = (leftWall.x + leftWall.width) + j * (width + spacing) + spacing; // Add horizontal spacing
                     cluster[i][j] = new Block(x, y, width, height);
                 }
             }
