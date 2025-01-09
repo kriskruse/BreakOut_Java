@@ -5,8 +5,8 @@ import java.util.Set;
 public class GameLoop {
     public GameState gameState;
 
-    public GameLoop(int n, int m, int gameWidth, int gameHeight) {
-        gameState = new GameState(n, m, gameWidth, gameHeight);
+    public GameLoop(int n, int m, int gameWidth, int gameHeight, int lives) {
+        gameState = new GameState(n, m, gameWidth, gameHeight, lives);
     }
 
     public void handleInput(Set<String> activeKeys) {
@@ -18,10 +18,10 @@ public class GameLoop {
         }
 
         if (activeKeys.contains("A") || activeKeys.contains("LEFT")) {
-            gameState.platform.move(-10);
+            gameState.platform.move(-7);
         }
         if (activeKeys.contains("D") || activeKeys.contains("RIGHT")) {
-            gameState.platform.move(10);
+            gameState.platform.move(7);
         }
     }
 

@@ -20,18 +20,22 @@ public class BreakoutGraphical extends Application {
     private GameLoop gameLoop;
     private static int n;
     private static int m;
+    private static int lives;
 
     public static void main(String[] args) {
         int arg1 = 8;
         int arg2 = 8;
+        int arg3 = 3;
         try {
             arg1 = Integer.parseInt(args[0]);
             arg2 = Integer.parseInt(args[1]);
+            arg3 = Integer.parseInt(args[2]);
         } catch (Exception e) {
             System.out.println("Default to 8x8, use 2 arguments to change the size of the game board.");
         }
         n = arg1;
         m = arg2;
+        lives = arg3;
         launch();
     }
 
@@ -40,7 +44,7 @@ public class BreakoutGraphical extends Application {
 
     @Override
     public void start(Stage stage) {
-        gameLoop = new GameLoop(n, m, windowX, windowY);
+        gameLoop = new GameLoop(n, m, windowX, windowY, lives);
         Group root = new Group();
         Scene scene = new Scene(root);
         stage.setScene(scene);

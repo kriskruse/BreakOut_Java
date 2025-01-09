@@ -1,126 +1,97 @@
 package dk.group12.breakout.BreakOutGame;
 
 public class Collision {
-    public boolean collision = false;
-    public double x;
-    public double y;
-    public int lives = 1;
 
+    // Method to check and handle collision with walls
+    public static void WallCollision(GameState gameState) {
+        GameState.Ball ball = gameState.ball;
+        // Left and right walls collision
+        if (ball.x - ball.radius <= gameState.leftWall.x + gameState.leftWall.width ||
+                ball.x + ball.radius >= gameState.rightWall.x) {
+            ball.direction.x *= -1; // Reflect the ball horizontally
+        }
 
+        // Top wall collision
+        if (ball.y - ball.radius <= gameState.topWall.y + gameState.topWall.height) {
+            ball.direction.y *= -1; // Reflect the ball vertically
+        }
+    }
 
-    // a method to check if the ball has collided with the platform
-    public void platformCollision(GameState.Ball ball, GameState.Platform platform) {
-        // if the ball hits the platform then two things happen:
-        // 1. the ball will bounce back up which means it will go in the opposite direction of the y-axis
-        // 2. the angle of which the ball will go is dependent on where the ball hits the platform
-        // if the ball hits the platform on the left side then the ball will go to the left and vice versa
+    // Method to check and handle collision with the platform
+    public static void PlatformCollision(GameState gameState) {
+        GameState.Ball ball = gameState.ball;
+        GameState.Platform platform = gameState.platform;
 
-        // game coordinate system y= is at the top
-        int bottomBall= (int) (ball.y + ball.radius);
-
-        if (bottomBall >= platform.x){ // check if the bottom of the ball overlaps the top of the platform
-            if (ball.x >= platform.x && ball.x <= platform.x + platform.width ){ // check to see if the ball is inside the interval of the platform width
-
-                //Change the direction of y
-                ball.direction.y=-ball.direction.y;
-
-                double platformCenter = platform.x + platform.width / 2.0; // the center of the platform
-
+        // Check if the ball is in contact with the platform
+        if (ball.y + ball.radius >= platform.y && ball.y - ball.radius <= platform.y + platform.height) {
+            // Check if the ball is horizontally over the platform
+            if (ball.x + ball.radius >= platform.x && ball.x - ball.radius <= platform.x + platform.width) {
+                // Calculate the relative position of the ball on the platform
+                double platformCenterX = platform.x + platform.width / 2.0; // the center of the platform
                 // the distance from the center of the platform
-                double distanceFromCenter = (ball.x - platformCenter) / (platform.width / 2.0);
-                // normalising the length of the platform så it is between -1 to 1. this makes it possible for us
-                // to give the player som power up to make the platform bigger without disturbing the program
+                double distanceFromCenterX = (ball.x - platformCenterX) / (platform.width / 2.0);
+                // normalising the length of the platform such that it is between -1 to 1. this makes it possible for us
+                // to give the player some power up to make the platform bigger without disturbing the program
                 //(platform.width / 2.0) is used to normalise it
-
-                ball.direction.x = distanceFromCenter;
-                // We change the direction of the ball to the normalised distance of the platform
-            }
-
-        }
-
-
-
-
-    }
-
-    // a method to check if the ball has collided with the walls and top
-    public void wallCollision(GameState.Ball ball, GameState.StaticElements topWall, GameState.StaticElements leftWall, GameState.StaticElements rightWall) {
-
-        double topBall = ball.y - Ball.radius;
-        double leftSideBall = ball.x-Ball.radius;
-        double rightSideBall = ball.x+Ball.radius;
-
-
-
-        // Top wall
-        if (topBall >= topWall.y + topWall.height) {
-            ball.direction.y= -ball.direction.y;  // change the direction of the y direction (The opposite of what it originally was)
-
-        }
-
-        // Left wall
-        if (leftSideBall <= leftWall.x + leftWall.width) {
-            ball.direction.x = -ball.direction.x; // change the direction of the x direction (The opposite of what it originally was)
-
-        }
-
-        // right wall
-        if (rightSideBall >= rightWall.x) {
-            ball.direction.x = -ball.direction.x; // change the direction of the x direction (The opposite of what it originally was)
-
-        }
-    }
-
-
-
-    // a method to check if the ball has collided with a block
-    public void blockCollision(Ball ball, Block block) {
-
-    }
-
-    // a method to check if the ball has collided with the bottom wall
-    public void bottomCollision(GameState.Ball ball, int gameHeight) {
-        // if the ball hits the bottom wall then the player loses a life
-        // the ball will be reset to the middle of the screen
-
-
-        if (ball.y + GameState.Ball.ball.radius > GameState.StaticElements.height) { // when the ball is vertically lower than the gameheigth
-            // reduce the number of lives
-            lives--;
-
-            // To reset the ball to the startpoint
-            ball.x= GameState.StaticElements.width/2;
-            ball.y= GameState.StaticElements.heigth/2;
-
-
-            ball.direction.x=Math.random()*2-1; // 0<=Math.random<1 Bolden bliver skudt op med random vinkel
-            ball.direction.y=-1; // The ball HAS to go up
-
-
-            if (lives==0){
-                GameState.endGame();
+                ball.y = platform.y - ball.radius;
+                ball.direction.x = 2 * distanceFromCenterX;
+                ball.direction.y *= -1;
+                // We change the direction of the ball to the normalised distance of the platform. Max 30 degrees
             }
         }
-
-
     }
 
-    // method to check what type of collision the ball made, so is it a wall, platform or block etc.
-    public CollisionType detectCollision(Ball ball, GameState gamestate){
+    // Method to check and handle collision with blocks
+    public static void BlockCollision(GameState gameState) {
+        GameState.Ball ball = gameState.ball;
+        GameState.BlockCluster blockCluster = gameState.blockCluster;
 
-        return null;
+        for (int i = 0; i < blockCluster.cluster.length; i++) {
+            for (int j = 0; j < blockCluster.cluster[i].length; j++) {
+                GameState.Block block = blockCluster.cluster[i][j];
+
+                // Check if the block exists (hp > 0)
+                if (block.hp > 0) {
+                    // Check if the ball intersects with the block
+                    if (isBallIntersectingBlock(ball, block)) {
+                        // Determine which edge was hit (based on distances to edges)
+                        double overlapTop = calculateOverlap(ball.y, block.y); // Distance to top edge
+                        double overlapBottom = calculateOverlap(ball.y, block.y + block.height); // Distance to bottom edge
+                        double overlapLeft = calculateOverlap(ball.x, block.x); // Distance to left edge
+                        double overlapRight = calculateOverlap(ball.x, block.x + block.width); // Distance to right edge
+
+                        // Check which edge the ball is closest to and reflect appropriately
+                        if (overlapTop < overlapBottom && overlapTop < overlapLeft && overlapTop < overlapRight) {
+                            ball.y = block.y - ball.radius;
+                            ball.direction.y *= -1; // Top edge reflection
+                        } else if (overlapBottom < overlapTop && overlapBottom < overlapLeft && overlapBottom < overlapRight) {
+                            ball.y = block.y + block.height + ball.radius;
+                            ball.direction.y *= -1; // Bottom edge reflection
+                        } else if (overlapLeft < overlapRight) {
+                            ball.x = block.x - ball.radius;
+                            ball.direction.x *= -1; // Left edge reflection
+                        } else {
+                            ball.x = block.x + block.width + ball.radius;
+                            ball.direction.x *= -1; // Right edge reflection
+                        }
+
+                        // Decrease the block's hp and destroy it if necessary
+                        block.hp--;
+                    }
+                }
+            }
+        }
     }
 
-
-
-    // method to check if the ball has collided with multiple objects at the same time
-    public void multipleCollision(Ball ball, GameState gameState){
-        // if the ball hits multiple objects at the same time
-
+    // Helper function to check ball-block intersection
+    private static boolean isBallIntersectingBlock(GameState.Ball ball, GameState.Block block) {
+        return ball.x + ball.radius > block.x && ball.x - ball.radius < block.x + block.width &&
+                ball.y + ball.radius > block.y && ball.y - ball.radius < block.y + block.height;
     }
 
-
-
-
-
+    // Helper function to calculate overlap distance
+    private static double calculateOverlap(double point, double edge) {
+        return Math.abs(point - edge);
+    }
 }
+

@@ -7,10 +7,14 @@ public class GameState {
     public StaticElements topWall, leftWall, rightWall;
     public boolean gameRunning = false;
     public boolean gameEnded = false;
+    private int lives;
+    private final int gameWidth;
     private final int gameHeight;
 
-    public GameState(int n, int m, int gameWidth, int gameHeight) {
+    public GameState(int n, int m, int gameWidth, int gameHeight, int lives) {
         this.gameHeight = gameHeight;
+        this.gameWidth = gameWidth;
+        this.lives = lives;
         int platformWidth = gameWidth / 10;
         int platformX = (gameWidth - platformWidth) / 2;
         int platformHeight = 10;
@@ -39,9 +43,29 @@ public class GameState {
         gameEnded = true;
     }
 
+    // Reset the ball and platform after losing a life
+    public void resetBallAndPlatform() {
+        platform.x = (gameWidth - platform.width) / 2;  // Reset platform to center
+        ball.x = platform.x + platform.width / 2;  // Reset ball to above the platform
+        ball.y = platform.y - ball.radius;  // Position the ball just above the platform
+        ball.direction = new Ball.Vec2((Math.random() - 0.5) * 2, -1, 3);  // Random initial ball direction
+    }
+
     public void update() {
         ball.move();
-        blockCluster.update(getCollision(ball));
+        Collision.WallCollision(this);
+        Collision.PlatformCollision(this);
+        Collision.BlockCollision(this);
+
+        // Check if the ball has crossed the bottom
+        if (ball.y - ball.radius > gameHeight) {
+            lives--;  // Decrease a life
+            if (lives <= 0) {
+                endGame();  // End the game if no lives are left
+            } else {
+                resetBallAndPlatform();  // Reset the ball and platform if lives remain
+            }
+        }
     }
 
     public Collision getCollision(Ball ball) {
