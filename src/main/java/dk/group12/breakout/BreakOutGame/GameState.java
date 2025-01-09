@@ -18,6 +18,10 @@ public class GameState {
         // we want to add the ball right on top of the platform
         ball = new Ball(platform.x + platform.width / 2, platform.y - 10, 5);
 
+
+        this.clusterWidth = gameWidth;
+        this.clusterHeight = (int) (gameHeight * 0.25); // top 25% of screen
+
         // Init block cluster
         blockcluster = new Blockcluster(n, m, clusterWidth, clusterHeight);
     }
@@ -51,8 +55,11 @@ public class GameState {
 
         public Blockcluster(int n, int m, double clusterWidth, double clusterHeight) {
             cluster = new Block[n][m];
-            width = clusterWidth / m - m * 0.1;
-            height = clusterHeight / n - n * 0.1;
+            width = clusterWidth / m;// - m * 0.1;
+            height = clusterHeight / n;// - n * 0.1;
+
+            height -= 10;
+
             for (int i = 0; i < n; i++) {
                 double y = i * height;
                 for (int j = 0; j < m; j++) {

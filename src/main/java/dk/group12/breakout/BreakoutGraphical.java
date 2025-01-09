@@ -16,8 +16,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class BreakoutGraphical extends Application {
-    private int windowx = 400;
-    private int windowy = 700;
+    private final int windowx = 400;
+    private final int windowy = 700;
     private GameLoop gameLoop;
     private GameState gameState;
 
@@ -47,43 +47,69 @@ public class BreakoutGraphical extends Application {
         new AnimationTimer(){
             public void handle(long currentNanoTime){
                 double t = (currentNanoTime - startNanoTime) / 1000000000.0;
-                System.out.println("Animation loop running...");
 
                 // Pass active keys to game loop
                 gameLoop.handleInput(activeKeys);
 
-                // Update what to draw
+                // Update the game state (moves ball, etc.)
                 gameState = gameLoop.update();
 
-                // DRAW ----
-
-                // Draw platform
-                // drawPlatform(gameState)
-                // ||
-                // drawController.drawPlatform(x,y,width,Height)
-
-                // draw ball
-                // drawBall(gameState)
-                // ||
-                // drawBall(x,y,width,Height, Color)
-
-                // draw Boxes
-                // for all boxes
-                // drawBoxes(gameState)
-                // ||
-                // drawBox(x, y, width, height, color)
-
-                // used to clear the screen from the previous frame
-                graphicsContext.clearRect(0, 0, windowx, windowy);
-                // set color black
+                /* setting the background to BLACK
                 graphicsContext.setFill(Color.BLACK);
-                graphicsContext.fillRect(10, 0, windowx * 0.015, windowy);
-                graphicsContext.fillRect(windowx - 10 - windowx * 0.015, 0, windowx * 0.015, windowy);
-                graphicsContext.fillRect(0, windowy * 0.10, windowx, windowy * 0.008);
-                System.out.println("Drawing graphics...");
+                graphicsContext.fillRect(0, 0, windowx, windowy);
+                */
+
+                // Clear the screen
+                graphicsContext.clearRect(0, 0, windowx, windowy);
+
+                // Draw boundaries (walls, ceiling)
+                graphicsContext.setFill(javafx.scene.paint.Color.BLACK); // Set color to black
+                graphicsContext.fillRect(10, 0, windowx*0.015, windowy); // left wall
+                graphicsContext.fillRect(windowx - 10 - windowx*0.015, 0, windowx*0.015, windowy);  // right wall
+                graphicsContext.fillRect(0, windowy*0.10, windowx, windowy*0.008); // top ceiling
+
+                // Now draw the platform, ball, and blocks
+                drawPlatform(graphicsContext);
+                drawBall(graphicsContext);
+                drawBlocks(graphicsContext);
+
+                System.out.println("graphics is showing...");
+
+                // TODO: Add collision checks eventually (e.g., bounce ball on edges, blocks)
             }
         }.start();
 
         stage.show();
+    }
+    private void drawPlatform(GraphicsContext gc) {
+        // gameLoop.gameState.platform is your platform
+        gc.setFill(javafx.scene.paint.Color.DARKBLUE);
+        GameState.Platform p = gameLoop.gameState.platform;
+        gc.fillRect(p.x, p.y, p.width, p.height);
+    }
+
+    private void drawBall(GraphicsContext gc) {
+        gc.setFill(javafx.scene.paint.Color.RED);
+        GameState.Ball b = gameLoop.gameState.ball;
+        gc.fillOval(
+                b.x - b.radius,
+                b.y - b.radius,
+                b.radius * 2,
+                b.radius * 2
+        );
+    }
+
+    private void drawBlocks(GraphicsContext gc) {
+        gc.setFill(javafx.scene.paint.Color.GREEN);
+        // Loop through the 2D array of blocks
+        GameState.Blockcluster cluster = gameLoop.gameState.blockcluster;
+        for (int i = 0; i < cluster.cluster.length; i++) {
+            for (int j = 0; j < cluster.cluster[i].length; j++) {
+                GameState.Block block = cluster.cluster[i][j];
+                if (block.hp > 0) {
+                    gc.fillRect(block.x, block.y, block.width, block.height);
+                }
+            }
+        }
     }
 }

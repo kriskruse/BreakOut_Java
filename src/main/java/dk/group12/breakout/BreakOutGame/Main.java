@@ -1,3 +1,5 @@
+
+/*
 package dk.group12.breakout.BreakOutGame;
 
 
@@ -14,3 +16,5 @@ public class Main {
 
     }
 }
+
+ */

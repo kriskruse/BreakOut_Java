@@ -3,7 +3,7 @@ package dk.group12.breakout.BreakOutGame;
 import java.util.Set;
 
 public class GameLoop {
-    private GameState gameState;
+    public GameState gameState;
 
     public GameLoop(int n, int m, int gameWidth, int gameHeight) {
         gameState = new GameState(n, m, gameWidth, gameHeight);
