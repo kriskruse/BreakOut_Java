@@ -45,8 +45,19 @@ public class BreakoutGraphical extends Application {
 
         // Animation loop running at 60 FPS
         new AnimationTimer(){
+            private long lastTime = System.nanoTime();
+            private int frameCount = 0;
             public void handle(long currentNanoTime){
                 double t = (currentNanoTime - startNanoTime) / 1000000000.0;
+
+                frameCount ++;
+                // using frames count how many we had in one secound
+                if ((currentNanoTime - lastTime) >= 1000000000) {
+                    System.out.println("FPS: " + frameCount);
+                    frameCount = 0;
+                    lastTime = currentNanoTime;
+                }
+
 
                 // Pass active keys to game loop
                 gameLoop.handleInput(activeKeys);
@@ -73,9 +84,6 @@ public class BreakoutGraphical extends Application {
                 drawBall(graphicsContext);
                 drawBlocks(graphicsContext);
 
-                System.out.println("graphics is showing...");
-
-                // TODO: Add collision checks eventually (e.g., bounce ball on edges, blocks)
             }
         }.start();
 
