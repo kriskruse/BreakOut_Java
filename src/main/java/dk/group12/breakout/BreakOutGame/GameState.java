@@ -5,7 +5,7 @@ public class GameState {
     public Ball ball;
     public BlockCluster blockcluster;
     public StaticElements topWall, leftWall, rightWall;
-    private int clusterWidth, clusterHeight;
+    public boolean gameRunning = false;
 
     public GameState(int n, int m, int gameWidth, int gameHeight) {
         int platformWidth = gameWidth / 10;
@@ -21,11 +21,14 @@ public class GameState {
         ball = new Ball(platform.x + platform.width / 2, platform.y - 10, 5);
 
 
-        this.clusterWidth = gameWidth - gameWidth / 10; // 90% of screen width
-        this.clusterHeight = (int) (gameHeight * 0.25); // top 25% of screen
+        int clusterWidth = (int) (gameWidth*0.95 - leftWall.width - rightWall.width);
+        int clusterHeight = (int) (gameHeight * 0.20 - topWall.y + topWall.height);
 
-        // Init block cluster
         blockcluster = new BlockCluster(n, m, clusterWidth, clusterHeight);
+    }
+    public void startGame() {
+        gameRunning = true;
+        ball.direction = new Ball.vec2((Math.random() - 0.5) * 2, -1, 1);
     }
 
     public void update() {
@@ -54,24 +57,24 @@ public class GameState {
     public static class BlockCluster {
         public Block[][] cluster;
         double width,height;
-        double spacing; // Adjust this value for desired spacing
+        double spacing;
+        final int offsetHeight = 10;
+        final int offsetWidth = 20;
+        final double spacingOffset = 0.02;
 
         public BlockCluster(int n, int m, double clusterWidth, double clusterHeight) {
             cluster = new Block[n][m];
 
-            // Define the spacing between blocks
-            double horizontalSpacing = 5; // Space between blocks horizontally
-            double verticalSpacing = 5;   // Space between blocks vertically
-
             // Calculate block dimensions
-            width = (clusterWidth - (m - 1) * horizontalSpacing) / m;
-            height = (clusterHeight - (n - 1) * verticalSpacing) / n;
+            spacing = Math.min(clusterWidth, clusterHeight) * spacingOffset;
+            width = (clusterWidth - (m - 1) * spacing) / m;
+            height = (clusterHeight - (n - 1) * spacing) / n;
 
             // Populate the cluster with blocks
             for (int i = 0; i < n; i++) {
-                double y = i * (height + verticalSpacing); // Add vertical spacing
+                double y = i * (height + spacing) + clusterHeight / offsetHeight; // Add vertical spacing
                 for (int j = 0; j < m; j++) {
-                    double x = j * (width + horizontalSpacing); // Add horizontal spacing
+                    double x = j * (width + spacing) + clusterWidth / offsetWidth; // Add horizontal spacing
                     cluster[i][j] = new Block(x, y, width, height);
                 }
             }
@@ -91,9 +94,7 @@ public class GameState {
             this.x = x;
             this.y = y;
             this.radius=radius;
-
-            // Initialize direction for testing
-            direction = new vec2(0, -1, 5);
+            direction = new vec2(0, 0, 0);
         }
 
         public void move() {
@@ -126,8 +127,8 @@ public class GameState {
         public void move(double direction) {
             this.x += direction;
 
-            if (this.x < 0) this.x = 0;
-            if (this.x + this.width > clusterWidth) this.x = clusterWidth - this.width;
+            if (this.x < leftWall.x + leftWall.width) this.x = leftWall.x + leftWall.width;
+            if (this.x + this.width > rightWall.x) this.x = rightWall.x - this.width;
         }
     }
 

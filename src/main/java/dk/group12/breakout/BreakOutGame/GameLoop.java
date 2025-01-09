@@ -10,6 +10,10 @@ public class GameLoop {
     }
 
     public void handleInput(Set<String> activeKeys) {
+        if (!gameState.gameRunning && !activeKeys.isEmpty()) {
+            gameState.startGame();
+        }
+
         if (activeKeys.contains("A") || activeKeys.contains("LEFT")) {
             gameState.platform.move(-10);
         }
