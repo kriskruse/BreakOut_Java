@@ -3,7 +3,7 @@ package dk.group12.breakout.BreakOutGame;
 public class GameState {
     public Platform platform;
     public Ball ball;
-    public BlockCluster blockCluster;
+    public BlockCluster blockcluster;
     public StaticElements topWall, leftWall, rightWall;
     public boolean gameRunning = false;
     public boolean gameEnded = false;
@@ -26,7 +26,7 @@ public class GameState {
 
         int clusterWidth = (int) (gameWidth - leftWall.width - rightWall.width);
         int clusterHeight = (int) ((gameHeight - (topWall.x + topWall.height)) * 0.25);
-        blockCluster = new BlockCluster(n, m, clusterWidth, clusterHeight);
+        blockcluster = new BlockCluster(n, m, clusterWidth, clusterHeight);
     }
     public void startGame() {
         gameRunning = true;
@@ -41,7 +41,7 @@ public class GameState {
 
     public void update() {
         ball.move();
-        blockCluster.update(getCollision(ball));
+        blockcluster.update(getCollision(ball));
     }
 
     public Collision getCollision(Ball ball) {
