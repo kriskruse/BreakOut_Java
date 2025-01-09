@@ -11,12 +11,12 @@ public class GameState {
     public GameState(int n, int m, int gameWidth, int gameHeight) {
         this.gameHeight = gameHeight;
         int platformWidth = gameWidth / 10;
-        int platformX = gameWidth / 2 - platformWidth / 2;
+        int platformX = (gameWidth - platformWidth) / 2;
         int platformHeight = 10;
         int platformY = (int) (gameHeight - platformHeight - gameHeight * 0.05);
         platform = new Platform(platformX, platformY, platformWidth, platformHeight);
 
-        topWall = new StaticElements(0, 150, gameWidth, 10);
+        topWall = new StaticElements(0, 20, gameWidth, 10);
         leftWall = new StaticElements(0, 0, 10, gameHeight);
         rightWall = new StaticElements(gameWidth - 10, 0, 10, gameHeight);
 
@@ -71,10 +71,10 @@ public class GameState {
             // Populate the cluster with blocks
             for (int i = 0; i < n; i++) {
                 double top = topWall.y + topWall.height;
-                double offset = (gameHeight - top) * 0.15;
-                double y = top + offset + i * (height + spacing) + spacing; // Add vertical spacing
+                double verticalOffset = (gameHeight - top) * 0.15;
+                double y = top + verticalOffset + (i * (height + spacing)) + spacing; // Add vertical spacing
                 for (int j = 0; j < m; j++) {
-                    double x = (leftWall.x + leftWall.width) + j * (width + spacing) + spacing; // Add horizontal spacing
+                    double x = (leftWall.x + leftWall.width) + spacing + (j * (width + spacing)) ; // Add horizontal spacing
                     cluster[i][j] = new Block(x, y, width, height);
                 }
             }
