@@ -20,6 +20,10 @@ public class BreakoutGraphical extends Application {
     private final int windowY = 700;
     private GameLoop gameLoop;
 
+    public static void main(String[] args) {
+        launch(args);
+    }
+
     // Track pressed keys
     private Set<String> activeKeys = new HashSet<>();
 
