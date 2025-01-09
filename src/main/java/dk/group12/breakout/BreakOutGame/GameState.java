@@ -58,18 +58,20 @@ public class GameState {
 
         public BlockCluster(int n, int m, double clusterWidth, double clusterHeight) {
             cluster = new Block[n][m];
-            spacing = Math.min(clusterWidth, clusterHeight) * 0.02;
-            width = (clusterWidth - (m - 1) * spacing) / m;
-            height = (clusterHeight - (n - 1) * spacing) / n;
 
+            // Define the spacing between blocks
+            double horizontalSpacing = 5; // Space between blocks horizontally
+            double verticalSpacing = 5;   // Space between blocks vertically
+
+            // Calculate block dimensions
+            width = (clusterWidth - (m - 1) * horizontalSpacing) / m;
+            height = (clusterHeight - (n - 1) * verticalSpacing) / n;
+
+            // Populate the cluster with blocks
             for (int i = 0; i < n; i++) {
-
-                double y = i * (height + spacing);
-
+                double y = i * (height + verticalSpacing); // Add vertical spacing
                 for (int j = 0; j < m; j++) {
-
-                    double x = j * (width + spacing) + clusterWidth / 20;
-
+                    double x = j * (width + horizontalSpacing); // Add horizontal spacing
                     cluster[i][j] = new Block(x, y, width, height);
                 }
             }
