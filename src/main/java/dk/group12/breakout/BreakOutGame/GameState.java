@@ -1,11 +1,10 @@
 package dk.group12.breakout.BreakOutGame;
 
-import dk.group12.breakout.BreakoutGraphical;
-
 public class GameState {
     public Platform platform;
     public Ball ball;
-    public Blockcluster blockcluster;
+    public BlockCluster blockcluster;
+    public StaticElements topWall, leftWall, rightWall;
     private int clusterWidth, clusterHeight;
 
     public GameState(int n, int m, int gameWidth, int gameHeight) {
@@ -14,16 +13,19 @@ public class GameState {
         int platformHeight = 10;
         int platformY = (int) (gameHeight - platformHeight - gameHeight * 0.05);
         platform = new Platform(platformX, platformY, platformWidth, platformHeight);
+        topWall = new StaticElements(0, 0, gameWidth, 10);
+        leftWall = new StaticElements(0, 0, 10, gameHeight);
+        rightWall = new StaticElements(gameWidth - 10, 0, 10, gameHeight);
 
         // we want to add the ball right on top of the platform
         ball = new Ball(platform.x + platform.width / 2, platform.y - 10, 5);
 
 
-        this.clusterWidth = gameWidth;
+        this.clusterWidth = gameWidth - gameWidth / 10; // 90% of screen width
         this.clusterHeight = (int) (gameHeight * 0.25); // top 25% of screen
 
         // Init block cluster
-        blockcluster = new Blockcluster(n, m, clusterWidth, clusterHeight);
+        blockcluster = new BlockCluster(n, m, clusterWidth, clusterHeight);
     }
 
     public void update() {
@@ -37,7 +39,7 @@ public class GameState {
         return null;
     }
 
-    public class Block {
+    public static class Block {
         public double x, y, width, height;
         public int hp = 1;
 
@@ -49,22 +51,26 @@ public class GameState {
         }
     }
 
-    public class Blockcluster {
+    public static class BlockCluster {
         public Block[][] cluster;
         double width,height;
+        double spacing; // Adjust this value for desired spacing
 
-        public Blockcluster(int n, int m, double clusterWidth, double clusterHeight) {
+        public BlockCluster(int n, int m, double clusterWidth, double clusterHeight) {
             cluster = new Block[n][m];
-            width = clusterWidth / m;// - m * 0.1;
-            height = clusterHeight / n;// - n * 0.1;
-
-            height -= 10;
+            spacing = Math.min(clusterWidth, clusterHeight) * 0.02;
+            width = (clusterWidth - (m - 1) * spacing) / m;
+            height = (clusterHeight - (n - 1) * spacing) / n;
 
             for (int i = 0; i < n; i++) {
-                double y = i * height;
+
+                double y = i * (height + spacing);
+
                 for (int j = 0; j < m; j++) {
-                    double x = j * width;
-                    cluster[i][j] = new Block(x,y,width,height);
+
+                    double x = j * (width + spacing) + clusterWidth / 20;
+
+                    cluster[i][j] = new Block(x, y, width, height);
                 }
             }
         }
@@ -74,7 +80,7 @@ public class GameState {
         }
     }
 
-    public class Ball {
+    public static class Ball {
         public double x, y;
         public vec2 direction;
         public int radius;
@@ -93,7 +99,7 @@ public class GameState {
             this.y += direction.y * direction.scalar;
         }
 
-        public class vec2 {
+        public static class vec2 {
             public double x, y;
             public double scalar;
 
@@ -122,4 +128,15 @@ public class GameState {
             if (this.x + this.width > clusterWidth) this.x = clusterWidth - this.width;
         }
     }
+
+    public static class StaticElements {
+        public double x, y, width, height;
+        public StaticElements(double x, double y, double width, double height) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+        }
+    }
+
 }

@@ -8,7 +8,6 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import java.io.IOException;
 
@@ -19,7 +18,6 @@ public class BreakoutGraphical extends Application {
     private final int windowx = 400;
     private final int windowy = 700;
     private GameLoop gameLoop;
-    private GameState gameState;
 
     // Track pressed keys
     private Set<String> activeKeys = new HashSet<>();
@@ -58,28 +56,18 @@ public class BreakoutGraphical extends Application {
                     lastTime = currentNanoTime;
                 }
 
-
-                // Pass active keys to game loop
                 gameLoop.handleInput(activeKeys);
-
-                // Update the game state (moves ball, etc.)
-                gameState = gameLoop.update();
+                gameLoop.update();
 
                 /* setting the background to BLACK
                 graphicsContext.setFill(Color.BLACK);
                 graphicsContext.fillRect(0, 0, windowx, windowy);
                 */
 
-                // Clear the screen
+                // This is here to clear the screen from the previous frame
                 graphicsContext.clearRect(0, 0, windowx, windowy);
 
-                // Draw boundaries (walls, ceiling)
-                graphicsContext.setFill(javafx.scene.paint.Color.BLACK); // Set color to black
-                graphicsContext.fillRect(10, 0, windowx*0.015, windowy); // left wall
-                graphicsContext.fillRect(windowx - 10 - windowx*0.015, 0, windowx*0.015, windowy);  // right wall
-                graphicsContext.fillRect(0, windowy*0.10, windowx, windowy*0.008); // top ceiling
-
-                // Now draw the platform, ball, and blocks
+                drawStaticElements(graphicsContext);
                 drawPlatform(graphicsContext);
                 drawBall(graphicsContext);
                 drawBlocks(graphicsContext);
@@ -106,11 +94,20 @@ public class BreakoutGraphical extends Application {
                 b.radius * 2
         );
     }
+    private void drawStaticElements(GraphicsContext gc) {
+        gc.setFill(javafx.scene.paint.Color.BLACK);
+        GameState.StaticElements topWall = gameLoop.gameState.topWall;
+        GameState.StaticElements leftWall = gameLoop.gameState.leftWall;
+        GameState.StaticElements rightWall = gameLoop.gameState.rightWall;
+        gc.fillRect(topWall.x, topWall.y, topWall.width, topWall.height);
+        gc.fillRect(leftWall.x, leftWall.y, leftWall.width, leftWall.height);
+        gc.fillRect(rightWall.x, rightWall.y, rightWall.width, rightWall.height);
+    }
 
     private void drawBlocks(GraphicsContext gc) {
         gc.setFill(javafx.scene.paint.Color.GREEN);
         // Loop through the 2D array of blocks
-        GameState.Blockcluster cluster = gameLoop.gameState.blockcluster;
+        GameState.BlockCluster cluster = gameLoop.gameState.blockcluster;
         for (int i = 0; i < cluster.cluster.length; i++) {
             for (int j = 0; j < cluster.cluster[i].length; j++) {
                 GameState.Block block = cluster.cluster[i][j];
