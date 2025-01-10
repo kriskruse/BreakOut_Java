@@ -26,17 +26,17 @@ public class BreakoutGraphical extends Application {
     public static void main(String[] args) {
         int arg1 = 8;
         int arg2 = 8;
-        int arg3 = 1;
+        //int arg3 = 1;
         try {
             arg1 = Integer.parseInt(args[0]);
             arg2 = Integer.parseInt(args[1]);
-            arg3 = Integer.parseInt(args[2]);
+        //    arg3 = Integer.parseInt(args[2]);
         } catch (Exception e) {
             System.out.println("Default to 8x8, use 2 arguments to change the size of the game board.");
         }
         n = arg1;
         m = arg2;
-        lives = arg3;
+        lives = 1;
         launch();
     }
 
