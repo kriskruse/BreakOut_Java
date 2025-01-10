@@ -1,6 +1,5 @@
 package dk.group12.breakout.BreakOutGame;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Collision2 {
@@ -18,6 +17,7 @@ public class Collision2 {
                 if (object instanceof GameState.Block) {
                     ((GameState.Block) object).hp--;
                 }
+                // we break the loop here because we only want to handle one collision at a time
                 break;
             }
         }
