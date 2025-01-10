@@ -31,7 +31,7 @@ public class GameState {
         rightWall = new CollisionElement(gameWidth - 10, 0, 10, gameHeight);
 
         // we want to add the ball right on top of the platform
-        ball = new Ball(platform.x + platform.width / 2 - 5, platform.y - 20, 5);
+        ball = new Ball(platform.x + platform.width / 2 - 5, platform.y - 10, 5);
 
         int clusterWidth = (int) (gameWidth - leftWall.width - rightWall.width);
         int clusterHeight = (int) ((gameHeight - (topWall.x + topWall.height)) * 0.25);
@@ -73,9 +73,9 @@ public class GameState {
     }
 
     public void update() {
-        ball.move();
         Collision.collisionCheck(this);
         removeDestroyedBlocks();
+        ball.move();
 
         // Check if the ball has crossed the bottom
         if (ball.y - ball.radius > gameHeight) {
@@ -91,6 +91,10 @@ public class GameState {
     private void removeDestroyedBlocks() {
         collisionElements.removeIf(element ->
                 element instanceof Block && ((Block) element).hp == 0);
+        // if all blocks are destroyed, end the game
+        if (collisionElements.stream().noneMatch(element -> element instanceof Block)) {
+            endGame();
+        }
     }
 
 
