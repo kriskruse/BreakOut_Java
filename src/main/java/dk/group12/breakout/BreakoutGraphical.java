@@ -73,8 +73,8 @@ public class BreakoutGraphical extends Application {
 
                 if (elapsedTime >= 13){ // 13 ms about 60 fps cap
                     frameCount ++;
-                    gameLoop.update();
                     gameLoop.handleInput(activeKeys);
+                    gameLoop.update();
                     previousTime = currentNanoTime;
                 }
 

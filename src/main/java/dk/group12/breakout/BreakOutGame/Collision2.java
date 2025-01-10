@@ -1,5 +1,6 @@
 package dk.group12.breakout.BreakOutGame;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Collision2 {
@@ -17,6 +18,7 @@ public class Collision2 {
                 if (object instanceof GameState.Block) {
                     ((GameState.Block) object).hp--;
                 }
+                break;
             }
         }
     }
@@ -45,15 +47,12 @@ public class Collision2 {
         double overlapTop = bottom - ballTop;
         double overlapBottom = ballBottom - top;
 
-        // return the normalVector of the side the ball is colliding with
-        if (overlapLeft < overlapRight && overlapLeft < overlapTop && overlapLeft < overlapBottom) {
+        // left and right side collision
+        if ((overlapLeft < overlapRight && overlapLeft < overlapTop && overlapLeft < overlapBottom) ||
+                (overlapRight < overlapTop && overlapRight < overlapBottom)) {
             return new Vec2(-1, 1, 1);
-        } else if (overlapRight < overlapTop && overlapRight < overlapBottom) {
-            return new Vec2(1, 1, 1);
-        } else if (overlapTop < overlapBottom) {
-            return new Vec2(1, -1, 1);
-        } else {
-            return new Vec2(1, 1, 1);
+        }// top and bottom side collision
+        else {return new Vec2(1, -1, 1);
         }
     }
 
@@ -64,8 +63,10 @@ public class Collision2 {
         double right = object.x + object.width;
         double bottom = object.y + object.height;
 
-        double ballLeft = ball.x;
-        double ballTop = ball.y;
+        // this is a little hacky, but making the bounding box of the ball a little bigger
+        // the collisions look a little better
+        double ballLeft = ball.x - ball.radius * 2;
+        double ballTop = ball.y - ball.radius * 2;
         double ballRight = ball.x + ball.radius * 2;
         double ballBottom = ball.y + ball.radius * 2;
 
