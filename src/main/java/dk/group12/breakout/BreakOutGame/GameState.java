@@ -20,7 +20,7 @@ public class GameState {
         this.gameHeight = gameHeight;
         this.gameWidth = gameWidth;
         this.lives = lives;
-        int platformWidth = gameWidth / 10;
+        int platformWidth = gameWidth / 6;
         int platformX = (gameWidth - platformWidth) / 2;
         int platformHeight = 10;
         int platformY = (int) (gameHeight - platformHeight - gameHeight * 0.05);
@@ -31,7 +31,7 @@ public class GameState {
         rightWall = new CollisionElement(gameWidth - 10, 0, 10, gameHeight);
 
         // we want to add the ball right on top of the platform
-        ball = new Ball(platform.x + platform.width / 2, platform.y - 600, 5);
+        ball = new Ball(platform.x + platform.width / 2, platform.y - 20, 5);
 
         int clusterWidth = (int) (gameWidth - leftWall.width - rightWall.width);
         int clusterHeight = (int) ((gameHeight - (topWall.x + topWall.height)) * 0.25);
@@ -75,7 +75,7 @@ public class GameState {
 
     public void update() {
         ball.move();
-        Collision2.collisionCheck(this);
+        Collision.collisionCheck(this);
         removeDestroyedBlocks();
 
         // Check if the ball has crossed the bottom
@@ -141,8 +141,8 @@ public class GameState {
         }
 
         public void move() {
-            this.x += direction.x * direction.scalar;
-            this.y += direction.y * direction.scalar;
+            this.x += direction.getX() * direction.getScalar();
+            this.y += direction.getY() * direction.getScalar();
         }
     }
 

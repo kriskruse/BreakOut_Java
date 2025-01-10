@@ -107,12 +107,11 @@ public class BreakoutGraphical extends Application {
 
     private void drawBall(GraphicsContext gc) {
         gc.setFill(Color.WHITE);
-        GameState.Ball b = gameLoop.gameState.ball;
         gc.fillOval(
-                b.x - b.radius,
-                b.y - b.radius,
-                b.radius * 2,
-                b.radius * 2
+                GameState.ball.x,
+                GameState.ball.y,
+                GameState.ball.radius * 2,
+                GameState.ball.radius * 2
         );
     }
     private void drawStaticElements(GraphicsContext gc) {
