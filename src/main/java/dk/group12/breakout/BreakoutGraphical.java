@@ -1,5 +1,6 @@
 package dk.group12.breakout;
 
+import dk.group12.breakout.BreakOutGame.CollisionElement;
 import dk.group12.breakout.BreakOutGame.GameLoop;
 import dk.group12.breakout.BreakOutGame.GameState;
 import javafx.animation.AnimationTimer;
@@ -25,7 +26,7 @@ public class BreakoutGraphical extends Application {
     public static void main(String[] args) {
         int arg1 = 8;
         int arg2 = 8;
-        int arg3 = 3;
+        int arg3 = 1;
         try {
             arg1 = Integer.parseInt(args[0]);
             arg2 = Integer.parseInt(args[1]);
@@ -116,9 +117,9 @@ public class BreakoutGraphical extends Application {
     }
     private void drawStaticElements(GraphicsContext gc) {
         gc.setFill(Color.LIGHTGREY);
-        GameState.StaticElements topWall = gameLoop.gameState.topWall;
-        GameState.StaticElements leftWall = gameLoop.gameState.leftWall;
-        GameState.StaticElements rightWall = gameLoop.gameState.rightWall;
+        CollisionElement topWall = gameLoop.gameState.topWall;
+        CollisionElement leftWall = gameLoop.gameState.leftWall;
+        CollisionElement rightWall = gameLoop.gameState.rightWall;
         gc.fillRect(topWall.x, topWall.y, topWall.width, topWall.height);
         gc.fillRect(leftWall.x, leftWall.y, leftWall.width, leftWall.height);
         gc.fillRect(rightWall.x, rightWall.y, rightWall.width, rightWall.height);
