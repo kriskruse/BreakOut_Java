@@ -76,6 +76,15 @@ public class BreakoutGraphical extends Application {
                     gameLoop.handleInput(activeKeys);
                     gameLoop.update();
                     previousTime = currentNanoTime;
+                    // This is here to clear the screen from the previous frame
+                    graphicsContext.clearRect(0, 0, windowX, windowY);
+                    graphicsContext.setFill(Color.BLACK);
+                    graphicsContext.fillRect(0, 0, windowX, windowY);
+
+                    drawStaticElements(graphicsContext);
+                    drawPlatform(graphicsContext);
+                    drawBall(graphicsContext);
+                    drawBlocks(graphicsContext);
                 }
 
                 if ((currentNanoTime - lastTime) >= 1000000000) {
@@ -83,16 +92,6 @@ public class BreakoutGraphical extends Application {
                     frameCount = 0;
                     lastTime = currentNanoTime;
                 }
-
-                // This is here to clear the screen from the previous frame
-                graphicsContext.clearRect(0, 0, windowX, windowY);
-                graphicsContext.setFill(Color.BLACK);
-                graphicsContext.fillRect(0, 0, windowX, windowY);
-
-                drawStaticElements(graphicsContext);
-                drawPlatform(graphicsContext);
-                drawBall(graphicsContext);
-                drawBlocks(graphicsContext);
 
             }
         }.start();
