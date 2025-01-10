@@ -55,13 +55,12 @@ public class Collision {
         double overlapTop = bottom - ballTop;
         double overlapBottom = ballBottom - top;
 
-        // left and right side collision
-        if ((overlapLeft < overlapRight && overlapLeft < overlapTop && overlapLeft < overlapBottom) ||
-                (overlapRight < overlapTop && overlapRight < overlapBottom)) {
-            return new Vec2(-1, 1, 1);
-        }// top and bottom side collision
-        else {
+        // top and bottom collision
+        if ((overlapTop < overlapRight && overlapTop < overlapLeft) ||
+                (overlapBottom < overlapRight && overlapBottom < overlapLeft)) {
             return new Vec2(1, -1, 1);
+        } else {
+            return new Vec2(-1, 1, 1);
         }
     }
 
