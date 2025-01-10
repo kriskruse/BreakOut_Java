@@ -60,7 +60,6 @@ public class GameState {
     }
     public void endGame() {
         ball.direction = new Vec2(0, -1, 0);
-        System.out.println("Game Ended");
         gameRunning = false;
         gameEnded = true;
     }
