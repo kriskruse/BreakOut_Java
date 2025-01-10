@@ -47,15 +47,14 @@ public class Collision2 {
 
         // return the normalVector of the side the ball is colliding with
         if (overlapLeft < overlapRight && overlapLeft < overlapTop && overlapLeft < overlapBottom) {
-            return new Vec2(-1, 0, 1);
+            return new Vec2(-1, 1, 1);
         } else if (overlapRight < overlapTop && overlapRight < overlapBottom) {
-            return new Vec2(1, 0, 1);
+            return new Vec2(1, 1, 1);
         } else if (overlapTop < overlapBottom) {
-            return new Vec2(0, -1, 1);
+            return new Vec2(1, -1, 1);
         } else {
-            return new Vec2(0, 1, 1);
+            return new Vec2(1, 1, 1);
         }
-
     }
 
     private static boolean isCollidingWithObject(CollisionElement object, GameState.Ball ball){
@@ -70,16 +69,7 @@ public class Collision2 {
         double ballRight = ball.x + ball.radius * 2;
         double ballBottom = ball.y + ball.radius * 2;
 
-        return isOverlapping1D(ballLeft, ballRight, left, right) &&
-                isOverlapping1D(ballTop, ballBottom, top, bottom);
-
-
+        return  (left < ballRight && ballLeft < right && top < ballBottom && ballTop < bottom);
     }
-
-    private static boolean isOverlapping1D(double a1, double a2, double b1, double b2){
-        return a1 <= b2 && a2 >= b1;
-    }
-
-
 }
 

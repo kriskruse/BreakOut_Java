@@ -31,7 +31,7 @@ public class GameState {
         rightWall = new CollisionElement(gameWidth - 10, 0, 10, gameHeight);
 
         // we want to add the ball right on top of the platform
-        ball = new Ball(platform.x + platform.width / 2, platform.y - 10, 5);
+        ball = new Ball(platform.x + platform.width / 2, platform.y - 30, 5);
 
         int clusterWidth = (int) (gameWidth - leftWall.width - rightWall.width);
         int clusterHeight = (int) ((gameHeight - (topWall.x + topWall.height)) * 0.25);
