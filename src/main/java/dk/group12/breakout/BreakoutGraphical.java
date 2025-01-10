@@ -101,8 +101,11 @@ public class BreakoutGraphical extends Application {
     }
     private void drawPlatform(GraphicsContext gc) {
         gc.setFill(Color.DEEPSKYBLUE);
-        GameState.Platform p = gameLoop.gameState.platform;
-        gc.fillRect(p.x, p.y, p.width, p.height);
+        gc.fillRect(
+                gameLoop.gameState.platform.x,
+                gameLoop.gameState.platform.y,
+                gameLoop.gameState.platform.width,
+                gameLoop.gameState.platform.height);
     }
 
     private void drawBall(GraphicsContext gc) {

@@ -31,7 +31,7 @@ public class GameState {
         rightWall = new CollisionElement(gameWidth - 10, 0, 10, gameHeight);
 
         // we want to add the ball right on top of the platform
-        ball = new Ball(platform.x + platform.width / 2, platform.y - 20, 5);
+        ball = new Ball(platform.x + platform.width / 2 - 5, platform.y - 20, 5);
 
         int clusterWidth = (int) (gameWidth - leftWall.width - rightWall.width);
         int clusterHeight = (int) ((gameHeight - (topWall.x + topWall.height)) * 0.25);
@@ -59,7 +59,7 @@ public class GameState {
         ball.direction = new Vec2((Math.random() - 0.5) * 2, -1, 3);
     }
     public void endGame() {
-        ball.direction = new Vec2(0, 0, 0);
+        ball.direction = new Vec2(0, -1, 0);
         System.out.println("Game Ended");
         gameRunning = false;
         gameEnded = true;
@@ -137,7 +137,7 @@ public class GameState {
         public Ball(double x, double y, double radius) {
             super(x, y, radius * 2, radius * 2);
             this.radius=radius;
-            direction = new Vec2(0, 0, 0);
+            direction = new Vec2(0, -1, 0);
         }
 
         public void move() {

@@ -74,8 +74,8 @@ public class Collision {
 
         // this is a little hacky, but making the bounding box of the ball a little bigger
         // the collisions look a little better
-        double ballLeft = ball.x - ball.radius * 2;
-        double ballTop = ball.y - ball.radius * 2;
+        double ballLeft = ball.x;
+        double ballTop = ball.y;
         double ballRight = ball.x + ball.radius * 2;
         double ballBottom = ball.y + ball.radius * 2;
 

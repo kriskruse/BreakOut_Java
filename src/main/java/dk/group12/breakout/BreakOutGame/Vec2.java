@@ -31,6 +31,9 @@ public class Vec2 {
 
     public void set(double x, double y) {
         double length = Math.sqrt(x * x + y * y);
+        if (length == 0) {
+            throw new IllegalArgumentException("Cannot set vector to zero length");
+        }
         this.x = x / length;
         this.y = y / length;
     }
