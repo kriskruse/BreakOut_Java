@@ -86,18 +86,16 @@ public class GameState {
                 if (powerUp.isActive) {
                     powerUp.move();
                     if (powerUp.y > gameHeight) {
-                        elementsToRemove.add(powerUp); // Mark for removal
+                        elementsToRemove.add(powerUp); // Mark for removal if it falls off-screen
                     }
                 } else if (powerUp.isPickedUp) {
-                    powerUp.decrementTimer();
-                    if (powerUp.isEffectExpired()) {
-                        elementsToRemove.add(powerUp);
-                    }
+                    applyPowerUpEffect(powerUp);
+                    elementsToRemove.add(powerUp); // Remove power-up once it's picked up
                 }
             }
         }
 
-        // Remove marked elements
+        // Remove marked elements (power-ups and other collision elements)
         collisionElements.removeAll(elementsToRemove);
 
         // Check if the ball has crossed the bottom
@@ -146,11 +144,6 @@ public class GameState {
         }
     }
 
-    public enum powerUpType {
-        NONE,
-        NO_EFFECT // Placeholder for future powerups
-    }
-
     public class BlockCluster {
         public Block[][] cluster;
         int width,height;
@@ -182,13 +175,17 @@ public class GameState {
             int totalBlocks = cluster.length;
             int powerUpCount = 64; // Amount of power-ups per block cluster
 
+            // Get all possible power-up types from the enum
+            powerUpType[] powerUpTypes = powerUpType.values();
+
             while (powerUpCount > 0) {
                 int randomRow = (int) (Math.random() * cluster.length);
                 int randomCol = (int) (Math.random() * cluster[0].length);
 
                 Block block = cluster[randomRow][randomCol];
                 if (block.powerUp == powerUpType.NONE) {
-                    block.powerUp = powerUpType.NO_EFFECT;
+                    int randomIndex = (int) (Math.random() * (powerUpTypes.length - 1)) + 1; // Skip index 0 (type NONE)
+                    block.powerUp = powerUpTypes[randomIndex];
                     powerUpCount--;
                 }
             }
@@ -199,7 +196,6 @@ public class GameState {
         public powerUpType type;
         public boolean isActive = true; // Track if the power-up is falling
         private boolean isPickedUp = false;
-        private int duration = 10;
 
         public PowerUp(Block block, powerUpType type) {
             super(block.x + (block.width - 15) / 2,
@@ -213,20 +209,20 @@ public class GameState {
         }
 
         public void activate() {
-            isActive = false; // Upon being picked up
-            isPickedUp = true;
+            this.isActive = false; // Upon being picked up
+            this.isPickedUp = true;
         }
+    }
 
-        public int getRemainingTime() {
-            return duration;
-        }
+    public enum powerUpType {
+        NONE,
+        WIDEN_PLATFORM
+    }
 
-        public void decrementTimer() {
-            if (duration > 0) { duration--; }
-        }
-
-        public boolean isEffectExpired() {
-            return isPickedUp && duration <= 0;
+    public void applyPowerUpEffect(PowerUp powerUp) {
+        if (powerUp.type == powerUpType.WIDEN_PLATFORM) {
+            platform.width *= 1.5;
+            powerUp.activate();
         }
     }
 
