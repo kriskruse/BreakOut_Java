@@ -59,7 +59,7 @@ public class GameState {
 
     public void startGame() {
         gameRunning = true;
-        ball.direction = new Vec2((Math.random() - 0.5) * 2, -1, 3);
+        ball.direction = new Vec2((Math.random() - 0.5) * 2, -1, 4);
     }
     public void endGame() {
         ball.direction = new Vec2(0, -1, 0);
@@ -72,7 +72,7 @@ public class GameState {
         platform.x = (gameWidth - platform.width) / 2;  // Reset platform to center
         ball.x = platform.x + platform.width / 2;  // Reset ball to above the platform
         ball.y = platform.y - ball.radius;  // Position the ball just above the platform
-        ball.direction = new Vec2((Math.random() - 0.5) * 2, -1, 3);  // Random initial ball direction
+        ball.direction = new Vec2((Math.random() - 0.5) * 2, -1, 4);  // Random initial ball direction
     }
 
     private final Map<powerUpType, PowerUp> activePowerUps = new HashMap<>();
@@ -200,7 +200,7 @@ public class GameState {
         }
 
         private void assignPowerUps() {
-            int powerUpCount = 64; // Amount of power-ups per block cluster
+            int powerUpCount = 15; // Amount of power-ups per block cluster
 
             // Get all possible power-up types from the enum
             powerUpType[] powerUpTypes = powerUpType.values();
