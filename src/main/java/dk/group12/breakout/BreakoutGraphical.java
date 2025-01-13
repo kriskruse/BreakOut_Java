@@ -85,6 +85,7 @@ public class BreakoutGraphical extends Application {
                     drawPlatform(graphicsContext);
                     drawBall(graphicsContext);
                     drawBlocks(graphicsContext);
+                    drawPowerUps(graphicsContext);
                 }
 
                 if ((currentNanoTime - lastTime) >= 1000000000) {
@@ -144,6 +145,16 @@ public class BreakoutGraphical extends Application {
                 if (block.hp > 0) {
                     gc.fillRect(block.x, block.y, block.width, block.height);
                 }
+            }
+        }
+    }
+
+    private void drawPowerUps(GraphicsContext gc) {
+        for (CollisionElement element : gameLoop.gameState.collisionElements) {
+            if (element instanceof GameState.PowerUp) {
+                GameState.PowerUp powerUp = (GameState.PowerUp) element;
+                gc.setFill(Color.LIGHTGREEN);
+                gc.fillOval(powerUp.x, powerUp.y, powerUp.width, powerUp.height);
             }
         }
     }

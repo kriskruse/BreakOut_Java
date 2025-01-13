@@ -9,13 +9,24 @@ public class Collision {
         List<CollisionElement> collisionElements = gameState.collisionElements;
 
         for (CollisionElement object : collisionElements) {
+            // Skip power-up collision checks with the ball
+            if (object instanceof GameState.PowerUp) {
+                GameState.PowerUp powerUp = (GameState.PowerUp) object;
+                // Check for platform collision with power-up
+                if (checkPlatformCollision(gameState.platform, powerUp)) {
+                    powerUp.activate();
+                    // Trigger power-up effects here
+                }
+                continue; // Skip further processing for power-ups
+            }
+
             if (isCollidingWithObject(object, ball)) {
                 if(object instanceof GameState.Platform){
                     double midPoint = object.x + object.width / 2;
-                    double normal = (ball.x - midPoint) / (object.width / 2) ;
+                    double normal = (ball.x - midPoint) / (object.width / 2);
 
                     GameState.ball.direction = new Vec2(normal, -1, ball.direction.getScalar());
-                }else{
+                } else {
                     GameState.ball.direction = calculateNewTrajectory(
                             getNormalVectorOfCollision(object, ball),
                             ball);
@@ -23,9 +34,8 @@ public class Collision {
                     if (object instanceof GameState.Block) {
                         ((GameState.Block) object).hp--;
                     }
-
                 }
-                // we break the loop here because we only want to handle one collision at a time
+                // Handle one collision at a time
                 break;
             }
         }
@@ -33,7 +43,7 @@ public class Collision {
 
     private static Vec2 calculateNewTrajectory(Vec2 normalVectorOfCollision, GameState.Ball ball) {
         Vec2 direction = ball.direction;
-        return new Vec2(direction.getX() * normalVectorOfCollision.getX() ,
+        return new Vec2(direction.getX() * normalVectorOfCollision.getX(),
                 direction.getY() * normalVectorOfCollision.getY(),
                 direction.getScalar() * normalVectorOfCollision.getScalar());
     }
@@ -49,13 +59,13 @@ public class Collision {
         double ballTop = ball.y;
         double ballBottom = ball.y + ball.radius * 2;
 
-        // figure out which side the ball is colliding with
+        // Determine which side the ball is colliding with
         double overlapLeft = right - ballLeft;
         double overlapRight = ballRight - left;
         double overlapTop = bottom - ballTop;
         double overlapBottom = ballBottom - top;
 
-        // top and bottom collision
+        // Top and bottom collision
         if ((overlapTop < overlapRight && overlapTop < overlapLeft) ||
                 (overlapBottom < overlapRight && overlapBottom < overlapLeft)) {
             return new Vec2(1, -1, 1);
@@ -65,20 +75,35 @@ public class Collision {
     }
 
     private static boolean isCollidingWithObject(CollisionElement object, GameState.Ball ball){
-        // find the bounding box of the object
+        // Bounding box of the object
         double left = object.x;
         double top = object.y;
         double right = object.x + object.width;
         double bottom = object.y + object.height;
 
-        // this is a little hacky, but making the bounding box of the ball a little bigger
-        // the collisions look a little better
+        // Bounding box of the ball
         double ballLeft = ball.x;
         double ballTop = ball.y;
         double ballRight = ball.x + ball.radius * 2;
         double ballBottom = ball.y + ball.radius * 2;
 
-        return  (left < ballRight && ballLeft < right && top < ballBottom && ballTop < bottom);
+        return (left < ballRight && ballLeft < right && top < ballBottom && ballTop < bottom);
+    }
+
+    private static boolean checkPlatformCollision(GameState.Platform platform, GameState.PowerUp powerUp) {
+        double platformLeft = platform.x;
+        double platformRight = platform.x + platform.width;
+        double platformTop = platform.y;
+        double platformBottom = platform.y + platform.height;
+
+        double powerUpLeft = powerUp.x;
+        double powerUpRight = powerUp.x + powerUp.width;
+        double powerUpTop = powerUp.y;
+        double powerUpBottom = powerUp.y + powerUp.height;
+
+        return (platformLeft < powerUpRight &&
+                platformRight > powerUpLeft &&
+                platformTop < powerUpBottom &&
+                platformBottom > powerUpTop);
     }
 }
-

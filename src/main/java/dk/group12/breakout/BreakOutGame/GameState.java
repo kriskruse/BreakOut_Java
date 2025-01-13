@@ -8,7 +8,9 @@ public class GameState {
     public Platform platform;
     public static Ball ball;
     public BlockCluster blockCluster;
-    public CollisionElement topWall, leftWall, rightWall;
+    public CollisionElement topWall;
+    public static CollisionElement leftWall;
+    public static CollisionElement rightWall;
     public boolean gameRunning = false;
     public boolean gameEnded = false;
     private int lives;
@@ -53,7 +55,6 @@ public class GameState {
         return blocks;
     }
 
-
     public void startGame() {
         gameRunning = true;
         ball.direction = new Vec2((Math.random() - 0.5) * 2, -1, 3);
@@ -77,6 +78,28 @@ public class GameState {
         removeDestroyedBlocks();
         ball.move();
 
+        List<CollisionElement> elementsToRemove = new ArrayList<>(); // Temporary list for removals
+
+        for (CollisionElement element : new ArrayList<>(collisionElements)) {
+            if (element instanceof PowerUp) {
+                PowerUp powerUp = (PowerUp) element;
+                if (powerUp.isActive) {
+                    powerUp.move();
+                    if (powerUp.y > gameHeight) {
+                        elementsToRemove.add(powerUp); // Mark for removal
+                    }
+                } else if (powerUp.isPickedUp) {
+                    powerUp.decrementTimer();
+                    if (powerUp.isEffectExpired()) {
+                        elementsToRemove.add(powerUp);
+                    }
+                }
+            }
+        }
+
+        // Remove marked elements
+        collisionElements.removeAll(elementsToRemove);
+
         // Check if the ball has crossed the bottom
         if (ball.y - ball.radius > gameHeight) {
             lives--;  // Decrease a life
@@ -89,21 +112,43 @@ public class GameState {
     }
 
     private void removeDestroyedBlocks() {
-        collisionElements.removeIf(element ->
-                element instanceof Block && ((Block) element).hp == 0);
+        List<PowerUp> activePowerUps = new ArrayList<>();
+
+        collisionElements.removeIf(element -> {
+            if (element instanceof Block) {
+                Block block = (Block) element;
+                if (block.hp == 0) {
+                    if (block.powerUp != powerUpType.NONE) {
+                        activePowerUps.add(new PowerUp(block, block.powerUp));
+                    }
+                    return true;
+                }
+            }
+            return false;
+        });
+
         // if all blocks are destroyed, end the game
         if (collisionElements.stream().noneMatch(element -> element instanceof Block)) {
             endGame();
         }
+
+        // Add active power-ups to the game
+        collisionElements.addAll(activePowerUps);
     }
 
 
     public static class Block extends CollisionElement {
         public int hp = 1;
+        public powerUpType powerUp = powerUpType.NONE;
 
         public Block(double x, double y, double width, double height) {
             super(x, y, width, height);
         }
+    }
+
+    public enum powerUpType {
+        NONE,
+        NO_EFFECT // Placeholder for future powerups
     }
 
     public class BlockCluster {
@@ -130,6 +175,58 @@ public class GameState {
                     cluster[i][j] = new Block(x, y, width, height);
                 }
             }
+            assignPowerUps();
+        }
+
+        private void assignPowerUps() {
+            int totalBlocks = cluster.length;
+            int powerUpCount = 64; // Amount of power-ups per block cluster
+
+            while (powerUpCount > 0) {
+                int randomRow = (int) (Math.random() * cluster.length);
+                int randomCol = (int) (Math.random() * cluster[0].length);
+
+                Block block = cluster[randomRow][randomCol];
+                if (block.powerUp == powerUpType.NONE) {
+                    block.powerUp = powerUpType.NO_EFFECT;
+                    powerUpCount--;
+                }
+            }
+        }
+    }
+
+    public class PowerUp extends CollisionElement {
+        public powerUpType type;
+        public boolean isActive = true; // Track if the power-up is falling
+        private boolean isPickedUp = false;
+        private int duration = 10;
+
+        public PowerUp(Block block, powerUpType type) {
+            super(block.x + (block.width - 15) / 2,
+                    block.y + (block.height - 15) / 2,
+                    15, 15);
+            this.type = type;
+        }
+
+        public void move() {
+            this.y += 5;
+        }
+
+        public void activate() {
+            isActive = false; // Upon being picked up
+            isPickedUp = true;
+        }
+
+        public int getRemainingTime() {
+            return duration;
+        }
+
+        public void decrementTimer() {
+            if (duration > 0) { duration--; }
+        }
+
+        public boolean isEffectExpired() {
+            return isPickedUp && duration <= 0;
         }
     }
 
@@ -149,7 +246,7 @@ public class GameState {
         }
     }
 
-    public class Platform extends CollisionElement {
+    public static class Platform extends CollisionElement {
         public Platform(int x, int y, int width, int height) {
             super(x, y, width, height);
         }
