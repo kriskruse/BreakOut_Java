@@ -18,23 +18,8 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-
-      - name: Test
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: test
-
-      - name: Build
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: build
-
-      - name: Build (jlink)
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: jlink
-
-      - name: Build (jpackage)
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: jpackage
+          cache: maven
+          
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml
+        
