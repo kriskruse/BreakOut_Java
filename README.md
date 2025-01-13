@@ -1,3 +1,5 @@
+[![Test](https://github.com/kriskruse/BreakOut_Java/actions/workflows/maven.yml/badge.svg)](https://github.com/kriskruse/BreakOut_Java/actions/workflows/maven.yml)
+
 # Basic Breakout Game
 ## Running the Game
 To run the game, you need to have Java installed on your computer. 
