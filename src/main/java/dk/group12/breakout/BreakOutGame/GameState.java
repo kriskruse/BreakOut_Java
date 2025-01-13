@@ -3,6 +3,8 @@ package dk.group12.breakout.BreakOutGame;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GameState {
     public Platform platform;
@@ -73,6 +75,8 @@ public class GameState {
         ball.direction = new Vec2((Math.random() - 0.5) * 2, -1, 3);  // Random initial ball direction
     }
 
+    private final Map<powerUpType, PowerUp> activePowerUps = new HashMap<>();
+
     public void update() {
         Collision.collisionCheck(this);
         removeDestroyedBlocks();
@@ -89,7 +93,12 @@ public class GameState {
                         elementsToRemove.add(powerUp); // Mark for removal if it falls off-screen
                     }
                 } else if (powerUp.isPickedUp) {
-                    applyPowerUpEffect(powerUp);
+                    if (!activePowerUps.containsKey(powerUp.type)) {
+                        applyPowerUpEffect(powerUp);
+                        activePowerUps.put(powerUp.type, powerUp);
+                    } else {
+                        activePowerUps.get(powerUp.type).resetTimer();
+                    }
                     elementsToRemove.add(powerUp); // Remove power-up once it's picked up
                 }
             }
@@ -97,6 +106,9 @@ public class GameState {
 
         // Remove marked elements (power-ups and other collision elements)
         collisionElements.removeAll(elementsToRemove);
+
+        // Expiration of active power-ups
+        handlePowerUpExpiration();
 
         // Check if the ball has crossed the bottom
         if (ball.y - ball.radius > gameHeight) {
@@ -106,6 +118,22 @@ public class GameState {
             } else {
                 resetBallAndPlatform();  // Reset the ball and platform if lives remain
             }
+        }
+    }
+
+    private void handlePowerUpExpiration() {
+        List<powerUpType> expiredPowerUps = new ArrayList<>();
+        for (Map.Entry<powerUpType, PowerUp> entry : activePowerUps.entrySet()) {
+            PowerUp powerUp = entry.getValue();
+            if (powerUp.hasExpired()) {
+                removePowerUpEffect(powerUp);
+                expiredPowerUps.add(entry.getKey());
+            }
+        }
+
+        // Remove expired power-ups from Map
+        for (powerUpType type : expiredPowerUps) {
+            activePowerUps.remove(type);
         }
     }
 
@@ -172,7 +200,6 @@ public class GameState {
         }
 
         private void assignPowerUps() {
-            int totalBlocks = cluster.length;
             int powerUpCount = 64; // Amount of power-ups per block cluster
 
             // Get all possible power-up types from the enum
@@ -196,12 +223,15 @@ public class GameState {
         public powerUpType type;
         public boolean isActive = true; // Track if the power-up is falling
         private boolean isPickedUp = false;
+        private long startTime; // Tracks when power
+        private final long duration;
 
         public PowerUp(Block block, powerUpType type) {
             super(block.x + (block.width - 15) / 2,
                     block.y + (block.height - 15) / 2,
                     15, 15);
             this.type = type;
+            this.duration = 10000; // 10 seconds
         }
 
         public void move() {
@@ -211,18 +241,49 @@ public class GameState {
         public void activate() {
             this.isActive = false; // Upon being picked up
             this.isPickedUp = true;
+            this.startTime = System.currentTimeMillis(); // Record time of pickup
+        }
+
+        public boolean hasExpired() {
+            if (!isPickedUp) { return false; }
+            return (System.currentTimeMillis() - startTime) >= duration;
+        }
+
+        public void resetTimer() {
+            this.startTime = System.currentTimeMillis();
         }
     }
 
     public enum powerUpType {
         NONE,
-        WIDEN_PLATFORM
+        WIDEN_PLATFORM,
+        ENLARGE_BALL
     }
 
+    // Applying effects
     public void applyPowerUpEffect(PowerUp powerUp) {
         if (powerUp.type == powerUpType.WIDEN_PLATFORM) {
+            platform.x -= platform.width / 4; // Platform stays centered around same point
             platform.width *= 1.5;
-            powerUp.activate();
+        }
+        if (powerUp.type == powerUpType.ENLARGE_BALL) {
+            ball.x -= ball.radius;
+            ball.y -= ball.radius;
+            ball.radius *= 2;
+        }
+        powerUp.activate();
+    }
+
+    // Reversing effects
+    public void removePowerUpEffect(PowerUp powerUp) {
+        if (powerUp.type == powerUpType.WIDEN_PLATFORM) {
+            platform.width /= 1.5;
+            platform.x += platform.width / 4;
+        }
+        if (powerUp.type == powerUpType.ENLARGE_BALL) {
+            ball.radius /= 2;
+            ball.x += ball.radius;
+            ball.y += ball.radius;
         }
     }
 

@@ -153,7 +153,8 @@ public class BreakoutGraphical extends Application {
         for (CollisionElement element : gameLoop.gameState.collisionElements) {
             if (element instanceof GameState.PowerUp) {
                 GameState.PowerUp powerUp = (GameState.PowerUp) element;
-                gc.setFill(Color.LIGHTGREEN);
+                if (powerUp.type == GameState.powerUpType.WIDEN_PLATFORM) { gc.setFill(Color.DEEPSKYBLUE); }
+                if (powerUp.type == GameState.powerUpType.ENLARGE_BALL) { gc.setFill(Color.GOLD); }
                 gc.fillOval(powerUp.x, powerUp.y, powerUp.width, powerUp.height);
             }
         }
