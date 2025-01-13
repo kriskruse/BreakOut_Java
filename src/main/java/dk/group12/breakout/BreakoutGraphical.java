@@ -50,7 +50,7 @@ public class BreakoutGraphical extends Application {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Breakout");
-        this should error everything;
+
         Canvas canvas = new Canvas(windowX, windowY);
         root.getChildren().add(canvas);
 
