@@ -75,8 +75,6 @@ public class PowerUpHandler {
             } else if (element.isPickedUp) {
                 if (element.isStackable) {
                     applyPowerUpEffect(element);
-                    fallingPowerUps.remove(element);
-                    break;
                 } else {
                     if (!activePowerUps.containsKey(element.type)) {
                         applyPowerUpEffect(element);
@@ -84,9 +82,9 @@ public class PowerUpHandler {
                     } else {
                         activePowerUps.get(element.type).extendDuration();
                     }
-                    fallingPowerUps.remove(element);
-                    break;
                 }
+                fallingPowerUps.remove(element);
+                break;
             }
         }
     }
@@ -123,7 +121,8 @@ public class PowerUpHandler {
         public GameState.powerUpType type;
         private boolean isPickedUp = false;
         private long startTime; // Tracks when power is picked up
-        private final long duration; // In milliseconds (0 for indefinite)
+        private long duration; // In milliseconds (0 for indefinite)
+        private final long originalDuration;
         private final boolean isStackable;
 
         public PowerUp(GameState.Block block, GameState.powerUpType type) {
@@ -135,9 +134,11 @@ public class PowerUpHandler {
             // For non-timed power-ups
             if (type == GameState.powerUpType.MULTIBALL) {
                 this.duration = 0;
+                this.originalDuration = 0;
                 this.isStackable = true;
             } else {
                 this.duration = 10_000;
+                this.originalDuration = this.duration;
                 this.isStackable = false;
             }
         }
@@ -157,7 +158,7 @@ public class PowerUpHandler {
         }
 
         public void extendDuration() {
-            this.startTime = System.currentTimeMillis();
+            this.duration += originalDuration;
         }
 
     }

@@ -101,6 +101,7 @@ public class GameState {
                     }
                 } else {
                     ballList.remove(ball);
+                    break;
                 }
             }
         }
