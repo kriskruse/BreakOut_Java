@@ -92,11 +92,15 @@ public class GameState {
         // Check if the ball has crossed the bottom
         for (Ball ball : ballList) {
             if (ball.y - ball.radius > gameHeight) {
-                lives--;  // Decrease a life
-                if (lives <= 0) {
-                    endGame();  // End the game if no lives are left
+                if (ballList.size() == 1) {
+                    lives--;
+                    if (lives <= 0) {
+                        endGame();  // End the game if no lives are left
+                    } else {
+                        resetBallAndPlatform();  // Reset the ball and platform if lives remain
+                    }
                 } else {
-                    resetBallAndPlatform();  // Reset the ball and platform if lives remain
+                    ballList.remove(ball);
                 }
             }
         }

@@ -73,14 +73,20 @@ public class PowerUpHandler {
                 fallingPowerUps.remove(element);
                 break;
             } else if (element.isPickedUp) {
-                if (!activePowerUps.containsKey(element.type)) {
+                if (element.isStackable) {
                     applyPowerUpEffect(element);
-                    activePowerUps.put(element.type, element);
+                    fallingPowerUps.remove(element);
+                    break;
                 } else {
-                    activePowerUps.get(element.type).resetTimer();
+                    if (!activePowerUps.containsKey(element.type)) {
+                        applyPowerUpEffect(element);
+                        activePowerUps.put(element.type, element);
+                    } else {
+                        activePowerUps.get(element.type).extendDuration();
+                    }
+                    fallingPowerUps.remove(element);
+                    break;
                 }
-                fallingPowerUps.remove(element);
-                break;
             }
         }
     }
@@ -118,6 +124,7 @@ public class PowerUpHandler {
         private boolean isPickedUp = false;
         private long startTime; // Tracks when power is picked up
         private final long duration; // In milliseconds (0 for indefinite)
+        private final boolean isStackable;
 
         public PowerUp(GameState.Block block, GameState.powerUpType type) {
             super(block.x + (block.width - 15) / 2,
@@ -128,8 +135,10 @@ public class PowerUpHandler {
             // For non-timed power-ups
             if (type == GameState.powerUpType.MULTIBALL) {
                 this.duration = 0;
+                this.isStackable = true;
             } else {
                 this.duration = 10_000;
+                this.isStackable = false;
             }
         }
 
@@ -147,7 +156,7 @@ public class PowerUpHandler {
             return (System.currentTimeMillis() - startTime) >= duration;
         }
 
-        public void resetTimer() {
+        public void extendDuration() {
             this.startTime = System.currentTimeMillis();
         }
 
