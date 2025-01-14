@@ -13,7 +13,7 @@ public class Collision {
             if (object instanceof GameState.PowerUp) {
                 GameState.PowerUp powerUp = (GameState.PowerUp) object;
                 // Check for platform collision with power-up
-                if (checkPlatformCollision(gameState.platform, powerUp)) {
+                if (isCollidingWithObject(gameState.platform, powerUp)) {
                     powerUp.activate();
                     // Trigger power-up effects here
                 }
@@ -76,36 +76,37 @@ public class Collision {
         }
     }
 
-    private static boolean isCollidingWithObject(CollisionElement object, GameState.Ball ball){
+    private static boolean isCollidingWithObject(CollisionElement object, CollisionElement collidingObject) {
         // Bounding box of the object
         double left = object.x;
         double top = object.y;
         double right = object.x + object.width;
         double bottom = object.y + object.height;
 
+        double collidingObejctLeft;
+        double collidingObejctTop;
+        double collidingObejctRight;
+        double collidingObejctBottom;
+
         // Bounding box of the ball
-        double ballLeft = ball.x;
-        double ballTop = ball.y;
-        double ballRight = ball.x + ball.radius * 2;
-        double ballBottom = ball.y + ball.radius * 2;
+        if (collidingObject instanceof GameState.Ball) {
+            collidingObejctLeft = collidingObject.x;
+            collidingObejctTop = collidingObject.y;
+            collidingObejctRight = collidingObject.x + ((GameState.Ball) collidingObject).radius * 2;
+            collidingObejctBottom = collidingObject.y + ((GameState.Ball) collidingObject).radius * 2;
+        }
+        else {
+            collidingObejctLeft = collidingObject.x;
+            collidingObejctTop = collidingObject.y;
+            collidingObejctRight = collidingObject.x + collidingObject.width;
+            collidingObejctBottom = collidingObject.y + collidingObject.height;
+        }
 
-        return (left < ballRight && ballLeft < right && top < ballBottom && ballTop < bottom);
+
+        return (left < collidingObejctRight &&
+                collidingObejctLeft < right &&
+                top < collidingObejctBottom &&
+                collidingObejctTop < bottom);
     }
 
-    private static boolean checkPlatformCollision(GameState.Platform platform, GameState.PowerUp powerUp) {
-        double platformLeft = platform.x;
-        double platformRight = platform.x + platform.width;
-        double platformTop = platform.y;
-        double platformBottom = platform.y + platform.height;
-
-        double powerUpLeft = powerUp.x;
-        double powerUpRight = powerUp.x + powerUp.width;
-        double powerUpTop = powerUp.y;
-        double powerUpBottom = powerUp.y + powerUp.height;
-
-        return (platformLeft < powerUpRight &&
-                platformRight > powerUpLeft &&
-                platformTop < powerUpBottom &&
-                platformBottom > powerUpTop);
-    }
 }
