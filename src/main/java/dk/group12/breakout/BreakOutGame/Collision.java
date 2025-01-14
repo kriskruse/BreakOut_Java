@@ -34,8 +34,10 @@ public class Collision {
                     if (object instanceof GameState.Block) {
                         ((GameState.Block) object).hp--;
                     }
+
                 }
-                // Handle one collision at a time
+                SoundController.playPing();
+                // we break the loop here because we only want to handle one collision at a time
                 break;
             }
         }

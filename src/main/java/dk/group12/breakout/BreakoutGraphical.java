@@ -3,6 +3,7 @@ package dk.group12.breakout;
 import dk.group12.breakout.BreakOutGame.CollisionElement;
 import dk.group12.breakout.BreakOutGame.GameLoop;
 import dk.group12.breakout.BreakOutGame.GameState;
+import dk.group12.breakout.BreakOutGame.SoundController;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Group;
@@ -22,6 +23,7 @@ public class BreakoutGraphical extends Application {
     private static int n;
     private static int m;
     private static int lives;
+    private SoundController soundController;
 
     public static void main(String[] args) {
         int arg1 = 8;
@@ -46,6 +48,7 @@ public class BreakoutGraphical extends Application {
     @Override
     public void start(Stage stage) {
         gameLoop = new GameLoop(n, m, windowX, windowY, lives);
+        soundController = new SoundController();
         Group root = new Group();
         Scene scene = new Scene(root);
         stage.setScene(scene);
@@ -60,6 +63,9 @@ public class BreakoutGraphical extends Application {
         scene.setOnKeyPressed(event -> activeKeys.add(event.getCode().toString()));
         scene.setOnKeyReleased(event -> activeKeys.remove(event.getCode().toString()));
 
+
+
+
         // Animation loop running at 60 FPS
         new AnimationTimer(){
             private long lastTime = System.nanoTime();
@@ -72,6 +78,8 @@ public class BreakoutGraphical extends Application {
                 long elapsedTime = (currentNanoTime - previousTime) / 1_000_000;
 
                 if (elapsedTime >= 13){ // 13 ms about 60 fps cap
+                    soundController.playMusic();
+
                     frameCount ++;
                     gameLoop.handleInput(activeKeys);
                     gameLoop.update();
