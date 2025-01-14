@@ -118,12 +118,14 @@ public class BreakoutGraphical extends Application {
 
     private void drawBall(GraphicsContext gc) {
         gc.setFill(Color.WHITE);
-        gc.fillOval(
-                GameState.ball.x,
-                GameState.ball.y,
-                GameState.ball.radius * 2,
-                GameState.ball.radius * 2
-        );
+        for (GameState.Ball ball : gameLoop.gameState.balls) {
+            gc.fillOval(
+                    ball.x,
+                    ball.y,
+                    ball.radius * 2,
+                    ball.radius * 2
+            );
+        }
     }
     private void drawStaticElements(GraphicsContext gc) {
         gc.setFill(Color.LIGHTGREY);
@@ -163,6 +165,7 @@ public class BreakoutGraphical extends Application {
                 GameState.PowerUp powerUp = (GameState.PowerUp) element;
                 if (powerUp.type == GameState.powerUpType.WIDEN_PLATFORM) { gc.setFill(Color.DEEPSKYBLUE); }
                 if (powerUp.type == GameState.powerUpType.ENLARGE_BALL) { gc.setFill(Color.GOLD); }
+                if (powerUp.type == GameState.powerUpType.MULTIBALL) { gc.setFill(Color.HOTPINK); }
                 gc.fillOval(powerUp.x, powerUp.y, powerUp.width, powerUp.height);
             }
         }

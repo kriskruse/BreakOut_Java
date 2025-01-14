@@ -19,6 +19,8 @@ public class GameState {
     private final int gameWidth;
     private final int gameHeight;
     public List<CollisionElement> collisionElements;
+    public List<Ball> balls = new ArrayList<>();
+    public List<PowerUp> fallingPowerUps = new ArrayList<>();
 
     public GameState(int n, int m, int gameWidth, int gameHeight, int lives) {
         this.gameHeight = gameHeight;
@@ -36,6 +38,7 @@ public class GameState {
 
         // we want to add the ball right on top of the platform
         ball = new Ball(platform.x + platform.width / 2 - 5, platform.y - 10, 5);
+        balls.add(ball);
 
         int clusterWidth = (int) (gameWidth - leftWall.width - rightWall.width);
         int clusterHeight = (int) ((gameHeight - (topWall.x + topWall.height)) * 0.25);
@@ -80,7 +83,10 @@ public class GameState {
     public void update() {
         Collision.collisionCheck(this);
         removeDestroyedBlocks();
-        ball.move();
+
+        for (Ball allBalls : balls) {
+            allBalls.move();
+        }
 
         List<CollisionElement> elementsToRemove = new ArrayList<>(); // Temporary list for removals
 
@@ -223,15 +229,21 @@ public class GameState {
         public powerUpType type;
         public boolean isActive = true; // Track if the power-up is falling
         private boolean isPickedUp = false;
-        private long startTime; // Tracks when power
-        private final long duration;
+        private long startTime; // Tracks when power is picked up
+        private final long duration; // In milliseconds (0 for indefinite)
 
         public PowerUp(Block block, powerUpType type) {
             super(block.x + (block.width - 15) / 2,
                     block.y + (block.height - 15) / 2,
                     15, 15);
             this.type = type;
-            this.duration = 10000; // 10 seconds
+
+            // For non-timed power-ups
+            if (type == powerUpType.MULTIBALL) {
+                this.duration = 0;
+            } else {
+                this.duration = 10_000;
+            }
         }
 
         public void move() {
@@ -245,7 +257,7 @@ public class GameState {
         }
 
         public boolean hasExpired() {
-            if (!isPickedUp) { return false; }
+            if (!isPickedUp || duration == 0) { return false; }
             return (System.currentTimeMillis() - startTime) >= duration;
         }
 
@@ -257,7 +269,8 @@ public class GameState {
     public enum powerUpType {
         NONE,
         WIDEN_PLATFORM,
-        ENLARGE_BALL
+        ENLARGE_BALL,
+        MULTIBALL
     }
 
     // Applying effects
@@ -270,6 +283,9 @@ public class GameState {
             ball.x -= ball.radius;
             ball.y -= ball.radius;
             ball.radius *= 2;
+        }
+        if (powerUp.type == powerUpType.MULTIBALL) {
+            spawnAdditionalBall();
         }
         powerUp.activate();
     }
@@ -301,6 +317,15 @@ public class GameState {
             this.x += direction.getX() * direction.getScalar();
             this.y += direction.getY() * direction.getScalar();
         }
+    }
+
+    private void spawnAdditionalBall() {
+        Ball newBall = new Ball(platform.x + platform.width / 2 - ball.radius,
+                platform.y - ball.radius * 2,
+                ball.radius);
+        newBall.direction = new Vec2((Math.random() - 0.5) * 2, -1, 4);
+        collisionElements.add(newBall);
+        balls.add(newBall);
     }
 
     public static class Platform extends CollisionElement {
