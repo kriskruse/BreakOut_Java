@@ -16,7 +16,7 @@ public class PowerUpHandler {
     }
 
     private void assignPowerUps(GameState.BlockCluster blockCluster) {
-        int powerUpCount = 64; // Amount of power-ups per block cluster
+        int powerUpCount = 10; // Amount of power-ups per block cluster
 
         // Get all possible power-up types from the enum
         GameState.powerUpType[] powerUpTypes = GameState.powerUpType.values();

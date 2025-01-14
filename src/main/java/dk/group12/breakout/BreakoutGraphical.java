@@ -168,7 +168,7 @@ public class BreakoutGraphical extends Application {
     }
 
     private void drawActivePowerUps(GraphicsContext gc) {
-        gc.setFill(Color.WHITE);
+        gc.setFill(Color.color(Color.HOTPINK.getRed(), Color.HOTPINK.getGreen(), Color.HOTPINK.getBlue(),0.7));
         gc.setFont(javafx.scene.text.Font.font("Arial", 12));
 
         int offsetX = 15;
@@ -186,6 +186,12 @@ public class BreakoutGraphical extends Application {
 
         for (PowerUpHandler.PowerUp powerUp : gameLoop.gameState.powerUpHandler.activePowerUps.values()) {
             if (powerUp.duration > 0) {
+                if (powerUp.type == GameState.powerUpType.WIDEN_PLATFORM) {
+                    gc.setFill(Color.color(Color.DEEPSKYBLUE.getRed(), Color.DEEPSKYBLUE.getGreen(), Color.DEEPSKYBLUE.getBlue(), 0.7));
+                }
+                if (powerUp.type == GameState.powerUpType.ENLARGE_BALL) {
+                    gc.setFill(Color.color(Color.GOLD.getRed(), Color.GOLD.getGreen(), Color.GOLD.getBlue(), 0.7));
+                }
                 long remainingTime = (powerUp.duration - (System.currentTimeMillis() - powerUp.startTime)) / 1000; // To show remaining time in secs
 
                 if (remainingTime > 0) {
