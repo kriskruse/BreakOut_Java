@@ -13,7 +13,7 @@ public class SoundController {
     private static Media musicSound;
     private static AudioClip pingTone;
 
-    private static final String pingFile = "src/main/resources/dk/group12/breakout/sounds/punch.wav";
+    private static final String pingFile = "src/main/resources/dk/group12/breakout/sounds/beep.wav";
     private static final String musicFile = "src/main/resources/dk/group12/breakout/sounds/music.mp3";
 
     public static boolean soundControl = true;
