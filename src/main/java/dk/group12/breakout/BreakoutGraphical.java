@@ -88,7 +88,8 @@ public class BreakoutGraphical extends Application {
                     drawPlatform(graphicsContext);
                     drawBall(graphicsContext);
                     drawBlocks(graphicsContext);
-                    drawPowerUps(graphicsContext);
+                    drawFallingPowerUps(graphicsContext);
+                    drawActivePowerUps(graphicsContext);
                 }
 
                 if ((currentNanoTime - lastTime) >= 1000000000) {
@@ -154,7 +155,7 @@ public class BreakoutGraphical extends Application {
         }
     }
 
-    private void drawPowerUps(GraphicsContext gc) {
+    private void drawFallingPowerUps(GraphicsContext gc) {
         for (PowerUpHandler.PowerUp powerUp : gameLoop.gameState.powerUpHandler.fallingPowerUps) {
             if (powerUp.type == GameState.powerUpType.WIDEN_PLATFORM) {
                 gc.setFill(Color.DEEPSKYBLUE); }
@@ -164,6 +165,38 @@ public class BreakoutGraphical extends Application {
                 gc.setFill(Color.HOTPINK); }
             gc.fillOval(powerUp.x, powerUp.y, powerUp.width, powerUp.height);
         }
+    }
 
+    private void drawActivePowerUps(GraphicsContext gc) {
+        gc.setFill(Color.WHITE);
+        gc.setFont(javafx.scene.text.Font.font("Arial", 12));
+
+        int offsetX = 15;
+        int initialOffsetY = 45;
+        int spacingY = 0;
+
+        if (GameState.ballList.size() > 1) {
+            gc.fillText(
+                    "MULTIBALL x" + GameState.ballList.size(),
+                    offsetX,
+                    initialOffsetY + spacingY
+            );
+            spacingY += 20;
+        }
+
+        for (PowerUpHandler.PowerUp powerUp : gameLoop.gameState.powerUpHandler.activePowerUps.values()) {
+            if (powerUp.duration > 0) {
+                long remainingTime = (powerUp.duration - (System.currentTimeMillis() - powerUp.startTime)) / 1000; // To show remaining time in secs
+
+                if (remainingTime > 0) {
+                    gc.fillText(
+                            powerUp.type + ": " + (remainingTime) + "s",
+                            offsetX,
+                            initialOffsetY + spacingY
+                    );
+                    spacingY += 20;
+                }
+            }
+        }
     }
 }

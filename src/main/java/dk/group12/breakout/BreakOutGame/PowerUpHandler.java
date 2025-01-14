@@ -9,7 +9,7 @@ import static dk.group12.breakout.BreakOutGame.GameState.*;
 
 public class PowerUpHandler {
     public List<PowerUp> fallingPowerUps = new ArrayList<>();
-    private final Map<GameState.powerUpType, PowerUp> activePowerUps = new HashMap<>();
+    public final Map<GameState.powerUpType, PowerUp> activePowerUps = new HashMap<>();
 
     public PowerUpHandler(GameState.BlockCluster blockCluster) {
         assignPowerUps(blockCluster);
@@ -120,8 +120,8 @@ public class PowerUpHandler {
     public class PowerUp extends CollisionElement {
         public GameState.powerUpType type;
         private boolean isPickedUp = false;
-        private long startTime; // Tracks when power is picked up
-        private long duration; // In milliseconds (0 for indefinite)
+        public long startTime; // Tracks when power is picked up
+        public long duration; // In milliseconds (0 for indefinite)
         private final long originalDuration;
         private final boolean isStackable;
 
