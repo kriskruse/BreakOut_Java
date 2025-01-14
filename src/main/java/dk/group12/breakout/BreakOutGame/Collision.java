@@ -1,44 +1,45 @@
 package dk.group12.breakout.BreakOutGame;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Collision {
+    public static List<GameState.Ball> ballList;
 
     public static void collisionCheck(GameState gameState){
-        GameState.Ball ball = GameState.ball;
+        ballList = GameState.ballList;
+
         List<CollisionElement> collisionElements = gameState.collisionElements;
+        List<PowerUpHandler.PowerUp> fallingPowerUps = gameState.powerUpHandler.fallingPowerUps;
+
+        for (PowerUpHandler.PowerUp powerUp : fallingPowerUps) {
+            if (isCollidingWithObject(GameState.platform, powerUp)) {
+                powerUp.activate();
+            }
+        }
 
         for (CollisionElement object : collisionElements) {
-            // Skip power-up collision checks with the ball
-            if (object instanceof GameState.PowerUp) {
-                GameState.PowerUp powerUp = (GameState.PowerUp) object;
-                // Check for platform collision with power-up
-                if (isCollidingWithObject(gameState.platform, powerUp)) {
-                    powerUp.activate();
-                    // Trigger power-up effects here
-                }
-                continue; // Skip further processing for power-ups
-            }
+            for (GameState.Ball ball : ballList) {
+                if (isCollidingWithObject(object, ball)) {
+                    if (object instanceof GameState.Platform) {
+                        double midPoint = object.x + object.width / 2;
+                        double normal = (ball.x - midPoint) / (object.width / 2);
 
-            if (isCollidingWithObject(object, ball)) {
-                if(object instanceof GameState.Platform){
-                    double midPoint = object.x + object.width / 2;
-                    double normal = (ball.x - midPoint) / (object.width / 2);
+                        ball.direction = new Vec2(normal, -1, ball.direction.getScalar());
+                    } else {
+                        ball.direction = calculateNewTrajectory(
+                                getNormalVectorOfCollision(object, ball),
+                                ball);
 
-                    GameState.ball.direction = new Vec2(normal, -1, ball.direction.getScalar());
-                } else {
-                    GameState.ball.direction = calculateNewTrajectory(
-                            getNormalVectorOfCollision(object, ball),
-                            ball);
+                        if (object instanceof GameState.Block) {
+                            ((GameState.Block) object).hp--;
+                        }
 
-                    if (object instanceof GameState.Block) {
-                        ((GameState.Block) object).hp--;
                     }
-
+                    SoundController.playPing();
+                    // we break the loop here because we only want to handle one collision at a time
+                    break;
                 }
-                SoundController.playPing();
-                // we break the loop here because we only want to handle one collision at a time
-                break;
             }
         }
     }

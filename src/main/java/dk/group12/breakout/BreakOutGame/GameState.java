@@ -3,13 +3,11 @@ package dk.group12.breakout.BreakOutGame;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
 
 public class GameState {
-    public Platform platform;
-    public static Ball ball;
-    public BlockCluster blockCluster;
+    public static Platform platform;
+    public static List<Ball> ballList;
+    public static BlockCluster blockCluster;
     public CollisionElement topWall;
     public static CollisionElement leftWall;
     public static CollisionElement rightWall;
@@ -19,8 +17,7 @@ public class GameState {
     private final int gameWidth;
     private final int gameHeight;
     public List<CollisionElement> collisionElements;
-    public List<Ball> balls = new ArrayList<>();
-    public List<PowerUp> fallingPowerUps = new ArrayList<>();
+    public PowerUpHandler powerUpHandler;
 
     public GameState(int n, int m, int gameWidth, int gameHeight, int lives) {
         this.gameHeight = gameHeight;
@@ -37,12 +34,14 @@ public class GameState {
         rightWall = new CollisionElement(gameWidth - 10, 0, 10, gameHeight);
 
         // we want to add the ball right on top of the platform
-        ball = new Ball(platform.x + platform.width / 2 - 5, platform.y - 10, 5);
-        balls.add(ball);
+        ballList = new ArrayList<>();
+        ballList.add(new Ball(platform.x + platform.width / 2 - 5, platform.y - 10, 5));
 
         int clusterWidth = (int) (gameWidth - leftWall.width - rightWall.width);
         int clusterHeight = (int) ((gameHeight - (topWall.x + topWall.height)) * 0.25);
         blockCluster = new BlockCluster(n, m, clusterWidth, clusterHeight);
+        powerUpHandler = new PowerUpHandler(blockCluster);
+
 
         collisionElements = new ArrayList<>();
         collisionElements.add(platform);
@@ -62,10 +61,10 @@ public class GameState {
 
     public void startGame() {
         gameRunning = true;
-        ball.direction = new Vec2((Math.random() - 0.5) * 2, -1, 4);
+        ballList.get(0).direction = new Vec2((Math.random() - 0.5) * 2, -1, 4);
     }
     public void endGame() {
-        ball.direction = new Vec2(0, -1, 0);
+        ballList.get(0).direction = new Vec2(0, -1, 0);
         gameRunning = false;
         gameEnded = true;
     }
@@ -73,99 +72,53 @@ public class GameState {
     // Reset the ball and platform after losing a life
     public void resetBallAndPlatform() {
         platform.x = (gameWidth - platform.width) / 2;  // Reset platform to center
-        ball.x = platform.x + platform.width / 2;  // Reset ball to above the platform
-        ball.y = platform.y - ball.radius;  // Position the ball just above the platform
-        ball.direction = new Vec2((Math.random() - 0.5) * 2, -1, 4);  // Random initial ball direction
+        ballList.get(0).x = platform.x + platform.width / 2;  // Reset ball to above the platform
+        ballList.get(0).y = platform.y - ballList.get(0).radius;  // Position the ball just above the platform
+        ballList.get(0).direction = new Vec2((Math.random() - 0.5) * 2, -1, 4);  // Random initial ball direction
     }
-
-    private final Map<powerUpType, PowerUp> activePowerUps = new HashMap<>();
 
     public void update() {
         Collision.collisionCheck(this);
         removeDestroyedBlocks();
 
-        for (Ball allBalls : balls) {
-            allBalls.move();
+        for (Ball ball : ballList) {
+            ball.move();
         }
 
-        List<CollisionElement> elementsToRemove = new ArrayList<>(); // Temporary list for removals
+        powerUpHandler.movePowerUps();
+        powerUpHandler.checkForCatch(gameHeight);
+        powerUpHandler.handlePowerUpExpiration();
 
-        for (CollisionElement element : new ArrayList<>(collisionElements)) {
-            if (element instanceof PowerUp) {
-                PowerUp powerUp = (PowerUp) element;
-                if (powerUp.isActive) {
-                    powerUp.move();
-                    if (powerUp.y > gameHeight) {
-                        elementsToRemove.add(powerUp); // Mark for removal if it falls off-screen
-                    }
-                } else if (powerUp.isPickedUp) {
-                    if (!activePowerUps.containsKey(powerUp.type)) {
-                        applyPowerUpEffect(powerUp);
-                        activePowerUps.put(powerUp.type, powerUp);
-                    } else {
-                        activePowerUps.get(powerUp.type).resetTimer();
-                    }
-                    elementsToRemove.add(powerUp); // Remove power-up once it's picked up
+        // Check if the ball has crossed the bottom
+        for (Ball ball : ballList) {
+            if (ball.y - ball.radius > gameHeight) {
+                lives--;  // Decrease a life
+                if (lives <= 0) {
+                    endGame();  // End the game if no lives are left
+                } else {
+                    resetBallAndPlatform();  // Reset the ball and platform if lives remain
                 }
             }
         }
 
-        // Remove marked elements (power-ups and other collision elements)
-        collisionElements.removeAll(elementsToRemove);
-
-        // Expiration of active power-ups
-        handlePowerUpExpiration();
-
-        // Check if the ball has crossed the bottom
-        if (ball.y - ball.radius > gameHeight) {
-            lives--;  // Decrease a life
-            if (lives <= 0) {
-                endGame();  // End the game if no lives are left
-            } else {
-                resetBallAndPlatform();  // Reset the ball and platform if lives remain
-            }
-        }
-    }
-
-    private void handlePowerUpExpiration() {
-        List<powerUpType> expiredPowerUps = new ArrayList<>();
-        for (Map.Entry<powerUpType, PowerUp> entry : activePowerUps.entrySet()) {
-            PowerUp powerUp = entry.getValue();
-            if (powerUp.hasExpired()) {
-                removePowerUpEffect(powerUp);
-                expiredPowerUps.add(entry.getKey());
-            }
-        }
-
-        // Remove expired power-ups from Map
-        for (powerUpType type : expiredPowerUps) {
-            activePowerUps.remove(type);
-        }
     }
 
     private void removeDestroyedBlocks() {
-        List<PowerUp> activePowerUps = new ArrayList<>();
-
         collisionElements.removeIf(element -> {
             if (element instanceof Block) {
                 Block block = (Block) element;
                 if (block.hp == 0) {
-                    if (block.powerUp != powerUpType.NONE) {
-                        activePowerUps.add(new PowerUp(block, block.powerUp));
-                    }
+                    powerUpHandler.spawnPowerUp(block);
                     return true;
                 }
             }
             return false;
         });
-
         // if all blocks are destroyed, end the game
         if (collisionElements.stream().noneMatch(element -> element instanceof Block)) {
             endGame();
         }
 
-        // Add active power-ups to the game
-        collisionElements.addAll(activePowerUps);
     }
 
 
@@ -202,67 +155,6 @@ public class GameState {
                     cluster[i][j] = new Block(x, y, width, height);
                 }
             }
-            assignPowerUps();
-        }
-
-        private void assignPowerUps() {
-            int powerUpCount = 15; // Amount of power-ups per block cluster
-
-            // Get all possible power-up types from the enum
-            powerUpType[] powerUpTypes = powerUpType.values();
-
-            while (powerUpCount > 0) {
-                int randomRow = (int) (Math.random() * cluster.length);
-                int randomCol = (int) (Math.random() * cluster[0].length);
-
-                Block block = cluster[randomRow][randomCol];
-                if (block.powerUp == powerUpType.NONE) {
-                    int randomIndex = (int) (Math.random() * (powerUpTypes.length - 1)) + 1; // Skip index 0 (type NONE)
-                    block.powerUp = powerUpTypes[randomIndex];
-                    powerUpCount--;
-                }
-            }
-        }
-    }
-
-    public class PowerUp extends CollisionElement {
-        public powerUpType type;
-        public boolean isActive = true; // Track if the power-up is falling
-        private boolean isPickedUp = false;
-        private long startTime; // Tracks when power is picked up
-        private final long duration; // In milliseconds (0 for indefinite)
-
-        public PowerUp(Block block, powerUpType type) {
-            super(block.x + (block.width - 15) / 2,
-                    block.y + (block.height - 15) / 2,
-                    15, 15);
-            this.type = type;
-
-            // For non-timed power-ups
-            if (type == powerUpType.MULTIBALL) {
-                this.duration = 0;
-            } else {
-                this.duration = 10_000;
-            }
-        }
-
-        public void move() {
-            this.y += 5;
-        }
-
-        public void activate() {
-            this.isActive = false; // Upon being picked up
-            this.isPickedUp = true;
-            this.startTime = System.currentTimeMillis(); // Record time of pickup
-        }
-
-        public boolean hasExpired() {
-            if (!isPickedUp || duration == 0) { return false; }
-            return (System.currentTimeMillis() - startTime) >= duration;
-        }
-
-        public void resetTimer() {
-            this.startTime = System.currentTimeMillis();
         }
     }
 
@@ -273,35 +165,6 @@ public class GameState {
         MULTIBALL
     }
 
-    // Applying effects
-    public void applyPowerUpEffect(PowerUp powerUp) {
-        if (powerUp.type == powerUpType.WIDEN_PLATFORM) {
-            platform.x -= platform.width / 4; // Platform stays centered around same point
-            platform.width *= 1.5;
-        }
-        if (powerUp.type == powerUpType.ENLARGE_BALL) {
-            ball.x -= ball.radius;
-            ball.y -= ball.radius;
-            ball.radius *= 2;
-        }
-        if (powerUp.type == powerUpType.MULTIBALL) {
-            spawnAdditionalBall();
-        }
-        powerUp.activate();
-    }
-
-    // Reversing effects
-    public void removePowerUpEffect(PowerUp powerUp) {
-        if (powerUp.type == powerUpType.WIDEN_PLATFORM) {
-            platform.width /= 1.5;
-            platform.x += platform.width / 4;
-        }
-        if (powerUp.type == powerUpType.ENLARGE_BALL) {
-            ball.radius /= 2;
-            ball.x += ball.radius;
-            ball.y += ball.radius;
-        }
-    }
 
     public static class Ball extends CollisionElement {
         public Vec2 direction;
@@ -319,13 +182,12 @@ public class GameState {
         }
     }
 
-    private void spawnAdditionalBall() {
-        Ball newBall = new Ball(platform.x + platform.width / 2 - ball.radius,
-                platform.y - ball.radius * 2,
-                ball.radius);
+    public static void spawnAdditionalBall() {
+        Ball newBall = new Ball(platform.x + platform.width / 2 - ballList.get(0).radius,
+                platform.y - ballList.get(0).radius * 2,
+                ballList.get(0).radius);
         newBall.direction = new Vec2((Math.random() - 0.5) * 2, -1, 4);
-        collisionElements.add(newBall);
-        balls.add(newBall);
+        ballList.add(newBall);
     }
 
     public static class Platform extends CollisionElement {

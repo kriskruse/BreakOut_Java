@@ -18,10 +18,10 @@ public class GameLoop {
         }
 
         if (activeKeys.contains("A") || activeKeys.contains("LEFT")) {
-            gameState.platform.move(-7);
+            GameState.platform.move(-7);
         }
         if (activeKeys.contains("D") || activeKeys.contains("RIGHT")) {
-            gameState.platform.move(7);
+            GameState.platform.move(7);
         }
     }
 

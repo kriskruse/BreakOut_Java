@@ -1,9 +1,6 @@
 package dk.group12.breakout;
 
-import dk.group12.breakout.BreakOutGame.CollisionElement;
-import dk.group12.breakout.BreakOutGame.GameLoop;
-import dk.group12.breakout.BreakOutGame.GameState;
-import dk.group12.breakout.BreakOutGame.SoundController;
+import dk.group12.breakout.BreakOutGame.*;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Group;
@@ -70,11 +67,9 @@ public class BreakoutGraphical extends Application {
         new AnimationTimer(){
             private long lastTime = System.nanoTime();
             private int frameCount = 0;
-            long previousTime = 0;
+            long previousTime = System.nanoTime();
             public void handle(long currentNanoTime){
-                if (previousTime == 0){
-                    previousTime = currentNanoTime;
-                }
+
                 long elapsedTime = (currentNanoTime - previousTime) / 1_000_000;
 
                 if (elapsedTime >= 13){ // 13 ms about 60 fps cap
@@ -110,15 +105,15 @@ public class BreakoutGraphical extends Application {
     private void drawPlatform(GraphicsContext gc) {
         gc.setFill(Color.DEEPSKYBLUE);
         gc.fillRect(
-                gameLoop.gameState.platform.x,
-                gameLoop.gameState.platform.y,
-                gameLoop.gameState.platform.width,
-                gameLoop.gameState.platform.height);
+                GameState.platform.x,
+                GameState.platform.y,
+                GameState.platform.width,
+                GameState.platform.height);
     }
 
     private void drawBall(GraphicsContext gc) {
         gc.setFill(Color.WHITE);
-        for (GameState.Ball ball : gameLoop.gameState.balls) {
+        for (GameState.Ball ball : GameState.ballList) {
             gc.fillOval(
                     ball.x,
                     ball.y,
@@ -130,8 +125,8 @@ public class BreakoutGraphical extends Application {
     private void drawStaticElements(GraphicsContext gc) {
         gc.setFill(Color.LIGHTGREY);
         CollisionElement topWall = gameLoop.gameState.topWall;
-        CollisionElement leftWall = gameLoop.gameState.leftWall;
-        CollisionElement rightWall = gameLoop.gameState.rightWall;
+        CollisionElement leftWall = GameState.leftWall;
+        CollisionElement rightWall = GameState.rightWall;
         gc.fillRect(topWall.x, topWall.y, topWall.width, topWall.height);
         gc.fillRect(leftWall.x, leftWall.y, leftWall.width, leftWall.height);
         gc.fillRect(rightWall.x, rightWall.y, rightWall.width, rightWall.height);
@@ -147,7 +142,7 @@ public class BreakoutGraphical extends Application {
                 Color.INDIGO,
                 Color.VIOLET
         };
-        GameState.BlockCluster cluster = gameLoop.gameState.blockCluster;
+        GameState.BlockCluster cluster = GameState.blockCluster;
         for (int i = 0; i < cluster.cluster.length; i++) {
             gc.setFill(rainbow[(i / 2) % rainbow.length]);
             for (int j = 0; j < cluster.cluster[i].length; j++) {
@@ -160,14 +155,15 @@ public class BreakoutGraphical extends Application {
     }
 
     private void drawPowerUps(GraphicsContext gc) {
-        for (CollisionElement element : gameLoop.gameState.collisionElements) {
-            if (element instanceof GameState.PowerUp) {
-                GameState.PowerUp powerUp = (GameState.PowerUp) element;
-                if (powerUp.type == GameState.powerUpType.WIDEN_PLATFORM) { gc.setFill(Color.DEEPSKYBLUE); }
-                if (powerUp.type == GameState.powerUpType.ENLARGE_BALL) { gc.setFill(Color.GOLD); }
-                if (powerUp.type == GameState.powerUpType.MULTIBALL) { gc.setFill(Color.HOTPINK); }
-                gc.fillOval(powerUp.x, powerUp.y, powerUp.width, powerUp.height);
-            }
+        for (PowerUpHandler.PowerUp powerUp : gameLoop.gameState.powerUpHandler.fallingPowerUps) {
+            if (powerUp.type == GameState.powerUpType.WIDEN_PLATFORM) {
+                gc.setFill(Color.DEEPSKYBLUE); }
+            if (powerUp.type == GameState.powerUpType.ENLARGE_BALL) {
+                gc.setFill(Color.GOLD); }
+            if (powerUp.type == GameState.powerUpType.MULTIBALL) {
+                gc.setFill(Color.HOTPINK); }
+            gc.fillOval(powerUp.x, powerUp.y, powerUp.width, powerUp.height);
         }
+
     }
 }

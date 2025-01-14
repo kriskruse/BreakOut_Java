@@ -2,7 +2,7 @@ package dk.group12.breakout.BreakOutGame;
 
 public class Vec2 {
     private double x, y;
-    private double scalar;
+    private final double scalar;
 
     public Vec2(double x, double y, double scalar) {
         set(x, y);
