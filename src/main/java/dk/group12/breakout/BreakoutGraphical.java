@@ -30,6 +30,7 @@ public class BreakoutGraphical extends Application {
     private GraphicsContext graphicsContext;
     private MenuController menuController;
     private boolean gamePaused = false;
+    private boolean gameEnded = false;
     private Button pauseButton;
     private int gameIterations = 0; // Tracks the number of iterations
 
@@ -63,11 +64,10 @@ public class BreakoutGraphical extends Application {
 
     @Override
     public void start(Stage stage) {
-        gameLoop = new GameLoop(n, m, windowX, windowY, lives);
-        soundController = new SoundController();
-
         //Create StackPane to layer menu scenes on top of Game scene
         StackPane root = new StackPane();
+
+
 
         Canvas canvas = new Canvas(windowX, windowY);
         //So "LEFT" adn "RIGHT" can be used also when there's buttons on screen
@@ -119,10 +119,13 @@ public class BreakoutGraphical extends Application {
         runGameLoop();
 
         menuController = new MenuController(root, this);
-       // menuController.showStartMenu();
+        gameLoop = new GameLoop(n, m, windowX, windowY, lives, this);
+        soundController = new SoundController();
     }
 
+
     /*GAME MENU LOGIC*/
+    // returns the pause button, so it can be accessed easily from other classes
     public Button getPauseButton(){
         return pauseButton;
     }
@@ -143,26 +146,36 @@ public class BreakoutGraphical extends Application {
     }
     public void restartGame() {
         gamePaused = false;
-        // Reset game logic (GameLoop reset method)
-        startGame();
+        gameLoop = new GameLoop(n, m, windowX, windowY, lives, this); // Reinitialize the game loop
+        startGame(); // Start the game
+    }
+    //helper method to set gameEnded to true/false
+    public void setGameEnded(boolean value) {
+        this.gameEnded = value;
+        menuController.showGameOverPage();
     }
 
     /* GAME LOOP RUNNER*/
     public void runGameLoop(){
-        // Animation loop running at 60 FPS
+        // Animation loop running at ≈ 60 FPS
         new AnimationTimer() {
             private long lastTime = System.nanoTime();
             private int frameCount = 0;
             long previousTime = 0;
 
             public void handle(long currentNanoTime) {
-                //When game starts
+                // Check if the game has ended
+                if (gameEnded) {
+                    return;
+                }
+                // Check if the game is in the first iteration
                 if (gameIterations == 1){
                     gamePaused = true;
                 }
+                // Check if the game is paused
                 if (gameIterations > 1){
                     if (gamePaused) {
-                        return; // Skip the rest of the frame's logic
+                        return; // Skip the rest of the frame's logic if gamePaused is true
                     }
                 }
 

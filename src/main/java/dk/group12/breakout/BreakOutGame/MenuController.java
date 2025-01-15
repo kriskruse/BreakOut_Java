@@ -1,6 +1,3 @@
-
-
-// MenuController.java
 package dk.group12.breakout.BreakOutGame;
 
 
@@ -15,9 +12,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MenuController {
+
     private VBox startMenu;
     private VBox settingsMenu;
     private VBox pauseMenu;
+    private VBox gameOverPage;
     private final StackPane root;
     //private final Map<String, VBox> menus = new HashMap<String, VBox>();
 
@@ -25,6 +24,7 @@ public class MenuController {
     private boolean isStartMenuVisible = true;
     private boolean isSettingsMenuVisible = false;
     private boolean isPauseMenuVisible = false;
+    private boolean isGameOverPageVisible = false;
 
     public MenuController(StackPane root, BreakoutGraphical game) {
         this.root = root;
@@ -36,19 +36,20 @@ public class MenuController {
         startMenu = createStartMenu(game);
         //settingsMenu = createSettingsMenu();
         pauseMenu = createPauseMenu(game);
+        gameOverPage = createGameOverPage(game);
 
-        root.getChildren().addAll(startMenu, pauseMenu);  //add other menus also
-
-        // Initially show only the start men
+        root.getChildren().addAll(startMenu, pauseMenu, gameOverPage);  //add other menus also
+        // Upon initialization show only the start menu
         hideMenus();
         showStartMenu();
     }
 
-    /* Menu visibility Settings */
+    /* MENU VISIBILITY SETTINGS */
     public void showStartMenu() {
         isStartMenuVisible = true;
         isSettingsMenuVisible = false;
         isPauseMenuVisible = false;
+        isGameOverPageVisible = false;
         updateMenuVisibility();
     }
 
@@ -56,6 +57,7 @@ public class MenuController {
         isStartMenuVisible = false;
         isSettingsMenuVisible = true;
         isPauseMenuVisible = false;
+        isGameOverPageVisible = false;
         updateMenuVisibility();
     }
 
@@ -63,24 +65,33 @@ public class MenuController {
         isStartMenuVisible = false;
         isSettingsMenuVisible = false;
         isPauseMenuVisible = true;
+        isGameOverPageVisible = false;
         updateMenuVisibility();
-
+    }
+    public void showGameOverPage() {
+        isStartMenuVisible = false;
+        isSettingsMenuVisible = false;
+        isPauseMenuVisible = false;
+        isGameOverPageVisible = true;
+        updateMenuVisibility();
     }
 
     private void updateMenuVisibility() {
         startMenu.setVisible(isStartMenuVisible);
         //settingsMenu.setVisible(isSettingsMenuVisible);
         pauseMenu.setVisible(isPauseMenuVisible);
+        gameOverPage.setVisible(isGameOverPageVisible);
     }
     public void hideMenus() {
         startMenu.setVisible(false);
         //settingsMenu.setVisible(false);
         pauseMenu.setVisible(false);
+        gameOverPage.setVisible(false);
     }
 
     /* CREATING MENU PAGES */
 
-    // START MENU CREATION
+    // START MENU PAGE CREATION
     private VBox createStartMenu(BreakoutGraphical game) {
         // Create label & buttons
         Label pageTitle = new Label("Main Menu");
@@ -95,13 +106,6 @@ public class MenuController {
 
         Button howToPlayButton = new Button("How To Play");
         howToPlayButton.setOnAction(e -> {});
-        /*
-        Button difficultyButton = new Button("Difficulty");
-
-        Button sensitivityButton = new Button("Sensitivity");
-
-        Button soundButton = new Button("Sound");
-        */
 
         Button exitButton = new Button("Exit");
         exitButton.setOnAction(event ->{
@@ -120,22 +124,12 @@ public class MenuController {
         styleButton(settingsMenuButton, "orange", "white");
         styleButton(howToPlayButton, "green", "white");
         styleButton(exitButton, "yellow",  "black");
-        /*
-        styleButton(difficultyButton, "orange", "white");
-        styleButton(sensitivityButton, "green", "white");
-        styleButton(soundButton, "yellow",  "black");
-         */
 
         // Hover effect for buttons
         mouseHoverGraphic(startGameButton);
         mouseHoverGraphic(settingsMenuButton);
         mouseHoverGraphic(howToPlayButton);
         mouseHoverGraphic(exitButton);
-        /*
-        mouseHoverGraphic(difficultyButton);
-        mouseHoverGraphic(sensitivityButton);
-        mouseHoverGraphic(soundButton);
-         */
 
         // VBox layout for vertical alignment
         VBox menu = new VBox(15); // Spacing between buttons
@@ -145,35 +139,37 @@ public class MenuController {
         menu.getChildren().addAll(
                 pageTitle, startGameButton, settingsMenuButton,howToPlayButton, exitButton
         );
-        //root.getChildren().add(menu);
 
         return menu;
     }
 
-    // PAUSE MENU CREATION
+    // PAUSE MENU PAGE CREATION
     private VBox createPauseMenu(BreakoutGraphical game) {
         // Create label & buttons
         Label pageTitle = new Label("Main Menu");
+        //resume game button
         Button resumeGameButton = new Button("Resume Game");
         resumeGameButton.setOnAction(e -> {
             game.startGame();
             game.getPauseButton().setVisible(true);
             hideMenus();
         });
-
+        //restart button
+        Button restartGameButton = new Button("Restart Game");
+        restartGameButton.setOnAction(e -> {
+            System.out.println("Restart button pressed");
+            game.restartGame();
+            hideMenus();
+        });
+        //Settings Menu Button
         Button settingsMenuButton = new Button("Settings");
         settingsMenuButton.setOnAction(e -> {});
 
+        //How to Play Button
         Button howToPlayButton = new Button("How To Play");
         howToPlayButton.setOnAction(e -> {});
-        /*
-        Button difficultyButton = new Button("Difficulty");
 
-        Button sensitivityButton = new Button("Sensitivity");
-
-        Button soundButton = new Button("Sound");
-        */
-
+        //exit game button
         Button exitButton = new Button("Exit");
         exitButton.setOnAction(event ->{
             System.out.println("Exit button pressed");
@@ -188,9 +184,10 @@ public class MenuController {
                         "-fx-text-fill: white;" // Text color
         );
         styleButton(resumeGameButton, "red", "white");
-        styleButton(settingsMenuButton, "orange", "white");
-        styleButton(howToPlayButton, "green", "white");
-        styleButton(exitButton, "yellow",  "black");
+        styleButton(restartGameButton, "orange",  "white");
+        styleButton(settingsMenuButton, "green", "white");
+        styleButton(howToPlayButton, "yellow", "black");
+        styleButton(exitButton, "blue",  "white");
         /*
         styleButton(difficultyButton, "orange", "white");
         styleButton(sensitivityButton, "green", "white");
@@ -199,14 +196,10 @@ public class MenuController {
 
         // Hover effect for buttons
         mouseHoverGraphic(resumeGameButton);
+        mouseHoverGraphic(restartGameButton);
         mouseHoverGraphic(settingsMenuButton);
         mouseHoverGraphic(howToPlayButton);
         mouseHoverGraphic(exitButton);
-        /*
-        mouseHoverGraphic(difficultyButton);
-        mouseHoverGraphic(sensitivityButton);
-        mouseHoverGraphic(soundButton);
-         */
 
         // VBox layout for vertical alignment
         VBox menu = new VBox(15); // Spacing between buttons
@@ -214,13 +207,58 @@ public class MenuController {
         menu.setPadding(new Insets(20));
         menu.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8);");
         menu.getChildren().addAll(
-                pageTitle, resumeGameButton, settingsMenuButton,howToPlayButton, exitButton
+                pageTitle, resumeGameButton,restartGameButton, settingsMenuButton,howToPlayButton, exitButton
         );
-        //root.getChildren().add(menu);
 
         return menu;
     }
 
+    //GAME OVER PAGE CREATION
+    private VBox createGameOverPage(BreakoutGraphical game) {
+        // Create label & buttons
+        Label pageTitle = new Label("Game Over");
+
+        //restart button
+        Button restartGameButton = new Button("Restart Game");
+        restartGameButton.setOnAction(e -> {
+            System.out.println("Restart button pressed");
+            game.setGameEnded(false);
+            game.restartGame();
+            hideMenus();
+        });
+
+        //exit game button
+        Button exitButton = new Button("Exit");
+        exitButton.setOnAction(event ->{
+            System.out.println("Exit button pressed");
+            System.exit(0);
+        }); // Exit the application
+
+        // Style buttons & Label
+        pageTitle.setStyle(
+                "-fx-font-size: 35px;" + // Font size
+                        "-fx-font-family: 'Arial';" + // Font family
+                        "-fx-font-weight: bold;" + // Bold text
+                        "-fx-text-fill: red;" // Text color
+        );
+        styleButton(restartGameButton, "rgba(0,0,0,0)",  "white");
+        styleButton(exitButton, "rgba(0,0,0,0)",  "white");
+
+        // Hover effect for buttons
+        mouseHoverGraphic(restartGameButton);
+        mouseHoverGraphic(exitButton);
+
+        // VBox layout for vertical alignment
+        VBox menu = new VBox(15); // Spacing between buttons
+        menu.setAlignment(Pos.CENTER);
+        menu.setPadding(new Insets(20));
+        menu.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8);");
+        menu.getChildren().addAll(
+                pageTitle, restartGameButton, exitButton
+        );
+
+        return menu;
+    }
 
 
     /*buttons Styling & Effects methods*/
@@ -241,14 +279,14 @@ public class MenuController {
     // Helper method to add effect on buttons, when hovered over
     public static Button mouseHoverGraphic(Button button) {
         String originalStyle = button.getStyle(); // Store original style
-        // On hover: Scale the button
+        // On hover-> Scale the button
         button.setOnMouseEntered(event -> {
             button.setScaleX(1.1); // Increase size horizontally
             button.setScaleY(1.1); // Increase size vertically
             button.setStyle(originalStyle+"-fx-cursor: hand;"); // Revert to original style + hand cursor
         });
 
-        // On hover exit: Revert scale
+        // On hover exit -> Revert scale
         button.setOnMouseExited(event -> {
             button.setScaleX(1.0); // Reset horizontal size
             button.setScaleY(1.0); // Reset vertical size
