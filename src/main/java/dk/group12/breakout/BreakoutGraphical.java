@@ -251,7 +251,7 @@ public class BreakoutGraphical extends Application {
 
     private void drawActivePowerUps(GraphicsContext gc) {
         gc.setFill(Color.color(Color.HOTPINK.getRed(), Color.HOTPINK.getGreen(), Color.HOTPINK.getBlue(),0.7));
-        gc.setFont(javafx.scene.text.Font.font("Arial", 12));
+        gc.setFont(javafx.scene.text.Font.font("Press Start 2P", 12));
 
         int offsetX = 15;
         int initialOffsetY = 45;
@@ -274,15 +274,25 @@ public class BreakoutGraphical extends Application {
                 if (powerUp.type == GameState.powerUpType.ENLARGE_BALL) {
                     gc.setFill(Color.color(Color.GOLD.getRed(), Color.GOLD.getGreen(), Color.GOLD.getBlue(), 0.7));
                 }
-                long remainingTime = (powerUp.duration - (System.currentTimeMillis() - powerUp.startTime)) / 1000; // To show remaining time in secs
+                long remainingTime = powerUp.duration - (System.currentTimeMillis() - powerUp.startTime); // To show remaining time in secs
 
                 if (remainingTime > 0) {
                     gc.fillText(
-                            powerUp.type + ": " + (remainingTime) + "s",
+                            powerUp.type + ": " + (remainingTime / 1000) + "s",
                             offsetX,
                             initialOffsetY + spacingY
                     );
-                    spacingY += 20;
+
+                    double barWidth = 100; // Total width of the loading bar
+                    double barHeight = 10; // Height of the loading bar
+                    double remainingRatio = (double) remainingTime / powerUp.duration;
+                    double currentBarWidth = barWidth * remainingRatio;
+
+                    gc.fillRect(offsetX, initialOffsetY + spacingY + 5, currentBarWidth, barHeight);
+                    gc.setStroke(Color.color(1., 1., 1., 0.7));
+                    gc.strokeRect(offsetX, initialOffsetY + spacingY + 5, barWidth, barHeight);
+
+                    spacingY += 30;
                 }
             }
         }

@@ -41,8 +41,14 @@ public class PowerUpHandler {
         }
         if (powerUp.type == GameState.powerUpType.ENLARGE_BALL) {
             for (GameState.Ball ball : ballList) {
-                ball.x -= ball.radius;
-                ball.y -= ball.radius;
+                if (ball.x - (leftWall.x + leftWall.width) <= 10) {
+                    ball.x = leftWall.x + leftWall.width + 1;
+                } else if (rightWall.x - (ball.x + ball.width) <= 10) {
+                    ball.x = rightWall.x - ball.width - 1;
+                } else {
+                    ball.x -= ball.radius;
+                    ball.y -= ball.radius;
+                }
                 ball.radius *= 2;
             }
         }
