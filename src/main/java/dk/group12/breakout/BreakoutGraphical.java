@@ -32,6 +32,13 @@ public class BreakoutGraphical extends Application {
     private Button pauseButton;
     private int gameIterations = 0; // Tracks the number of iterations
 
+    // Quick colorscheme (HUD)
+    double hudOpacity = 0.7;
+    Color hudOutlineColor = Color.WHITE;
+    // PowerUps
+    Color widenPlatformColor = Color.DEEPSKYBLUE;
+    Color enlargeBallColor = Color.DARKORCHID;
+    Color multiballColor = Color.AQUAMARINE;
 
     public static void main(String[] args) {
         int arg1 = 8;
@@ -240,40 +247,50 @@ public class BreakoutGraphical extends Application {
     private void drawFallingPowerUps(GraphicsContext gc) {
         for (PowerUpHandler.PowerUp powerUp : gameLoop.gameState.powerUpHandler.fallingPowerUps) {
             if (powerUp.type == GameState.powerUpType.WIDEN_PLATFORM) {
-                gc.setFill(Color.DEEPSKYBLUE); }
+                gc.setFill(widenPlatformColor); }
             if (powerUp.type == GameState.powerUpType.ENLARGE_BALL) {
-                gc.setFill(Color.GOLD); }
+                gc.setFill(enlargeBallColor); }
             if (powerUp.type == GameState.powerUpType.MULTIBALL) {
-                gc.setFill(Color.HOTPINK); }
+                gc.setFill(multiballColor); }
             gc.fillOval(powerUp.x, powerUp.y, powerUp.width, powerUp.height);
         }
     }
 
     private void drawActivePowerUps(GraphicsContext gc) {
-        gc.setFill(Color.color(Color.HOTPINK.getRed(), Color.HOTPINK.getGreen(), Color.HOTPINK.getBlue(),0.7));
         gc.setFont(javafx.scene.text.Font.font("Press Start 2P", 12));
+        gc.setLineWidth(0.75);
 
         int offsetX = 15;
         int initialOffsetY = 45;
         int spacingY = 0;
 
         if (GameState.ballList.size() > 1) {
+            gc.setFill(Color.color(multiballColor.getRed(), multiballColor.getGreen(), multiballColor.getBlue(), hudOpacity));
+            gc.setStroke(Color.color(hudOutlineColor.getRed(), hudOutlineColor.getGreen(), hudOutlineColor.getBlue(), hudOpacity));
             gc.fillText(
                     "MULTIBALL x" + GameState.ballList.size(),
                     offsetX,
                     initialOffsetY + spacingY
             );
+
+            gc.strokeText(
+                    "MULTIBALL x" + GameState.ballList.size(),
+                    offsetX,
+                    initialOffsetY + spacingY
+            );
+
             spacingY += 20;
         }
 
         for (PowerUpHandler.PowerUp powerUp : gameLoop.gameState.powerUpHandler.activePowerUps.values()) {
             if (powerUp.duration > 0) {
                 if (powerUp.type == GameState.powerUpType.WIDEN_PLATFORM) {
-                    gc.setFill(Color.color(Color.DEEPSKYBLUE.getRed(), Color.DEEPSKYBLUE.getGreen(), Color.DEEPSKYBLUE.getBlue(), 0.7));
+                    gc.setFill(Color.color(widenPlatformColor.getRed(), widenPlatformColor.getGreen(), widenPlatformColor.getBlue(), hudOpacity));
                 }
                 if (powerUp.type == GameState.powerUpType.ENLARGE_BALL) {
-                    gc.setFill(Color.color(Color.GOLD.getRed(), Color.GOLD.getGreen(), Color.GOLD.getBlue(), 0.7));
+                    gc.setFill(Color.color(enlargeBallColor.getRed(), enlargeBallColor.getGreen(), enlargeBallColor.getBlue(), hudOpacity));
                 }
+                gc.setStroke(Color.color(hudOutlineColor.getRed(), hudOutlineColor.getGreen(), hudOutlineColor.getBlue(), hudOpacity));
                 long remainingTime = powerUp.duration - (System.currentTimeMillis() - powerUp.startTime); // To show remaining time in secs
 
                 if (remainingTime > 0) {
@@ -289,8 +306,13 @@ public class BreakoutGraphical extends Application {
                     double currentBarWidth = barWidth * remainingRatio;
 
                     gc.fillRect(offsetX, initialOffsetY + spacingY + 5, currentBarWidth, barHeight);
-                    gc.setStroke(Color.color(1., 1., 1., 0.7));
                     gc.strokeRect(offsetX, initialOffsetY + spacingY + 5, barWidth, barHeight);
+
+                    gc.strokeText(
+                            powerUp.type + ": " + (remainingTime / 1000) + "s",
+                            offsetX,
+                            initialOffsetY + spacingY
+                    );
 
                     spacingY += 30;
                 }
