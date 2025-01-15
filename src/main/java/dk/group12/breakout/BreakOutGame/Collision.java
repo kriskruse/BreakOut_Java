@@ -1,5 +1,7 @@
 package dk.group12.breakout.BreakOutGame;
 
+import dk.group12.breakout.BreakoutGraphical;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +35,9 @@ public class Collision {
 
                         if (object instanceof GameState.Block) {
                             ((GameState.Block) object).hp--;
+
+                            BreakoutGraphical.scoreTracker.addScore(1); //Tilføjer 1 point til scoren
+                            System.out.println("Score updated "+ BreakoutGraphical.scoreTracker.getScore());
                         }
 
                     }
