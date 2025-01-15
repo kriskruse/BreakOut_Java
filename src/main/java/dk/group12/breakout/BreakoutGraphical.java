@@ -3,15 +3,17 @@ package dk.group12.breakout;
 import dk.group12.breakout.BreakOutGame.CollisionElement;
 import dk.group12.breakout.BreakOutGame.GameLoop;
 import dk.group12.breakout.BreakOutGame.GameState;
+import dk.group12.breakout.BreakOutGame.MenuController;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-
+import javafx.scene.layout.StackPane;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,6 +24,12 @@ public class BreakoutGraphical extends Application {
     private static int n;
     private static int m;
     private static int lives;
+    private GraphicsContext graphicsContext;
+    private MenuController menuController;
+    private boolean gamePaused = false;
+    private Button pauseButton;
+    private int gameIterations = 0; // Tracks the number of iterations
+
 
     public static void main(String[] args) {
         int arg1 = 8;
@@ -46,33 +54,107 @@ public class BreakoutGraphical extends Application {
     @Override
     public void start(Stage stage) {
         gameLoop = new GameLoop(n, m, windowX, windowY, lives);
-        Group root = new Group();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setTitle("Breakout");
+
+        //Create StackPane to layer menu scenes on top of Game scene
+        StackPane root = new StackPane();
 
         Canvas canvas = new Canvas(windowX, windowY);
-        root.getChildren().add(canvas);
+        //So "LEFT" adn "RIGHT" can be used also when there's buttons on screen
+        canvas.setFocusTraversable(true); // Ensure the Canvas can receive focus
+        canvas.requestFocus(); // Request focus explicitly
 
-        GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
+        root.getChildren().add(canvas);
+        this.graphicsContext = canvas.getGraphicsContext2D();
+
+        //Pause button creation and settings
+        Pane overlayPane = new Pane();
+        root.getChildren().add(overlayPane);
+        pauseButton = new Button("Pause");
+        pauseButton.setLayoutX(windowX-60);
+        pauseButton.setLayoutY(1);
+        pauseButton.setOnAction(e -> pauseGame());
+        overlayPane.getChildren().add(pauseButton);
+        getPauseButton().setVisible(false);
+        pauseButton.setStyle(
+                "-fx-background-color: rgba(0,0,0,0);"+
+                "-fx-font-weight: bold;"+
+                "-fx-text-fill: white;"+
+                "-fx-font-family: 'Arial';"+
+                "-fx-padding: 0 0 10 0;"
+        );
+        MenuController.mouseHoverGraphic(pauseButton); //button graphics added to button
+
+        Scene gameScene = new Scene(root, windowX, windowY);
 
         // Input handling
-        scene.setOnKeyPressed(event -> activeKeys.add(event.getCode().toString()));
-        scene.setOnKeyReleased(event -> activeKeys.remove(event.getCode().toString()));
+        gameScene.setOnKeyPressed(event -> activeKeys.add(event.getCode().toString()));
+        gameScene.setOnKeyReleased(event -> activeKeys.remove(event.getCode().toString()));
 
+        stage.setScene(gameScene);
+        stage.setTitle("Breakout");
+        stage.show();
+
+        runGameLoop();
+
+        menuController = new MenuController(root, this);
+       // menuController.showStartMenu();
+    }
+
+    /*GAME MENU LOGIC*/
+    public Button getPauseButton(){
+        return pauseButton;
+    }
+    public void startOfGame() {
+        gamePaused = true;
+        menuController.showStartMenu(); // show start menu
+    }
+    public void startGame() {
+        System.out.println("Start Game Button Pressed");
+        gamePaused = false;
+        if (!gamePaused) {System.out.println("gamePaused is false");}
+        getPauseButton().setVisible(true);
+
+    }
+    public void pauseGame() {
+        System.out.println("Pause Game Button Pressed");
+        gamePaused = true;
+        getPauseButton().setVisible(false);
+        menuController.showPauseMenu(); // Show the pause menu
+
+    }
+    public void restartGame() {
+        gamePaused = false;
+        // Reset game logic (GameLoop reset method)
+        startGame();
+    }
+
+    /* GAME LOOP RUNNER*/
+    public void runGameLoop(){
         // Animation loop running at 60 FPS
-        new AnimationTimer(){
+        new AnimationTimer() {
             private long lastTime = System.nanoTime();
             private int frameCount = 0;
             long previousTime = 0;
-            public void handle(long currentNanoTime){
-                if (previousTime == 0){
+
+            public void handle(long currentNanoTime) {
+                //When game starts
+                if (gameIterations == 1){
+                    gamePaused = true;
+                }
+                if (gameIterations > 1){
+                    if (gamePaused) {
+                        return; // Skip the rest of the frame's logic
+                    }
+                }
+
+                if (previousTime == 0) {
                     previousTime = currentNanoTime;
                 }
                 long elapsedTime = (currentNanoTime - previousTime) / 1_000_000;
 
-                if (elapsedTime >= 13){ // 13 ms about 60 fps cap
-                    frameCount ++;
+                if (elapsedTime >= 13) { // 13 ms about 60 fps cap
+                    gameIterations++;
+                    frameCount++;
                     gameLoop.handleInput(activeKeys);
                     gameLoop.update();
                     previousTime = currentNanoTime;
@@ -95,9 +177,10 @@ public class BreakoutGraphical extends Application {
 
             }
         }.start();
-
-        stage.show();
     }
+
+    /* DRAW GAME STATE HELPER METHODS*/
+
     private void drawPlatform(GraphicsContext gc) {
         gc.setFill(Color.DEEPSKYBLUE);
         gc.fillRect(
@@ -147,4 +230,5 @@ public class BreakoutGraphical extends Application {
             }
         }
     }
+
 }
