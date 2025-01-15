@@ -11,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -97,7 +98,18 @@ public class BreakoutGraphical extends Application {
         Scene gameScene = new Scene(root, windowX, windowY);
 
         // Input handling
-        gameScene.setOnKeyPressed(event -> activeKeys.add(event.getCode().toString()));
+        gameScene.setOnKeyPressed(event -> {
+            activeKeys.add(event.getCode().toString());
+            if (event.getCode() == KeyCode.ESCAPE) {
+                if (gamePaused) {
+                    startGame();
+                    getPauseButton().setVisible(true);
+                    menuController.hideMenus();
+                } else {
+                    pauseGame();
+                }
+            }
+        });
         gameScene.setOnKeyReleased(event -> activeKeys.remove(event.getCode().toString()));
 
         stage.setScene(gameScene);
