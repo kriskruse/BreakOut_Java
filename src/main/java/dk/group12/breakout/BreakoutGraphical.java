@@ -61,10 +61,6 @@ public class BreakoutGraphical extends Application {
         //Create StackPane to layer menu scenes on top of Game scene
         StackPane root = new StackPane();
 
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setTitle("Breakout");
-
         Canvas canvas = new Canvas(windowX, windowY);
         //So "LEFT" adn "RIGHT" can be used also when there's buttons on screen
         canvas.setFocusTraversable(true); // Ensure the Canvas can receive focus
@@ -84,10 +80,10 @@ public class BreakoutGraphical extends Application {
         getPauseButton().setVisible(false);
         pauseButton.setStyle(
                 "-fx-background-color: rgba(0,0,0,0);"+
-                "-fx-font-weight: bold;"+
-                "-fx-text-fill: white;"+
-                "-fx-font-family: 'Arial';"+
-                "-fx-padding: 0 0 10 0;"
+                        "-fx-font-weight: bold;"+
+                        "-fx-text-fill: white;"+
+                        "-fx-font-family: 'Arial';"+
+                        "-fx-padding: 0 0 10 0;"
         );
         MenuController.mouseHoverGraphic(pauseButton); //button graphics added to button
 
@@ -111,10 +107,7 @@ public class BreakoutGraphical extends Application {
     public Button getPauseButton(){
         return pauseButton;
     }
-    public void startOfGame() {
-        gamePaused = true;
-        menuController.showStartMenu(); // show start menu
-    }
+
     public void startGame() {
         System.out.println("Start Game Button Pressed");
         gamePaused = false;
@@ -141,7 +134,7 @@ public class BreakoutGraphical extends Application {
         new AnimationTimer() {
             private long lastTime = System.nanoTime();
             private int frameCount = 0;
-            long previousTime = System.nanoTime();
+            long previousTime = 0;
 
             public void handle(long currentNanoTime) {
                 //When game starts
@@ -164,7 +157,6 @@ public class BreakoutGraphical extends Application {
                     frameCount++;
                     soundController.playMusic();
 
-                    frameCount ++;
                     gameLoop.handleInput(activeKeys);
                     gameLoop.update();
                     previousTime = currentNanoTime;
