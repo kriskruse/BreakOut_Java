@@ -4,6 +4,7 @@ import dk.group12.breakout.BreakOutGame.CollisionElement;
 import dk.group12.breakout.BreakOutGame.GameLoop;
 import dk.group12.breakout.BreakOutGame.GameState;
 import dk.group12.breakout.BreakOutGame.MenuController;
+import dk.group12.breakout.BreakOutGame.ScoreTracker;
 import dk.group12.breakout.BreakOutGame.*;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -33,6 +34,7 @@ public class BreakoutGraphical extends Application {
     private boolean gameEnded = false;
     private Button pauseButton;
     private int gameIterations = 0; // Tracks the number of iterations
+    public static ScoreTracker scoreTracker = new ScoreTracker(); // Tracks the score
 
     // Quick colorscheme (HUD)
     double hudOpacity = 0.7;
@@ -203,6 +205,7 @@ public class BreakoutGraphical extends Application {
                     drawBlocks(graphicsContext);
                     drawFallingPowerUps(graphicsContext);
                     drawActivePowerUps(graphicsContext);
+                    drawScore(graphicsContext);
                 }
 
                 if ((currentNanoTime - lastTime) >= 1000000000) {
@@ -344,4 +347,16 @@ public class BreakoutGraphical extends Application {
             }
         }
     }
+
+    private void drawScore(GraphicsContext gc) {
+
+        gc.setFill(Color.WHITE);
+        gc.setFont(javafx.scene.text.Font.font("Arial", javafx.scene.text.FontWeight.BOLD, 35));
+
+        double centerX = (double) windowX / 2;
+
+        gc.fillText("Score: " + scoreTracker.getScore(), centerX-70, 70);
+    }
+
+
 }
