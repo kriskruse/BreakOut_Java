@@ -135,6 +135,7 @@ public class BreakoutGraphical extends Application {
     public void startGame() {
         System.out.println("Start Game Button Pressed");
         gamePaused = false;
+        scoreTracker.resetScore();
         if (!gamePaused) {System.out.println("gamePaused is false");}
         getPauseButton().setVisible(true);
 
