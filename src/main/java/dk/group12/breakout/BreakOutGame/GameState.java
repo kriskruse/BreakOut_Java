@@ -5,16 +5,19 @@ import java.util.Arrays;
 import java.util.List;
 
 public class GameState {
-    public Platform platform;
-    public static Ball ball;
-    public BlockCluster blockCluster;
-    public CollisionElement topWall, leftWall, rightWall;
+    public static Platform platform;
+    public static List<Ball> ballList;
+    public static BlockCluster blockCluster;
+    public CollisionElement topWall;
+    public static CollisionElement leftWall;
+    public static CollisionElement rightWall;
     public boolean gameRunning = false;
     public boolean gameEnded = false;
     private int lives;
     private final int gameWidth;
     private final int gameHeight;
     public List<CollisionElement> collisionElements;
+    public PowerUpHandler powerUpHandler;
 
     public GameState(int n, int m, int gameWidth, int gameHeight, int lives) {
         this.gameHeight = gameHeight;
@@ -31,11 +34,14 @@ public class GameState {
         rightWall = new CollisionElement(gameWidth - 10, 0, 10, gameHeight);
 
         // we want to add the ball right on top of the platform
-        ball = new Ball(platform.x + platform.width / 2 - 5, platform.y - 10, 5);
+        ballList = new ArrayList<>();
+        ballList.add(new Ball(platform.x + platform.width / 2 - 5, platform.y - 10, 5));
 
         int clusterWidth = (int) (gameWidth - leftWall.width - rightWall.width);
         int clusterHeight = (int) ((gameHeight - (topWall.x + topWall.height)) * 0.25);
         blockCluster = new BlockCluster(n, m, clusterWidth, clusterHeight);
+        powerUpHandler = new PowerUpHandler(blockCluster);
+
 
         collisionElements = new ArrayList<>();
         collisionElements.add(platform);
@@ -53,13 +59,12 @@ public class GameState {
         return blocks;
     }
 
-
     public void startGame() {
         gameRunning = true;
-        ball.direction = new Vec2((Math.random() - 0.5) * 2, -1, 3);
+        ballList.get(0).direction = new Vec2((Math.random() - 0.5) * 2, -1, 4);
     }
     public void endGame() {
-        ball.direction = new Vec2(0, -1, 0);
+        ballList.get(0).direction = new Vec2(0, -1, 0);
         gameRunning = false;
         gameEnded = true;
     }
@@ -67,39 +72,64 @@ public class GameState {
     // Reset the ball and platform after losing a life
     public void resetBallAndPlatform() {
         platform.x = (gameWidth - platform.width) / 2;  // Reset platform to center
-        ball.x = platform.x + platform.width / 2;  // Reset ball to above the platform
-        ball.y = platform.y - ball.radius;  // Position the ball just above the platform
-        ball.direction = new Vec2((Math.random() - 0.5) * 2, -1, 3);  // Random initial ball direction
+        ballList.get(0).x = platform.x + platform.width / 2;  // Reset ball to above the platform
+        ballList.get(0).y = platform.y - ballList.get(0).radius;  // Position the ball just above the platform
+        ballList.get(0).direction = new Vec2((Math.random() - 0.5) * 2, -1, 4);  // Random initial ball direction
     }
 
     public void update() {
         Collision.collisionCheck(this);
         removeDestroyedBlocks();
-        ball.move();
+
+        for (Ball ball : ballList) {
+            ball.move();
+        }
+
+        powerUpHandler.movePowerUps();
+        powerUpHandler.checkForCatch(gameHeight);
+        powerUpHandler.handlePowerUpExpiration();
 
         // Check if the ball has crossed the bottom
-        if (ball.y - ball.radius > gameHeight) {
-            lives--;  // Decrease a life
-            if (lives <= 0) {
-                endGame();  // End the game if no lives are left
-            } else {
-                resetBallAndPlatform();  // Reset the ball and platform if lives remain
+        for (Ball ball : ballList) {
+            if (ball.y - ball.radius > gameHeight) {
+                if (ballList.size() == 1) {
+                    lives--;
+                    if (lives <= 0) {
+                        endGame();  // End the game if no lives are left
+                    } else {
+                        resetBallAndPlatform();  // Reset the ball and platform if lives remain
+                    }
+                } else {
+                    ballList.remove(ball);
+                    break;
+                }
             }
         }
+
     }
 
     private void removeDestroyedBlocks() {
-        collisionElements.removeIf(element ->
-                element instanceof Block && ((Block) element).hp == 0);
+        collisionElements.removeIf(element -> {
+            if (element instanceof Block) {
+                Block block = (Block) element;
+                if (block.hp == 0) {
+                    powerUpHandler.spawnPowerUp(block);
+                    return true;
+                }
+            }
+            return false;
+        });
         // if all blocks are destroyed, end the game
         if (collisionElements.stream().noneMatch(element -> element instanceof Block)) {
             endGame();
         }
+
     }
 
 
     public static class Block extends CollisionElement {
         public int hp = 1;
+        public powerUpType powerUp = powerUpType.NONE;
 
         public Block(double x, double y, double width, double height) {
             super(x, y, width, height);
@@ -133,6 +163,14 @@ public class GameState {
         }
     }
 
+    public enum powerUpType {
+        NONE,
+        WIDEN_PLATFORM,
+        ENLARGE_BALL,
+        MULTIBALL
+    }
+
+
     public static class Ball extends CollisionElement {
         public Vec2 direction;
         public double radius;
@@ -149,7 +187,15 @@ public class GameState {
         }
     }
 
-    public class Platform extends CollisionElement {
+    public static void spawnAdditionalBall() {
+        Ball newBall = new Ball(platform.x + platform.width / 2 - ballList.get(0).radius,
+                platform.y - ballList.get(0).radius * 2,
+                ballList.get(0).radius);
+        newBall.direction = new Vec2((Math.random() - 0.5) * 2, -1, 4);
+        ballList.add(newBall);
+    }
+
+    public static class Platform extends CollisionElement {
         public Platform(int x, int y, int width, int height) {
             super(x, y, width, height);
         }

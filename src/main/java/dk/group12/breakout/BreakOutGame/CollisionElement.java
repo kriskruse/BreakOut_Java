@@ -12,5 +12,4 @@ public class CollisionElement {
         this.width = width;
         this.height = height;
     }
-
 }
