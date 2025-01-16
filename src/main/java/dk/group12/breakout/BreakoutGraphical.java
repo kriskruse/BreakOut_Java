@@ -21,8 +21,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class BreakoutGraphical extends Application {
-    private final int windowX = 400;
-    private final int windowY = 700;
+    private final int windowX = 700;
+    private final int windowY = 900;
     private GameLoop gameLoop;
     private static int n;
     private static int m;
@@ -172,11 +172,10 @@ public class BreakoutGraphical extends Application {
                     return;
                 }
                 // Check if the game is paused
-                if (gameIterations > 1){
-                    if (gamePaused) {
-                        return; // Skip the rest of the frame's logic if gamePaused is true
-                    }
+                if (gameIterations > 1 && gamePaused) {
+                    return; // Skip the rest of the frame's logic if gamePaused is true
                 }
+
 
                 if (previousTime == 0) {
                     previousTime = currentNanoTime;
@@ -240,7 +239,7 @@ public class BreakoutGraphical extends Application {
     private void drawStaticElements(GraphicsContext gc) {
         gc.setFill(Color.LIGHTGREY);
         CollisionElement topWall = gameLoop.gameState.topWall;
-        CollisionElement leftWall = GameState.leftWall;
+        CollisionElement leftWall = gameLoop.gameState.leftWall;
         CollisionElement rightWall = GameState.rightWall;
         gc.fillRect(topWall.x, topWall.y, topWall.width, topWall.height);
         gc.fillRect(leftWall.x, leftWall.y, leftWall.width, leftWall.height);

@@ -30,16 +30,18 @@ public class GameState {
         platform = new Platform(platformX, platformY, platformWidth, platformHeight);
 
         topWall = new CollisionElement(0, 20, gameWidth, 10);
-        leftWall = new CollisionElement(0, 0, 10, gameHeight);
-        rightWall = new CollisionElement(gameWidth - 10, 0, 10, gameHeight);
+        leftWall = new CollisionElement(-100, 0, 100, gameHeight);
+        rightWall = new CollisionElement(gameWidth, 0, 100, gameHeight);
 
         // we want to add the ball right on top of the platform
         ballList = new ArrayList<>();
-        ballList.add(new Ball(platform.x + platform.width / 2 - 5, platform.y - 10, 5));
+        double radius = 0.015*((double) (gameWidth + gameHeight) / 2);
+        double x = platform.x + platform.width / 2 - radius;
+        double y = platform.y - radius * 2;
+        ballList.add(new Ball(x, y, radius));
 
-        int clusterWidth = (int) (gameWidth - leftWall.width - rightWall.width);
-        int clusterHeight = (int) ((gameHeight - (topWall.x + topWall.height)) * 0.25);
-        blockCluster = new BlockCluster(n, m, clusterWidth, clusterHeight);
+        int clusterHeight = (int) (gameHeight * 0.25);
+        blockCluster = new BlockCluster(n, m, gameWidth, clusterHeight);
         powerUpHandler = new PowerUpHandler(blockCluster);
 
 
