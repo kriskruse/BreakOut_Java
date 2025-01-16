@@ -8,23 +8,27 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Label;
-import java.util.HashMap;
-import java.util.Map;
+import javafx.animation.ScaleTransition;
+import javafx.util.Duration;
 
 public class MenuController {
+    private final StackPane root;
+    //private final Map<String, VBox> menus = new HashMap<String, VBox>();
 
+    // Menu pages
     private VBox startMenu;
     private VBox settingsMenu;
     private VBox pauseMenu;
     private VBox gameOverPage;
-    private final StackPane root;
-    //private final Map<String, VBox> menus = new HashMap<String, VBox>();
+    private VBox tutorialScreen;
 
     // Booleans to track menu visibility
     private boolean isStartMenuVisible = true;
     private boolean isSettingsMenuVisible = false;
     private boolean isPauseMenuVisible = false;
     private boolean isGameOverPageVisible = false;
+    private boolean isTutorialScreenVisible = false;
+
 
     public MenuController(StackPane root, BreakoutGraphical game) {
         this.root = root;
@@ -37,8 +41,9 @@ public class MenuController {
         //settingsMenu = createSettingsMenu();
         pauseMenu = createPauseMenu(game);
         gameOverPage = createGameOverPage(game);
+        tutorialScreen = createTutorialScreen(game);
 
-        root.getChildren().addAll(startMenu, pauseMenu, gameOverPage);  //add other menus also
+        root.getChildren().addAll(startMenu, pauseMenu, gameOverPage, tutorialScreen);  //add other menus also
         // Upon initialization show only the start menu
         hideMenus();
         showStartMenu();
@@ -50,6 +55,7 @@ public class MenuController {
         isSettingsMenuVisible = false;
         isPauseMenuVisible = false;
         isGameOverPageVisible = false;
+        isTutorialScreenVisible = false;
         updateMenuVisibility();
     }
 
@@ -58,6 +64,7 @@ public class MenuController {
         isSettingsMenuVisible = true;
         isPauseMenuVisible = false;
         isGameOverPageVisible = false;
+        isTutorialScreenVisible = false;
         updateMenuVisibility();
     }
 
@@ -66,6 +73,7 @@ public class MenuController {
         isSettingsMenuVisible = false;
         isPauseMenuVisible = true;
         isGameOverPageVisible = false;
+        isTutorialScreenVisible = false;
         updateMenuVisibility();
     }
     public void showGameOverPage() {
@@ -73,7 +81,20 @@ public class MenuController {
         isSettingsMenuVisible = false;
         isPauseMenuVisible = false;
         isGameOverPageVisible = true;
+        isTutorialScreenVisible = false;
         updateMenuVisibility();
+    }
+    public void showTutorialScreen() {
+        isStartMenuVisible = false;
+        isSettingsMenuVisible = false;
+        isPauseMenuVisible = false;
+        isGameOverPageVisible = false;
+        isTutorialScreenVisible = true;
+        tutorialScreen.setMouseTransparent(true); // Allow mouse clicks to pass through
+        updateMenuVisibility();
+    }
+    public boolean isTutorialScreenVisible() {
+        return isTutorialScreenVisible;
     }
 
     private void updateMenuVisibility() {
@@ -81,12 +102,14 @@ public class MenuController {
         //settingsMenu.setVisible(isSettingsMenuVisible);
         pauseMenu.setVisible(isPauseMenuVisible);
         gameOverPage.setVisible(isGameOverPageVisible);
+        tutorialScreen.setVisible(isTutorialScreenVisible);
     }
     public void hideMenus() {
         startMenu.setVisible(false);
         //settingsMenu.setVisible(false);
         pauseMenu.setVisible(false);
         gameOverPage.setVisible(false);
+        tutorialScreen.setVisible(false);
     }
 
     /* CREATING MENU PAGES */
@@ -100,6 +123,8 @@ public class MenuController {
             SoundController.menuClickSound();
             game.startGame();
             hideMenus();
+            showTutorialScreen();
+
         });
 
         Button settingsMenuButton = new Button("Settings");
@@ -256,20 +281,64 @@ public class MenuController {
         return menu;
     }
 
+    // TUTORIAL PAGE CREATION
+    public VBox createTutorialScreen(BreakoutGraphical game) {
+        // Create label & buttons
+
+        Label moveLeftOrRightText = new Label("Move Left/Right arrows");
+        Label orText = new Label("or");
+        Label moveADText = new Label("A/D keys");
+
+
+        // Style Labels
+        styleLabel(moveLeftOrRightText);
+        styleLabel(orText);
+        styleLabel(moveADText);
+
+        // VBox layout for vertical alignment
+        VBox menu = new VBox(15); // Spacing between buttons
+        menu.setAlignment(Pos.BOTTOM_CENTER);
+        StackPane.setMargin(menu,new Insets(0, 0, 150, 0)); // Adjust the bottom padding
+        menu.setStyle("-fx-background-color: rgba(0, 0, 0, 0);");
+        menu.getChildren().addAll(
+                moveLeftOrRightText, orText, moveADText
+        );
+        //Lav animationen
+        moveLeftOrRightGraphics(moveLeftOrRightText);
+        moveLeftOrRightGraphics(orText);
+        moveLeftOrRightGraphics(moveADText);
+
+        return menu;
+    }
 
     /*buttons Styling & Effects methods*/
     // Helper method to style buttons
     private void styleButton(Button button, String color, String textColor) {
         button.setStyle(
                 "-fx-background-color: " + color + ";" +  // Button color
-                        "-fx-font-family: 'Arial';"+ // Font family
-                        "-fx-font-size: 18px;" +      // Font size
-                        "-fx-font-weight: bold;" + // Bold text
-                        "-fx-padding: 10 0 10 0;" +// Top, Right, Bottom, Left padding
-                        "-fx-text-fill: " + textColor + ";" // Text color
+                "-fx-font-family: 'Arial';"+ // Font family
+                "-fx-font-size: 18px;" +      // Font size
+                "-fx-font-weight: bold;" + // Bold text
+                "-fx-padding: 10 0 10 0;" +// Top, Right, Bottom, Left padding
+                "-fx-text-fill: " + textColor + ";" // Text color
+
+
 
         );
         button.setPrefWidth(200); // Set uniform width for buttons
+    }
+    //Helper method to style labels
+    public void styleLabel(Label label) {
+        label.setStyle(
+                "-fx-font-family: 'Arial';"+ // Font family
+                "-fx-font-size: 18px;" +      // Font size
+                "-fx-font-weight: bold;" + // Bold text
+                "-fx-padding: 0 0 0 0;" +// Top, Right, Bottom, Left padding
+                "-fx-text-fill: rgba(255, 255, 255,0.7) ;"+ // Text color
+                "-fx-alignment: center;" // Center text
+
+        );
+        label.setPrefWidth(200); // Set uniform width for buttons
     }
 
     // Helper method to add effect on buttons, when hovered over
@@ -291,6 +360,18 @@ public class MenuController {
         });
 
         return button;
+    }
+    //
+    public void moveLeftOrRightGraphics(Label label){
+        ScaleTransition scaleTransition = new ScaleTransition(Duration.seconds(1.5), label);
+        scaleTransition.setFromX(0.9);
+        scaleTransition.setFromY(0.8);
+        scaleTransition.setToX(1.1);
+        scaleTransition.setToY(1);
+        scaleTransition.setCycleCount(ScaleTransition.INDEFINITE);
+        scaleTransition.setAutoReverse(true);
+        scaleTransition.play();
+
     }
 
 

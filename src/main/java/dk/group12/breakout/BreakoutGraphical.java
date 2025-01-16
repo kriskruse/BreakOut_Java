@@ -100,8 +100,12 @@ public class BreakoutGraphical extends Application {
         Scene gameScene = new Scene(root, windowX, windowY);
 
         // Input handling
+        //esc button to pause game
         gameScene.setOnKeyPressed(event -> {
             activeKeys.add(event.getCode().toString());
+            if (menuController.isTutorialScreenVisible()) {
+                menuController.hideMenus(); // Hide the tutorial screen
+            }
             if (event.getCode() == KeyCode.ESCAPE) {
                 if (gamePaused) {
                     startGame();
@@ -113,6 +117,8 @@ public class BreakoutGraphical extends Application {
             }
         });
         gameScene.setOnKeyReleased(event -> activeKeys.remove(event.getCode().toString()));
+
+
 
         stage.setScene(gameScene);
         stage.setTitle("Breakout");
@@ -157,6 +163,9 @@ public class BreakoutGraphical extends Application {
         this.gameEnded = value;
         menuController.showGameOverPage();
     }
+    public void removeToturial(){
+        menuController.hideMenus();
+    }
 
     /* GAME LOOP RUNNER*/
     public void runGameLoop(){
@@ -167,6 +176,7 @@ public class BreakoutGraphical extends Application {
             long previousTime = 0;
 
             public void handle(long currentNanoTime) {
+
                 // Check if the game has ended
                 if (gameEnded) {
                     return;
