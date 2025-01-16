@@ -188,11 +188,6 @@ public class MenuController {
         styleButton(settingsMenuButton, "green", "white");
         styleButton(howToPlayButton, "yellow", "black");
         styleButton(exitButton, "blue",  "white");
-        /*
-        styleButton(difficultyButton, "orange", "white");
-        styleButton(sensitivityButton, "green", "white");
-        styleButton(soundButton, "yellow",  "black");
-         */
 
         // Hover effect for buttons
         mouseHoverGraphic(resumeGameButton);
