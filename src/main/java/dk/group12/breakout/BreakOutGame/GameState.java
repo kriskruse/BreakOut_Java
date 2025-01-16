@@ -74,9 +74,12 @@ public class GameState {
     // Reset the ball and platform after losing a life
     public void resetBallAndPlatform() {
         platform.x = (gameWidth - platform.width) / 2;  // Reset platform to center
-        ballList.get(0).x = platform.x + platform.width / 2;  // Reset ball to above the platform
-        ballList.get(0).y = platform.y - ballList.get(0).radius;  // Position the ball just above the platform
-        ballList.get(0).direction = new Vec2((Math.random() - 0.5) * 2, -1, 4);  // Random initial ball direction
+        ballList.clear();
+        double radius = 0.015*((double) (gameWidth + gameHeight) / 2);
+        double x = platform.x + platform.width / 2 - radius;
+        double y = platform.y - radius * 2;
+        ballList.add(new Ball(x, y, radius));
+        ballList.get(0).direction = new Vec2(0, -1, 0);
     }
 
     public void update() {
@@ -121,9 +124,11 @@ public class GameState {
             }
             return false;
         });
-        // if all blocks are destroyed, end the game
+        // if all blocks are destroyed, spawn a new block cluster
         if (collisionElements.stream().noneMatch(element -> element instanceof Block)) {
-            endGame();
+            resetBallAndPlatform();
+            spawnNewBlockCluster(blockCluster.cluster.length, blockCluster.cluster[0].length);
+            gameRunning = false;
         }
 
     }
@@ -163,6 +168,12 @@ public class GameState {
                 }
             }
         }
+    }
+
+    public void spawnNewBlockCluster(int n, int m) {
+        int clusterHeight = (int) (gameHeight * 0.25);
+        blockCluster = new BlockCluster(n, m, gameWidth, clusterHeight);
+        collisionElements.addAll(flattenBlockCluster(blockCluster));
     }
 
     public enum powerUpType {
