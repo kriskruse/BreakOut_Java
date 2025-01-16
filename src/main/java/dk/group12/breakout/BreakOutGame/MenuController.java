@@ -1,6 +1,5 @@
 package dk.group12.breakout.BreakOutGame;
 
-
 import dk.group12.breakout.BreakoutGraphical;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -152,10 +151,7 @@ public class MenuController {
         styleButton(exitButton, "yellow",  "black");
 
         // Hover effect for buttons
-        mouseHoverGraphic(startGameButton);
-        mouseHoverGraphic(settingsMenuButton);
-        mouseHoverGraphic(howToPlayButton);
-        mouseHoverGraphic(exitButton);
+        mouseHoverGraphic(startGameButton, settingsMenuButton, howToPlayButton, exitButton);
 
         // VBox layout for vertical alignment
         VBox menu = new VBox(15); // Spacing between buttons
@@ -216,11 +212,7 @@ public class MenuController {
         styleButton(exitButton, "blue",  "white");
 
         // Hover effect for buttons
-        mouseHoverGraphic(resumeGameButton);
-        mouseHoverGraphic(restartGameButton);
-        mouseHoverGraphic(settingsMenuButton);
-        mouseHoverGraphic(howToPlayButton);
-        mouseHoverGraphic(exitButton);
+        mouseHoverGraphic(resumeGameButton, restartGameButton, settingsMenuButton, howToPlayButton, exitButton);
 
         // VBox layout for vertical alignment
         VBox menu = new VBox(15); // Spacing between buttons
@@ -266,8 +258,7 @@ public class MenuController {
         styleButton(exitButton, "rgba(0,0,0,0)",  "white");
 
         // Hover effect for buttons
-        mouseHoverGraphic(restartGameButton);
-        mouseHoverGraphic(exitButton);
+        mouseHoverGraphic(restartGameButton,exitButton);
 
         // VBox layout for vertical alignment
         VBox menu = new VBox(15); // Spacing between buttons
@@ -303,7 +294,7 @@ public class MenuController {
         menu.getChildren().addAll(
                 moveLeftOrRightText, orText, moveADText
         );
-        //Lav animationen
+        //add pulse animation
         moveLeftOrRightGraphics(moveLeftOrRightText);
         moveLeftOrRightGraphics(orText);
         moveLeftOrRightGraphics(moveADText);
@@ -342,24 +333,25 @@ public class MenuController {
     }
 
     // Helper method to add effect on buttons, when hovered over
-    public static Button mouseHoverGraphic(Button button) {
-        String originalStyle = button.getStyle(); // Store original style
-        // On hover-> Scale the button
-        button.setOnMouseEntered(event -> {
-            button.setScaleX(1.1); // Increase size horizontally
-            button.setScaleY(1.1); // Increase size vertically
-            button.setStyle(originalStyle+"-fx-cursor: hand;"); // Revert to original style + hand cursor
-            SoundController.menuHoverSound();
-        });
+    public static void mouseHoverGraphic(Button... buttons) {
+        for (Button button : buttons) {
+            String originalStyle = button.getStyle(); // Store original style
+            // On hover-> Scale the button
+            button.setOnMouseEntered(event -> {
+                button.setScaleX(1.1); // Increase size horizontally
+                button.setScaleY(1.1); // Increase size vertically
+                button.setStyle(originalStyle+"-fx-cursor: hand;"); // Revert to original style + hand cursor
+                SoundController.menuHoverSound();
+            });
 
-        // On hover exit -> Revert scale
-        button.setOnMouseExited(event -> {
-            button.setScaleX(1.0); // Reset horizontal size
-            button.setScaleY(1.0); // Reset vertical size
-            button.setStyle(originalStyle); // Revert to original style
-        });
+            // On hover exit -> Revert scale
+            button.setOnMouseExited(event -> {
+                button.setScaleX(1.0); // Reset horizontal size
+                button.setScaleY(1.0); // Reset vertical size
+                button.setStyle(originalStyle); // Revert to original style
+            });
+        }
 
-        return button;
     }
     //
     public void moveLeftOrRightGraphics(Label label){
