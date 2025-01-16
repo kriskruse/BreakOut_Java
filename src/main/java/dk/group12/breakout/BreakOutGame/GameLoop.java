@@ -28,10 +28,6 @@ public class GameLoop {
         if (!gameState.gameRunning && !activeKeys.isEmpty()) {
             gameState.startGame();
         }
-        if (gameState.gameEnded) {
-            gameEnded = true;
-        }
-
         if (activeKeys.contains("A") || activeKeys.contains("LEFT")) {
             gameState.platform.move(-7);
         }
@@ -42,6 +38,9 @@ public class GameLoop {
 
     public void update() {
         gameState.update();
+        if (gameState.gameEnded) {
+            gameEnded = true;
+        }
 
         if (gameState.gameWon) {
             GameState oldGameState = gameState;

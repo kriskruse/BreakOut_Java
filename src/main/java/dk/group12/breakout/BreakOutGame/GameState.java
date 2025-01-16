@@ -32,7 +32,7 @@ public class GameState {
         this.lives = lives;
         this.scoreTracker = scoreTracker;
         int platformWidth = gameWidth / 6;
-        int platformX = (gameWidth - platformWidth) / 2;
+        int platformX = 1;
         int platformHeight = 10;
         int platformY = (int) (gameHeight - platformHeight - gameHeight * 0.05);
         platform = new Platform(platformX, platformY, platformWidth, platformHeight);
@@ -44,8 +44,8 @@ public class GameState {
         // we want to add the ball right on top of the platform
         ballList = new ArrayList<>();
         double radius = 0.015*((double) (gameWidth + gameHeight) / 2);
-        double x = platform.x + platform.width / 2 - radius;
-        double y = platform.y - radius * 2;
+        double x = 140;
+        double y = platformY - 174;
         ballList.add(new Ball(x, y - 1, radius));
 
         int clusterHeight = (int) (gameHeight * 0.25);
@@ -71,7 +71,7 @@ public class GameState {
 
     public void startGame() {
         gameRunning = true;
-        ballList.get(0).direction = new Vec2((randomGenerator.nextDouble() - 0.5) * 2, -1, 4);
+        ballList.get(0).direction = new Vec2(-1, 1, 4);
     }
     public void endGame() {
         ballList.get(0).direction = new Vec2(0, -1, 0);
