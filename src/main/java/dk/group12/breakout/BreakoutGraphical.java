@@ -163,7 +163,7 @@ public class BreakoutGraphical extends Application {
         this.gameEnded = value;
         menuController.showGameOverPage();
     }
-    public void removeToturial(){
+    public void removeTutorial(){
         menuController.hideMenus();
     }
 
