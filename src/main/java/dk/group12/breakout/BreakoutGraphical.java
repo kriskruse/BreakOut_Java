@@ -47,8 +47,8 @@ public class BreakoutGraphical extends Application {
     Color multiballColor = Color.AQUAMARINE;
 
     public static void main(String[] args) {
-        int arg1 = 1;
-        int arg2 = 2;
+        int arg1 = 8;
+        int arg2 = 8;
         //int arg3 = 1;
         try {
             arg1 = Integer.parseInt(args[0]);
