@@ -97,6 +97,7 @@ public class MenuController {
         Label pageTitle = new Label("Main Menu");
         Button startGameButton = new Button("Start Game");
         startGameButton.setOnAction(e -> {
+            SoundController.menuClickSound();
             game.startGame();
             hideMenus();
         });
@@ -279,6 +280,7 @@ public class MenuController {
             button.setScaleX(1.1); // Increase size horizontally
             button.setScaleY(1.1); // Increase size vertically
             button.setStyle(originalStyle+"-fx-cursor: hand;"); // Revert to original style + hand cursor
+            SoundController.menuHoverSound();
         });
 
         // On hover exit -> Revert scale
