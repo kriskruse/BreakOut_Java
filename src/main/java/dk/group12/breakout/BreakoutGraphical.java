@@ -17,6 +17,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.scene.layout.StackPane;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -97,6 +99,22 @@ public class BreakoutGraphical extends Application {
         );
         MenuController.mouseHoverGraphic(pauseButton); //button graphics added to button
 
+        Scene gameScene = getScene(root);
+
+
+        stage.setScene(gameScene);
+        stage.setTitle("Breakout");
+        stage.show();
+
+        runGameLoop();
+
+        menuController = new MenuController(root, this);
+        gameLoop = new GameLoop(n, m, windowX, windowY, lives, this);
+        soundController = new SoundController();
+    }
+
+    @NotNull
+    private Scene getScene(StackPane root) {
         Scene gameScene = new Scene(root, windowX, windowY);
 
         // Input handling
@@ -117,18 +135,7 @@ public class BreakoutGraphical extends Application {
             }
         });
         gameScene.setOnKeyReleased(event -> activeKeys.remove(event.getCode().toString()));
-
-
-
-        stage.setScene(gameScene);
-        stage.setTitle("Breakout");
-        stage.show();
-
-        runGameLoop();
-
-        menuController = new MenuController(root, this);
-        gameLoop = new GameLoop(n, m, windowX, windowY, lives, this);
-        soundController = new SoundController();
+        return gameScene;
     }
 
 
