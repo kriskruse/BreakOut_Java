@@ -24,25 +24,26 @@ public class Collision {
             for (GameState.Ball ball : ballList) {
                 if (isCollidingWithObject(object, ball)) {
                     if (object instanceof GameState.Platform) {
+                        // we want a direction vector that changes the angle of the ball
+                        // depending on where it hits the platform
                         double midPoint = object.x + object.width / 2;
                         double normal = (ball.x - midPoint) / (object.width / 2);
-
                         ball.direction = new Vec2(normal, -1, ball.direction.getScalar());
+
                     } else {
                         ball.direction = calculateNewTrajectory(
                                 getNormalVectorOfCollision(object, ball),
                                 ball);
 
+                        // we want to update the block hp and score if the object is a block in our cluster
                         if (object instanceof GameState.Block) {
                             ((GameState.Block) object).hp--;
-
-                            BreakoutGraphical.scoreTracker.addScore(1); //Tilføjer 1 point til scoren
-                            System.out.println("Score updated "+ BreakoutGraphical.scoreTracker.getScore());
+                            BreakoutGraphical.scoreTracker.addScore(1);
                         }
 
                     }
                     SoundController.playPing();
-                    // we break the loop here because we only want to handle one collision at a time
+                    // we break the loop here because we only want to handle one collision at each frame
                     break;
                 }
             }
