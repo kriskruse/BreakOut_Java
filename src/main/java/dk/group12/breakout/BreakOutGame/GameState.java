@@ -16,6 +16,9 @@ public class GameState {
     public CollisionElement rightWall;
     public boolean gameRunning = false;
     public boolean gameEnded = false;
+    public static double initialBallSpeed = 4.;
+    public static double ballSpeedIncrement = initialBallSpeed / 8.;
+    public static double currentBallSpeed = initialBallSpeed;
     private int lives;
     private final int gameWidth;
     private final int gameHeight;
@@ -71,7 +74,7 @@ public class GameState {
 
     public void startGame() {
         gameRunning = true;
-        ballList.get(0).direction = new Vec2((randomGenerator.nextDouble() - 0.5) * 2, -1, 4);
+        ballList.get(0).direction = new Vec2((randomGenerator.nextDouble() - 0.5) * 2, -1, currentBallSpeed);
     }
     public void endGame() {
         ballList.get(0).direction = new Vec2(0, -1, 0);
@@ -134,6 +137,7 @@ public class GameState {
             }
             gameRunning = false;
             gameWon = true;
+            currentBallSpeed += ballSpeedIncrement;
         }
     }
 
@@ -217,7 +221,7 @@ public class GameState {
         Ball newBall = new Ball(platform.x + platform.width / 2 - ballList.get(0).radius,
                 platform.y - ballList.get(0).radius * 2,
                 ballList.get(0).radius);
-        newBall.direction = new Vec2((randomGenerator.nextDouble() - 0.5) * 2, -1, 4);
+        newBall.direction = new Vec2((randomGenerator.nextDouble() - 0.5) * 2, -1, currentBallSpeed);
         ballList.add(newBall);
     }
 

@@ -70,6 +70,7 @@ public class BreakoutGraphical extends Application {
         int screenHeight = (int) Screen.getPrimary().getVisualBounds().getHeight();
         windowY = (int) (screenHeight * 0.9);
         windowX = (int) (windowY * (7.0/9.0));
+        GameState.initialBallSpeed *= (double) windowX / 2500;
 
         //Create StackPane to layer menu scenes on top of Game scene
         StackPane root = new StackPane();

@@ -136,6 +136,4 @@ public class Collision {
         Point2D pb = p1.add(v.multiply(b));
         return ballCenter.subtract(pb).magnitude() <= ball.radius;
     }
-
-
 }
