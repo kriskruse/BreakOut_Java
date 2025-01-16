@@ -1,9 +1,10 @@
 package dk.group12.breakout.BreakOutGame;
 
-import dk.group12.breakout.BreakoutGraphical;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Label;
@@ -28,19 +29,47 @@ public class MenuController {
     private boolean isGameOverPageVisible = false;
     private boolean isTutorialScreenVisible = false;
 
+    public boolean gamePaused = false;
+    public boolean gameEnded = false;
 
-    public MenuController(StackPane root, BreakoutGraphical game) {
+    private Button pauseButton;
+    private Pane overlayPane = new Pane();
+
+
+    private GameLoop gameLoop;
+
+    public MenuController(StackPane root, GameLoop gameLoop) {
+        this.gameLoop = gameLoop;
         this.root = root;
-        createMenus(game);
+        overlayPane.getChildren().add(createPauseButton());
+        root.getChildren().add(overlayPane);
+        createMenus();
+    }
+
+    private Button createPauseButton() {
+        pauseButton = new Button("Pause");
+        pauseButton.setLayoutX(gameLoop.gameWidth-60);
+        pauseButton.setLayoutY(1);
+        pauseButton.setOnAction(e -> pauseGame());
+        getPauseButton().setVisible(false);
+        pauseButton.setStyle(
+                "-fx-background-color: rgba(0,0,0,0);"+
+                        "-fx-font-weight: bold;"+
+                        "-fx-text-fill: white;"+
+                        "-fx-font-family: 'Arial';"+
+                        "-fx-padding: 0 0 10 0;"
+        );
+        mouseHoverGraphic(pauseButton);
+        return pauseButton;
     }
 
     //Creation of different menus
-    private void createMenus(BreakoutGraphical game) {
-        startMenu = createStartMenu(game);
+    private void createMenus() {
+        startMenu = createStartMenu();
         //settingsMenu = createSettingsMenu();
-        pauseMenu = createPauseMenu(game);
-        gameOverPage = createGameOverPage(game);
-        tutorialScreen = createTutorialScreen(game);
+        pauseMenu = createPauseMenu();
+        gameOverPage = createGameOverPage();
+        tutorialScreen = createTutorialScreen();
 
         root.getChildren().addAll(startMenu, pauseMenu, gameOverPage, tutorialScreen);  //add other menus also
         // Upon initialization show only the start menu
@@ -109,18 +138,19 @@ public class MenuController {
         pauseMenu.setVisible(false);
         gameOverPage.setVisible(false);
         tutorialScreen.setVisible(false);
+        pauseButton.setVisible(true);
     }
 
     /* CREATING MENU PAGES */
 
     // START MENU PAGE CREATION
-    private VBox createStartMenu(BreakoutGraphical game) {
+    private VBox createStartMenu() {
         // Create label & buttons
         Label pageTitle = new Label("Main Menu");
         Button startGameButton = new Button("Start Game");
         startGameButton.setOnAction(e -> {
             SoundController.menuClickSound();
-            game.startGame();
+            resumeGame();
             hideMenus();
             showTutorialScreen();
 
@@ -166,21 +196,21 @@ public class MenuController {
     }
 
     // PAUSE MENU PAGE CREATION
-    private VBox createPauseMenu(BreakoutGraphical game) {
+    private VBox createPauseMenu() {
         // Create label & buttons
         Label pageTitle = new Label("Main Menu");
         //resume game button
         Button resumeGameButton = new Button("Resume Game");
         resumeGameButton.setOnAction(e -> {
-            game.startGame();
-            game.getPauseButton().setVisible(true);
+            resumeGame();
+            getPauseButton().setVisible(true);
             hideMenus();
         });
         //restart button
         Button restartGameButton = new Button("Restart Game");
         restartGameButton.setOnAction(e -> {
             System.out.println("Restart button pressed");
-            game.restartGame();
+            restartGame();
             hideMenus();
         });
         //Settings Menu Button
@@ -227,7 +257,7 @@ public class MenuController {
     }
 
     //GAME OVER PAGE CREATION
-    private VBox createGameOverPage(BreakoutGraphical game) {
+    private VBox createGameOverPage() {
         // Create label & buttons
         Label pageTitle = new Label("Game Over");
 
@@ -235,8 +265,8 @@ public class MenuController {
         Button restartGameButton = new Button("Restart Game");
         restartGameButton.setOnAction(e -> {
             System.out.println("Restart button pressed");
-            game.setGameEnded(false);
-            game.restartGame();
+            checkForGameEnded();
+            restartGame();
             hideMenus();
         });
 
@@ -273,7 +303,7 @@ public class MenuController {
     }
 
     // TUTORIAL PAGE CREATION
-    public VBox createTutorialScreen(BreakoutGraphical game) {
+    public VBox createTutorialScreen() {
         // Create label & buttons
 
         Label moveLeftOrRightText = new Label("Move Left/Right arrows");
@@ -362,6 +392,48 @@ public class MenuController {
             scaleTransition.setCycleCount(ScaleTransition.INDEFINITE);
             scaleTransition.setAutoReverse(true);
             scaleTransition.play();
+        }
+    }
+
+    /*GAME MENU LOGIC*/
+    // returns the pause button, so it can be accessed easily from other classes
+    public Button getPauseButton(){
+        return pauseButton;
+    }
+
+    public void resumeGame() {
+        gamePaused = false;
+        getPauseButton().setVisible(true);
+    }
+
+    public void pauseGame() {
+        gamePaused = true;
+        getPauseButton().setVisible(false);
+        showPauseMenu(); // Show the pause menu
+
+    }
+    public void restartGame() {
+        gamePaused = false;
+        gameEnded = false;
+        gameLoop.restartGame(); // Reinitialize the game loop
+        getPauseButton().setVisible(true);
+    }
+
+    //helper method to set gameEnded to true/false
+    public void checkForGameEnded() {
+
+    }
+    public void removeTutorial(){
+        hideMenus();
+    }
+
+    public void gamePausedCheck() {
+        if (gamePaused) {
+            resumeGame();
+            getPauseButton().setVisible(true);
+            hideMenus();
+        } else {
+            pauseGame();
         }
     }
 }

@@ -32,9 +32,7 @@ public class BreakoutGraphical extends Application {
     private SoundController soundController;
     private GraphicsContext graphicsContext;
     private MenuController menuController;
-    private boolean gamePaused = true;
-    private boolean gameEnded = false;
-    private Button pauseButton;
+
     private int gameIterations = 0; // Tracks the number of iterations
 
 
@@ -84,36 +82,17 @@ public class BreakoutGraphical extends Application {
         root.getChildren().add(canvas);
         this.graphicsContext = canvas.getGraphicsContext2D();
 
-        //Pause button creation and settings
-        Pane overlayPane = new Pane();
-        root.getChildren().add(overlayPane);
-        pauseButton = new Button("Pause");
-        pauseButton.setLayoutX(windowX-60);
-        pauseButton.setLayoutY(1);
-        pauseButton.setOnAction(e -> pauseGame());
-        overlayPane.getChildren().add(pauseButton);
-        getPauseButton().setVisible(false);
-        pauseButton.setStyle(
-                "-fx-background-color: rgba(0,0,0,0);"+
-                        "-fx-font-weight: bold;"+
-                        "-fx-text-fill: white;"+
-                        "-fx-font-family: 'Arial';"+
-                        "-fx-padding: 0 0 10 0;"
-        );
-        MenuController.mouseHoverGraphic(pauseButton); //button graphics added to button
-
         Scene gameScene = getScene(root);
 
+        gameLoop = new GameLoop(n, m, windowX, windowY, lives);
+        menuController = new MenuController(root, gameLoop);
+        soundController = new SoundController();
 
         stage.setScene(gameScene);
         stage.setTitle("Breakout");
         stage.show();
 
         runGameLoop();
-
-        menuController = new MenuController(root, this);
-        gameLoop = new GameLoop(n, m, windowX, windowY, lives);
-        soundController = new SoundController();
     }
 
     @NotNull
@@ -128,54 +107,13 @@ public class BreakoutGraphical extends Application {
                 menuController.hideMenus(); // Hide the tutorial screen
             }
             if (event.getCode() == KeyCode.ESCAPE) {
-                if (gamePaused) {
-                    startGame();
-                    getPauseButton().setVisible(true);
-                    menuController.hideMenus();
-                } else {
-                    pauseGame();
-                }
+                menuController.gamePausedCheck();
             }
         });
         gameScene.setOnKeyReleased(event -> activeKeys.remove(event.getCode().toString()));
         return gameScene;
     }
 
-
-    /*GAME MENU LOGIC*/
-    // returns the pause button, so it can be accessed easily from other classes
-    public Button getPauseButton(){
-        return pauseButton;
-    }
-
-    public void startGame() {
-        System.out.println("Start Game Button Pressed");
-        gamePaused = false;
-        gameLoop.gameState.scoreTracker.resetScore();
-        if (!gamePaused) {System.out.println("gamePaused is false");}
-        getPauseButton().setVisible(true);
-
-    }
-    public void pauseGame() {
-        System.out.println("Pause Game Button Pressed");
-        gamePaused = true;
-        getPauseButton().setVisible(false);
-        menuController.showPauseMenu(); // Show the pause menu
-
-    }
-    public void restartGame() {
-        gamePaused = false;
-        gameLoop.restartGame(); // Reinitialize the game loop
-        startGame(); // Start the game
-    }
-    //helper method to set gameEnded to true/false
-    public void setGameEnded(boolean value) {
-        this.gameEnded = value;
-        menuController.showGameOverPage();
-    }
-    public void removeTutorial(){
-        menuController.hideMenus();
-    }
 
     /* GAME LOOP RUNNER*/
     public void runGameLoop(){
@@ -188,11 +126,11 @@ public class BreakoutGraphical extends Application {
             public void handle(long currentNanoTime) {
 
                 // Check if the game has ended
-                if (gameEnded) {
+                if (menuController.gameEnded) {
                     return;
                 }
                 // Check if the game is paused
-                if (gameIterations > 1 && gamePaused) {
+                if (gameIterations > 1 && menuController.gamePaused) {
                     return; // Skip the rest of the frame's logic if gamePaused is true
                 }
 
@@ -207,8 +145,9 @@ public class BreakoutGraphical extends Application {
                     frameCount++;
                     soundController.playMusic();
 
-                    gameLoop.handleInput(activeKeys, BreakoutGraphical.this);
+                    gameLoop.handleInput(activeKeys);
                     gameLoop.update();
+                    menuController.checkForGameEnded();
                     previousTime = currentNanoTime;
                     // This is here to clear the screen from the previous frame
                     graphicsContext.clearRect(0, 0, windowX, windowY);
