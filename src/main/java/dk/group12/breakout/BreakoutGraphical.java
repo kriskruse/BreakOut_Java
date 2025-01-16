@@ -30,7 +30,7 @@ public class BreakoutGraphical extends Application {
     private SoundController soundController;
     private GraphicsContext graphicsContext;
     private MenuController menuController;
-    private boolean gamePaused = false;
+    private boolean gamePaused = true;
     private boolean gameEnded = false;
     private Button pauseButton;
     private int gameIterations = 0; // Tracks the number of iterations
@@ -170,10 +170,6 @@ public class BreakoutGraphical extends Application {
                 // Check if the game has ended
                 if (gameEnded) {
                     return;
-                }
-                // Check if the game is in the first iteration
-                if (gameIterations == 1){
-                    gamePaused = true;
                 }
                 // Check if the game is paused
                 if (gameIterations > 1){
