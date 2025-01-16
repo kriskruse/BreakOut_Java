@@ -3,6 +3,7 @@ package dk.group12.breakout.BreakOutGame;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 public class GameState {
     public static Platform platform;
@@ -18,6 +19,7 @@ public class GameState {
     private final int gameHeight;
     public List<CollisionElement> collisionElements;
     public PowerUpHandler powerUpHandler;
+    public static Random randomGenerator = new Random(432234);
 
     public GameState(int n, int m, int gameWidth, int gameHeight, int lives) {
         this.gameHeight = gameHeight;
@@ -38,7 +40,7 @@ public class GameState {
         double radius = 0.015*((double) (gameWidth + gameHeight) / 2);
         double x = platform.x + platform.width / 2 - radius;
         double y = platform.y - radius * 2;
-        ballList.add(new Ball(x, y, radius));
+        ballList.add(new Ball(x, y - 1, radius));
 
         int clusterHeight = (int) (gameHeight * 0.25);
         blockCluster = new BlockCluster(n, m, gameWidth, clusterHeight);
@@ -63,7 +65,7 @@ public class GameState {
 
     public void startGame() {
         gameRunning = true;
-        ballList.get(0).direction = new Vec2((Math.random() - 0.5) * 2, -1, 4);
+        ballList.get(0).direction = new Vec2((randomGenerator.nextDouble() - 0.5) * 2, -1, 4);
     }
     public void endGame() {
         ballList.get(0).direction = new Vec2(0, -1, 0);
@@ -77,7 +79,7 @@ public class GameState {
         ballList.clear();
         double radius = 0.015*((double) (gameWidth + gameHeight) / 2);
         double x = platform.x + platform.width / 2 - radius;
-        double y = platform.y - radius * 2;
+        double y = platform.y - radius;
         ballList.add(new Ball(x, y, radius));
         ballList.get(0).direction = new Vec2(0, -1, 0);
     }
@@ -204,7 +206,7 @@ public class GameState {
         Ball newBall = new Ball(platform.x + platform.width / 2 - ballList.get(0).radius,
                 platform.y - ballList.get(0).radius * 2,
                 ballList.get(0).radius);
-        newBall.direction = new Vec2((Math.random() - 0.5) * 2, -1, 4);
+        newBall.direction = new Vec2((randomGenerator.nextDouble() - 0.5) * 2, -1, 4);
         ballList.add(newBall);
     }
 

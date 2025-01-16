@@ -4,7 +4,6 @@ import dk.group12.breakout.BreakoutGraphical;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Collision {
@@ -33,9 +32,7 @@ public class Collision {
                         ball.direction = new Vec2(normal, -1, ball.direction.getScalar());
 
                     } else {
-                        ball.direction = calculateNewTrajectory(
-                                getNormalVectorOfCollision(object, ball),
-                                ball);
+                        handleCollisionWithObject(object, ball);
 
                         // we want to update the block hp and score if the object is a block in our cluster
                         if (object instanceof GameState.Block) {
@@ -46,20 +43,13 @@ public class Collision {
                     }
                     SoundController.playPing();
                     // we break the loop here because we only want to handle one collision at each frame
-                    break;
+                    return;
                 }
             }
         }
     }
 
-    private static Vec2 calculateNewTrajectory(Vec2 normalVectorOfCollision, GameState.Ball ball) {
-        Vec2 direction = ball.direction;
-        return new Vec2(direction.getX() * normalVectorOfCollision.getX(),
-                direction.getY() * normalVectorOfCollision.getY(),
-                direction.getScalar() * normalVectorOfCollision.getScalar());
-    }
-
-    private static Vec2 getNormalVectorOfCollision(CollisionElement object, GameState.Ball ball) {
+    private static void handleCollisionWithObject(CollisionElement object, GameState.Ball ball) {
         double left = object.x;
         double right = object.x + object.width;
         double top = object.y;
@@ -71,13 +61,19 @@ public class Collision {
         double distanceTop = Math.abs(ball.y - top);
         double distanceBottom = Math.abs(ball.y - bottom);
 
+        Vec2 normalVectorUpDown = new Vec2(1, -1, 1);
+        Vec2 normalVectorLeftRight = new Vec2(-1, 1, 1);
+
 
         // Top and bottom collision
         if ((distanceLeft < distanceTop && distanceLeft < distanceBottom) ||
                 (distanceRight < distanceTop && distanceRight < distanceBottom)) {
-            return new Vec2(-1, 1, 1);
+            ball.direction.setX(ball.direction.getX() * normalVectorLeftRight.getX());
+            ball.direction.setY(ball.direction.getY() * normalVectorLeftRight.getY());
+
         } else {
-            return new Vec2(1, -1, 1);
+            ball.direction.setX(ball.direction.getX() * normalVectorUpDown.getX());
+            ball.direction.setY(ball.direction.getY() * normalVectorUpDown.getY());
         }
     }
 
@@ -88,27 +84,27 @@ public class Collision {
         double right = object.x + object.width;
         double bottom = object.y + object.height;
 
-        double collidingObejctLeft;
-        double collidingObejctTop;
-        double collidingObejctRight;
-        double collidingObejctBottom;
+        double collidingObjectLeft;
+        double collidingObjectTop;
+        double collidingObjectRight;
+        double collidingObjectBottom;
 
         // Bounding box of the ball
         if (collidingObject instanceof GameState.Ball) {
             return intersectCircleRectangle((GameState.Ball) collidingObject, object);
         }
         else {
-            collidingObejctLeft = collidingObject.x;
-            collidingObejctTop = collidingObject.y;
-            collidingObejctRight = collidingObject.x + collidingObject.width;
-            collidingObejctBottom = collidingObject.y + collidingObject.height;
+            collidingObjectLeft = collidingObject.x;
+            collidingObjectTop = collidingObject.y;
+            collidingObjectRight = collidingObject.x + collidingObject.width;
+            collidingObjectBottom = collidingObject.y + collidingObject.height;
         }
 
 
-        return (left < collidingObejctRight &&
-                collidingObejctLeft < right &&
-                top < collidingObejctBottom &&
-                collidingObejctTop < bottom);
+        return (left < collidingObjectRight &&
+                collidingObjectLeft < right &&
+                top < collidingObjectBottom &&
+                collidingObjectTop < bottom);
     }
 
     private static boolean intersectCircleRectangle(GameState.Ball ball, CollisionElement rectangle) {
