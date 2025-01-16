@@ -10,13 +10,15 @@ import static dk.group12.breakout.BreakOutGame.GameState.*;
 public class PowerUpHandler {
     public List<PowerUp> fallingPowerUps = new ArrayList<>();
     public final Map<GameState.powerUpType, PowerUp> activePowerUps = new HashMap<>();
+    private final GameState gameState;
 
-    public PowerUpHandler(GameState.BlockCluster blockCluster) {
-        assignPowerUps(blockCluster);
+    public PowerUpHandler(GameState gameState) {
+        this.gameState = gameState;
+        assignPowerUps(gameState.blockCluster);
     }
 
     private void assignPowerUps(GameState.BlockCluster blockCluster) {
-        int powerUpCount = 10; // Amount of power-ups per block cluster
+        int powerUpCount = Math.min(10, blockCluster.cluster.length * blockCluster.cluster[0].length);
 
         // Get all possible power-up types from the enum
         GameState.powerUpType[] powerUpTypes = GameState.powerUpType.values();
@@ -34,17 +36,17 @@ public class PowerUpHandler {
         }
     }
 
-    public static void applyPowerUpEffect(PowerUp powerUp) {
+    public void applyPowerUpEffect(PowerUp powerUp) {
         if (powerUp.type == GameState.powerUpType.WIDEN_PLATFORM) {
-            platform.x -= platform.width / 4; // Platform stays centered around same point
-            platform.width *= 1.5;
+            gameState.platform.x -= gameState.platform.width / 4; // Platform stays centered around same point
+            gameState.platform.width *= 1.5;
         }
         if (powerUp.type == GameState.powerUpType.ENLARGE_BALL) {
-            for (GameState.Ball ball : ballList) {
-                if (ball.x - (leftWall.x + leftWall.width) <= 10) {
-                    ball.x = leftWall.x + leftWall.width + 1;
-                } else if (rightWall.x - (ball.x + ball.width) <= 10) {
-                    ball.x = rightWall.x - ball.width - 1;
+            for (GameState.Ball ball : gameState.ballList) {
+                if (ball.x - (gameState.leftWall.x + gameState.leftWall.width) <= 10) {
+                    ball.x = gameState.leftWall.x + gameState.leftWall.width + 1;
+                } else if (gameState.rightWall.x - (ball.x + ball.width) <= 10) {
+                    ball.x = gameState.rightWall.x - ball.width - 1;
                 } else {
                     ball.x -= ball.radius;
                     ball.y -= ball.radius;
@@ -53,19 +55,19 @@ public class PowerUpHandler {
             }
         }
         if (powerUp.type == GameState.powerUpType.MULTIBALL) {
-            spawnAdditionalBall();
+            gameState.spawnAdditionalBall();
         }
         powerUp.activate();
     }
 
     // Reversing effects
-    public static void removePowerUpEffect(PowerUp powerUp) {
+    public void removePowerUpEffect(PowerUp powerUp) {
         if (powerUp.type == GameState.powerUpType.WIDEN_PLATFORM) {
-            platform.width /= 1.5;
-            platform.x += platform.width / 4;
+            gameState.platform.width /= 1.5;
+            gameState.platform.x += gameState.platform.width / 4;
         }
         if (powerUp.type == GameState.powerUpType.ENLARGE_BALL) {
-            for (GameState.Ball ball : ballList) {
+            for (GameState.Ball ball : gameState.ballList) {
                 ball.radius /= 2;
                 ball.x += ball.radius;
                 ball.y += ball.radius;

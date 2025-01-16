@@ -1,6 +1,4 @@
 package dk.group12.breakout.BreakOutGame;
-
-import dk.group12.breakout.BreakoutGraphical;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 
@@ -10,13 +8,13 @@ public class Collision {
     public static List<GameState.Ball> ballList;
 
     public static void collisionCheck(GameState gameState){
-        ballList = GameState.ballList;
+        ballList = gameState.ballList;
 
         List<CollisionElement> collisionElements = gameState.collisionElements;
         List<PowerUpHandler.PowerUp> fallingPowerUps = gameState.powerUpHandler.fallingPowerUps;
 
         for (PowerUpHandler.PowerUp powerUp : fallingPowerUps) {
-            if (isCollidingWithObject(GameState.platform, powerUp)) {
+            if (isCollidingWithObject(gameState.platform, powerUp)) {
                 powerUp.activate();
             }
         }
@@ -37,7 +35,7 @@ public class Collision {
                         // we want to update the block hp and score if the object is a block in our cluster
                         if (object instanceof GameState.Block) {
                             ((GameState.Block) object).hp--;
-                            BreakoutGraphical.scoreTracker.addScore(1);
+                            gameState.scoreTracker.addScore(1);
                         }
 
                     }

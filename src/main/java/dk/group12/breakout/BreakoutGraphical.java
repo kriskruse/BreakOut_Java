@@ -4,11 +4,9 @@ import dk.group12.breakout.BreakOutGame.CollisionElement;
 import dk.group12.breakout.BreakOutGame.GameLoop;
 import dk.group12.breakout.BreakOutGame.GameState;
 import dk.group12.breakout.BreakOutGame.MenuController;
-import dk.group12.breakout.BreakOutGame.ScoreTracker;
 import dk.group12.breakout.BreakOutGame.*;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -19,12 +17,14 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.layout.StackPane;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.HashSet;
 import java.util.Set;
 
 public class BreakoutGraphical extends Application {
-    private int windowX = 700;
-    private final int windowY = 900;
+    private int windowX;
+    private int windowY;
     private GameLoop gameLoop;
     private static int n;
     private static int m;
@@ -36,7 +36,7 @@ public class BreakoutGraphical extends Application {
     private boolean gameEnded = false;
     private Button pauseButton;
     private int gameIterations = 0; // Tracks the number of iterations
-    public static ScoreTracker scoreTracker = new ScoreTracker(); // Tracks the score
+
 
     // Quick colorscheme (HUD)
     double hudOpacity = 0.7;
@@ -47,8 +47,8 @@ public class BreakoutGraphical extends Application {
     Color multiballColor = Color.AQUAMARINE;
 
     public static void main(String[] args) {
-        int arg1 = 8;
-        int arg2 = 8;
+        int arg1 = 1;
+        int arg2 = 2;
         //int arg3 = 1;
         try {
             arg1 = Integer.parseInt(args[0]);
@@ -69,11 +69,9 @@ public class BreakoutGraphical extends Application {
     @Override
     public void start(Stage stage) {
 
-        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-        double screenHeight = screenBounds.getHeight();
-
-        double windowY = screenHeight * 0.9;
-        double windowX = windowY * (7.0/9.0);
+        int screenHeight = (int) Screen.getPrimary().getVisualBounds().getHeight();
+        windowY = (int) (screenHeight * 0.9);
+        windowX = (int) (windowY * (7.0/9.0));
 
         //Create StackPane to layer menu scenes on top of Game scene
         StackPane root = new StackPane();
@@ -104,6 +102,22 @@ public class BreakoutGraphical extends Application {
         );
         MenuController.mouseHoverGraphic(pauseButton); //button graphics added to button
 
+        Scene gameScene = getScene(root);
+
+
+        stage.setScene(gameScene);
+        stage.setTitle("Breakout");
+        stage.show();
+
+        runGameLoop();
+
+        menuController = new MenuController(root, this);
+        gameLoop = new GameLoop(n, m, windowX, windowY, lives);
+        soundController = new SoundController();
+    }
+
+    @NotNull
+    private Scene getScene(StackPane root) {
         Scene gameScene = new Scene(root, windowX, windowY);
 
         // Input handling
@@ -124,18 +138,7 @@ public class BreakoutGraphical extends Application {
             }
         });
         gameScene.setOnKeyReleased(event -> activeKeys.remove(event.getCode().toString()));
-
-
-
-        stage.setScene(gameScene);
-        stage.setTitle("Breakout");
-        stage.show();
-
-        runGameLoop();
-
-        menuController = new MenuController(root, this);
-        gameLoop = new GameLoop(n, m, (int) windowX, (int) windowY, lives, this);
-        soundController = new SoundController();
+        return gameScene;
     }
 
 
@@ -148,7 +151,7 @@ public class BreakoutGraphical extends Application {
     public void startGame() {
         System.out.println("Start Game Button Pressed");
         gamePaused = false;
-        scoreTracker.resetScore();
+        gameLoop.gameState.scoreTracker.resetScore();
         if (!gamePaused) {System.out.println("gamePaused is false");}
         getPauseButton().setVisible(true);
 
@@ -162,7 +165,7 @@ public class BreakoutGraphical extends Application {
     }
     public void restartGame() {
         gamePaused = false;
-        gameLoop = new GameLoop(n, m, windowX, windowY, lives, this); // Reinitialize the game loop
+        gameLoop.restartGame(); // Reinitialize the game loop
         startGame(); // Start the game
     }
     //helper method to set gameEnded to true/false
@@ -236,15 +239,15 @@ public class BreakoutGraphical extends Application {
     private void drawPlatform(GraphicsContext gc) {
         gc.setFill(Color.DEEPSKYBLUE);
         gc.fillRect(
-                GameState.platform.x,
-                GameState.platform.y,
-                GameState.platform.width,
-                GameState.platform.height);
+                gameLoop.gameState.platform.x,
+                gameLoop.gameState.platform.y,
+                gameLoop.gameState.platform.width,
+                gameLoop.gameState.platform.height);
     }
 
     private void drawBall(GraphicsContext gc) {
         gc.setFill(Color.WHITE);
-        for (GameState.Ball ball : GameState.ballList) {
+        for (GameState.Ball ball : gameLoop.gameState.ballList) {
             gc.fillOval(
                     ball.x,
                     ball.y,
@@ -255,9 +258,9 @@ public class BreakoutGraphical extends Application {
     }
     private void drawStaticElements(GraphicsContext gc) {
         gc.setFill(Color.LIGHTGREY);
-        CollisionElement topWall = GameState.topWall;
-        CollisionElement leftWall = GameState.leftWall;
-        CollisionElement rightWall = GameState.rightWall;
+        CollisionElement topWall = gameLoop.gameState.topWall;
+        CollisionElement leftWall = gameLoop.gameState.leftWall;
+        CollisionElement rightWall = gameLoop.gameState.rightWall;
         gc.fillRect(topWall.x, topWall.y, topWall.width, topWall.height);
         gc.fillRect(leftWall.x, leftWall.y, leftWall.width, leftWall.height);
         gc.fillRect(rightWall.x, rightWall.y, rightWall.width, rightWall.height);
@@ -273,7 +276,7 @@ public class BreakoutGraphical extends Application {
                 Color.INDIGO,
                 Color.VIOLET
         };
-        GameState.BlockCluster cluster = GameState.blockCluster;
+        GameState.BlockCluster cluster = gameLoop.gameState.blockCluster;
         for (int i = 0; i < cluster.cluster.length; i++) {
             gc.setFill(rainbow[(i / 2) % rainbow.length]);
             for (int j = 0; j < cluster.cluster[i].length; j++) {
@@ -305,17 +308,17 @@ public class BreakoutGraphical extends Application {
         int initialOffsetY = 45;
         int spacingY = 0;
 
-        if (GameState.ballList.size() > 1) {
+        if (gameLoop.gameState.ballList.size() > 1) {
             gc.setFill(Color.color(multiballColor.getRed(), multiballColor.getGreen(), multiballColor.getBlue(), hudOpacity));
             gc.setStroke(Color.color(hudOutlineColor.getRed(), hudOutlineColor.getGreen(), hudOutlineColor.getBlue(), hudOpacity));
             gc.fillText(
-                    "MULTIBALL x" + GameState.ballList.size(),
+                    "MULTIBALL x" + gameLoop.gameState.ballList.size(),
                     offsetX,
                     initialOffsetY + spacingY
             );
 
             gc.strokeText(
-                    "MULTIBALL x" + GameState.ballList.size(),
+                    "MULTIBALL x" + gameLoop.gameState.ballList.size(),
                     offsetX,
                     initialOffsetY + spacingY
             );
@@ -326,12 +329,21 @@ public class BreakoutGraphical extends Application {
         for (PowerUpHandler.PowerUp powerUp : gameLoop.gameState.powerUpHandler.activePowerUps.values()) {
             if (powerUp.duration > 0) {
                 if (powerUp.type == GameState.powerUpType.WIDEN_PLATFORM) {
-                    gc.setFill(Color.color(widenPlatformColor.getRed(), widenPlatformColor.getGreen(), widenPlatformColor.getBlue(), hudOpacity));
+                    gc.setFill(Color.color(widenPlatformColor.getRed(),
+                            widenPlatformColor.getGreen(),
+                            widenPlatformColor.getBlue(),
+                            hudOpacity));
                 }
                 if (powerUp.type == GameState.powerUpType.ENLARGE_BALL) {
-                    gc.setFill(Color.color(enlargeBallColor.getRed(), enlargeBallColor.getGreen(), enlargeBallColor.getBlue(), hudOpacity));
+                    gc.setFill(Color.color(enlargeBallColor.getRed(),
+                            enlargeBallColor.getGreen(),
+                            enlargeBallColor.getBlue(),
+                            hudOpacity));
                 }
-                gc.setStroke(Color.color(hudOutlineColor.getRed(), hudOutlineColor.getGreen(), hudOutlineColor.getBlue(), hudOpacity));
+                gc.setStroke(Color.color(hudOutlineColor.getRed(),
+                        hudOutlineColor.getGreen(),
+                        hudOutlineColor.getBlue(),
+                        hudOpacity));
                 long remainingTime = powerUp.duration - (System.currentTimeMillis() - powerUp.startTime); // To show remaining time in secs
 
                 if (remainingTime > 0) {
@@ -368,7 +380,7 @@ public class BreakoutGraphical extends Application {
 
         double centerX = (double) windowX / 2;
 
-        gc.fillText("Score: " + scoreTracker.getScore(), centerX-70, 70);
+        gc.fillText("Score: " + gameLoop.gameState.scoreTracker.getScore(), centerX-70, 70);
     }
 
 
