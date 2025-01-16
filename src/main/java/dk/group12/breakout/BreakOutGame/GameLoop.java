@@ -1,5 +1,6 @@
 package dk.group12.breakout.BreakOutGame;
 
+import dk.group12.breakout.BreakoutGraphical;
 import javafx.scene.control.Menu;
 
 import java.util.Set;
@@ -24,12 +25,13 @@ public class GameLoop {
         gameState = new GameState(n, m, gameWidth, gameHeight, lives, new ScoreTracker());
     }
 
-    public void handleInput(Set<String> activeKeys) {
+    public void handleInput(Set<String> activeKeys, BreakoutGraphical breakoutGraphical) {
         if (!gameState.gameRunning && !activeKeys.isEmpty()) {
             gameState.startGame();
         }
         if (gameState.gameEnded) {
-            gameEnded = true;
+            breakoutGraphical.setGameEnded(true);
+
         }
 
         if (activeKeys.contains("A") || activeKeys.contains("LEFT")) {

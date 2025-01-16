@@ -207,7 +207,7 @@ public class BreakoutGraphical extends Application {
                     frameCount++;
                     soundController.playMusic();
 
-                    gameLoop.handleInput(activeKeys);
+                    gameLoop.handleInput(activeKeys, BreakoutGraphical.this);
                     gameLoop.update();
                     previousTime = currentNanoTime;
                     // This is here to clear the screen from the previous frame

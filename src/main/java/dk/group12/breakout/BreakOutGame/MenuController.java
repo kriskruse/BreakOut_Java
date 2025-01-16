@@ -295,9 +295,7 @@ public class MenuController {
                 moveLeftOrRightText, orText, moveADText
         );
         //add pulse animation
-        moveLeftOrRightGraphics(moveLeftOrRightText);
-        moveLeftOrRightGraphics(orText);
-        moveLeftOrRightGraphics(moveADText);
+        moveLeftOrRightGraphics(moveLeftOrRightText, orText, moveADText);
 
         return menu;
     }
@@ -354,18 +352,17 @@ public class MenuController {
 
     }
     //
-    public void moveLeftOrRightGraphics(Label label){
-        ScaleTransition scaleTransition = new ScaleTransition(Duration.seconds(1.5), label);
-        scaleTransition.setFromX(0.9);
-        scaleTransition.setFromY(0.8);
-        scaleTransition.setToX(1.1);
-        scaleTransition.setToY(1);
-        scaleTransition.setCycleCount(ScaleTransition.INDEFINITE);
-        scaleTransition.setAutoReverse(true);
-        scaleTransition.play();
-
+    public void moveLeftOrRightGraphics(Label... labels){
+        for (Label label : labels) {
+            ScaleTransition scaleTransition = new ScaleTransition(Duration.seconds(1.5), label);
+            scaleTransition.setFromX(0.9);
+            scaleTransition.setFromY(0.8);
+            scaleTransition.setToX(1.1);
+            scaleTransition.setToY(1);
+            scaleTransition.setCycleCount(ScaleTransition.INDEFINITE);
+            scaleTransition.setAutoReverse(true);
+            scaleTransition.play();
+        }
     }
-
-
 }
 
