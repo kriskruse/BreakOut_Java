@@ -59,20 +59,17 @@ public class Collision {
         double distanceTop = Math.abs(ball.y - top);
         double distanceBottom = Math.abs(ball.y - bottom);
 
-        Vec2 normalVectorUpDown = new Vec2(1, -1, 1);
-        Vec2 normalVectorLeftRight = new Vec2(-1, 1, 1);
-
-
-        // Top and bottom collision
-        if ((distanceLeft < distanceTop && distanceLeft < distanceBottom) ||
-                (distanceRight < distanceTop && distanceRight < distanceBottom)) {
-            ball.direction.setX(ball.direction.getX() * normalVectorLeftRight.getX());
-            ball.direction.setY(ball.direction.getY() * normalVectorLeftRight.getY());
-
+        // Left
+        if (distanceLeft < distanceRight && distanceLeft < distanceTop && distanceLeft < distanceBottom) {
+            ball.direction.setX(-Math.abs(ball.direction.getX()));
+        } else if (distanceRight < distanceLeft && distanceRight < distanceTop && distanceRight < distanceBottom) {
+            ball.direction.setX(Math.abs(ball.direction.getX()));
+        } else if (distanceTop < distanceLeft && distanceTop < distanceRight && distanceTop < distanceBottom) {
+            ball.direction.setY(-Math.abs(ball.direction.getY()));
         } else {
-            ball.direction.setX(ball.direction.getX() * normalVectorUpDown.getX());
-            ball.direction.setY(ball.direction.getY() * normalVectorUpDown.getY());
+            ball.direction.setY(Math.abs(ball.direction.getY()));
         }
+
     }
 
     private static boolean isCollidingWithObject(CollisionElement object, CollisionElement collidingObject) {
