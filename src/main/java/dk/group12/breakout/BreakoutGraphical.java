@@ -8,6 +8,7 @@ import dk.group12.breakout.BreakOutGame.ScoreTracker;
 import dk.group12.breakout.BreakOutGame.*;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -15,13 +16,14 @@ import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.layout.Pane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.layout.StackPane;
 import java.util.HashSet;
 import java.util.Set;
 
 public class BreakoutGraphical extends Application {
-    private final int windowX = 700;
+    private int windowX = 700;
     private final int windowY = 900;
     private GameLoop gameLoop;
     private static int n;
@@ -66,10 +68,15 @@ public class BreakoutGraphical extends Application {
 
     @Override
     public void start(Stage stage) {
+
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+        double screenHeight = screenBounds.getHeight();
+
+        double windowY = screenHeight * 0.9;
+        double windowX = windowY * (7.0/9.0);
+
         //Create StackPane to layer menu scenes on top of Game scene
         StackPane root = new StackPane();
-
-
 
         Canvas canvas = new Canvas(windowX, windowY);
         //So "LEFT" adn "RIGHT" can be used also when there's buttons on screen
@@ -127,7 +134,7 @@ public class BreakoutGraphical extends Application {
         runGameLoop();
 
         menuController = new MenuController(root, this);
-        gameLoop = new GameLoop(n, m, windowX, windowY, lives, this);
+        gameLoop = new GameLoop(n, m, (int) windowX, (int) windowY, lives, this);
         soundController = new SoundController();
     }
 
