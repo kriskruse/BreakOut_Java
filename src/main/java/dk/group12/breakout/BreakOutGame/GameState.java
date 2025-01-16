@@ -8,7 +8,7 @@ public class GameState {
     public static Platform platform;
     public static List<Ball> ballList;
     public static BlockCluster blockCluster;
-    public CollisionElement topWall;
+    public static CollisionElement topWall;
     public static CollisionElement leftWall;
     public static CollisionElement rightWall;
     public boolean gameRunning = false;
