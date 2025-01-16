@@ -255,8 +255,8 @@ public class BreakoutGraphical extends Application {
     }
     private void drawStaticElements(GraphicsContext gc) {
         gc.setFill(Color.LIGHTGREY);
-        CollisionElement topWall = gameLoop.gameState.topWall;
-        CollisionElement leftWall = gameLoop.gameState.leftWall;
+        CollisionElement topWall = GameState.topWall;
+        CollisionElement leftWall = GameState.leftWall;
         CollisionElement rightWall = GameState.rightWall;
         gc.fillRect(topWall.x, topWall.y, topWall.width, topWall.height);
         gc.fillRect(leftWall.x, leftWall.y, leftWall.width, leftWall.height);
