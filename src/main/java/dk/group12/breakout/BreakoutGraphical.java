@@ -125,9 +125,11 @@ public class BreakoutGraphical extends Application {
             long previousTime = 0;
 
             public void handle(long currentNanoTime) {
-
                 // Check if the game has ended
                 if (menuController.gameEnded) {
+                    return;
+                }
+                if (gameIterations > 1 && !menuController.gameStarted) {
                     return;
                 }
                 // Check if the game is paused
