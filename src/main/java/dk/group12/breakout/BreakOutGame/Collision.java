@@ -35,7 +35,6 @@ public class Collision {
 
                 } else {
                     handleCollisionWithObject(object, ball);
-
                     // we want to update the block hp and score if the object is a block in our cluster
                     if (object instanceof GameState.Block) {
                         ((GameState.Block) object).hp--;

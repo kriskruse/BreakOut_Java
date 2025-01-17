@@ -213,6 +213,7 @@ public class GameState {
                 this.x += (direction.getX() * direction.getScalar()) / 10;
                 this.y += (direction.getY() * direction.getScalar()) / 10;
                 Collision.ballCollisionCheck(gameState, this);
+                removeDestroyedBlocks();
             }
         }
     }
