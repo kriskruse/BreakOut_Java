@@ -16,9 +16,9 @@ public class GameState {
     public CollisionElement rightWall;
     public boolean gameRunning = false;
     public boolean gameEnded = false;
-    public static double initialBallSpeed = 4.;
-    public static double ballSpeedIncrement = initialBallSpeed / 8.;
-    public static double currentBallSpeed = initialBallSpeed;
+    public double initialBallSpeed;
+    public double ballSpeedIncrement;
+    public double currentBallSpeed;
     private int lives;
     private final int gameWidth;
     private final int gameHeight;
@@ -43,6 +43,11 @@ public class GameState {
         topWall = new CollisionElement(0, 20, gameWidth, 10);
         leftWall = new CollisionElement(-100, 0, 100, gameHeight);
         rightWall = new CollisionElement(gameWidth, 0, 100, gameHeight);
+
+
+        // ball speed is proportional to the game height
+        currentBallSpeed = (gameHeight / 200.) * (1 + scoreTracker.getScore() / 600.);
+
 
         // we want to add the ball right on top of the platform
         ballList = new ArrayList<>();
@@ -137,7 +142,6 @@ public class GameState {
             }
             gameRunning = false;
             gameWon = true;
-            currentBallSpeed += ballSpeedIncrement;
         }
     }
 
