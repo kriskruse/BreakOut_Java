@@ -1,8 +1,9 @@
 package dk.group12.breakout.BreakOutGame;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -10,6 +11,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.control.Label;
 import javafx.animation.ScaleTransition;
 import javafx.util.Duration;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MenuController {
     private final StackPane root;
@@ -29,14 +33,14 @@ public class MenuController {
     private boolean isGameOverPageVisible = false;
     private boolean isTutorialScreenVisible = false;
 
+    //game start pause end controls
+    private Button pauseButton;
+    private Pane overlayPane = new Pane();
+    public boolean gameStarted = false;
     public boolean gamePaused = false;
     public boolean gameEnded = false;
 
-    private Button pauseButton;
-    private Pane overlayPane = new Pane();
-
-
-    private GameLoop gameLoop;
+    private final GameLoop gameLoop;
 
     public MenuController(StackPane root, GameLoop gameLoop) {
         this.gameLoop = gameLoop;
@@ -44,14 +48,15 @@ public class MenuController {
         overlayPane.getChildren().add(createPauseButton());
         root.getChildren().add(overlayPane);
         createMenus();
-    }
 
+    }
+    //Pause button creation
     private Button createPauseButton() {
         pauseButton = new Button("Pause");
         pauseButton.setLayoutX(gameLoop.gameWidth-60);
         pauseButton.setLayoutY(1);
         pauseButton.setOnAction(e -> pauseGame());
-        getPauseButton().setVisible(false);
+        pauseButton.setVisible(false);
         pauseButton.setStyle(
                 "-fx-background-color: rgba(0,0,0,0);"+
                         "-fx-font-weight: bold;"+
@@ -65,13 +70,13 @@ public class MenuController {
 
     //Creation of different menus
     private void createMenus() {
-        startMenu = createStartMenu();
-        //settingsMenu = createSettingsMenu();
-        pauseMenu = createPauseMenu();
+        startMenu = createVBoxMenuPage("Main Menu", new String[]{"Start Game", "Settings", "How To Play", "Score History", "Exit"});
+        pauseMenu = createVBoxMenuPage("Pause Menu", new String[]{"Resume Game", "Restart Game", "Settings", "How To Play", "Exit"});
         gameOverPage = createGameOverPage();
         tutorialScreen = createTutorialScreen();
+        settingsMenu = createVBoxMenuPage("Settings", new String[]{"Difficulty","Sound", "Sensitivity", "Back"});
 
-        root.getChildren().addAll(startMenu, pauseMenu, gameOverPage, tutorialScreen);  //add other menus also
+        root.getChildren().addAll(startMenu, pauseMenu, gameOverPage, tutorialScreen, settingsMenu);  //add other menus also
         // Upon initialization show only the start menu
         hideMenus();
         showStartMenu();
@@ -127,134 +132,22 @@ public class MenuController {
 
     private void updateMenuVisibility() {
         startMenu.setVisible(isStartMenuVisible);
-        //settingsMenu.setVisible(isSettingsMenuVisible);
+        settingsMenu.setVisible(isSettingsMenuVisible);
         pauseMenu.setVisible(isPauseMenuVisible);
         gameOverPage.setVisible(isGameOverPageVisible);
         tutorialScreen.setVisible(isTutorialScreenVisible);
+
     }
     public void hideMenus() {
         startMenu.setVisible(false);
-        //settingsMenu.setVisible(false);
+        settingsMenu.setVisible(false);
         pauseMenu.setVisible(false);
         gameOverPage.setVisible(false);
         tutorialScreen.setVisible(false);
         pauseButton.setVisible(true);
     }
 
-    /* CREATING MENU PAGES */
-
-    // START MENU PAGE CREATION
-    private VBox createStartMenu() {
-        // Create label & buttons
-        Label pageTitle = new Label("Main Menu");
-        Button startGameButton = new Button("Start Game");
-        startGameButton.setOnAction(e -> {
-            SoundController.menuClickSound();
-            resumeGame();
-            hideMenus();
-            showTutorialScreen();
-
-        });
-
-        Button settingsMenuButton = new Button("Settings");
-        settingsMenuButton.setOnAction(e -> {});
-
-        Button howToPlayButton = new Button("How To Play");
-        howToPlayButton.setOnAction(e -> {});
-
-        Button exitButton = new Button("Exit");
-        exitButton.setOnAction(event ->{
-            System.out.println("Exit button pressed");
-            System.exit(0);
-        }); // Exit the application
-
-        // Style buttons & Label
-        pageTitle.setStyle(
-                "-fx-font-size: 24px;" + // Font size
-                        "-fx-font-family: 'Arial';" + // Font family
-                        "-fx-font-weight: bold;" + // Bold text
-                        "-fx-text-fill: white;" // Text color
-        );
-        styleButton(startGameButton, "red", "white");
-        styleButton(settingsMenuButton, "orange", "white");
-        styleButton(howToPlayButton, "green", "white");
-        styleButton(exitButton, "yellow",  "black");
-
-        // Hover effect for buttons
-        mouseHoverGraphic(startGameButton, settingsMenuButton, howToPlayButton, exitButton);
-
-        // VBox layout for vertical alignment
-        VBox menu = new VBox(15); // Spacing between buttons
-        menu.setAlignment(Pos.CENTER);
-        menu.setPadding(new Insets(20));
-        menu.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8);");
-        menu.getChildren().addAll(
-                pageTitle, startGameButton, settingsMenuButton,howToPlayButton, exitButton
-        );
-
-        return menu;
-    }
-
-    // PAUSE MENU PAGE CREATION
-    private VBox createPauseMenu() {
-        // Create label & buttons
-        Label pageTitle = new Label("Main Menu");
-        //resume game button
-        Button resumeGameButton = new Button("Resume Game");
-        resumeGameButton.setOnAction(e -> {
-            resumeGame();
-            getPauseButton().setVisible(true);
-            hideMenus();
-        });
-        //restart button
-        Button restartGameButton = new Button("Restart Game");
-        restartGameButton.setOnAction(e -> {
-            System.out.println("Restart button pressed");
-            restartGame();
-            hideMenus();
-        });
-        //Settings Menu Button
-        Button settingsMenuButton = new Button("Settings");
-        settingsMenuButton.setOnAction(e -> {});
-
-        //How to Play Button
-        Button howToPlayButton = new Button("How To Play");
-        howToPlayButton.setOnAction(e -> {});
-
-        //exit game button
-        Button exitButton = new Button("Exit");
-        exitButton.setOnAction(event ->{
-            System.out.println("Exit button pressed");
-            System.exit(0);
-        }); // Exit the application
-
-        // Style buttons & Label
-        pageTitle.setStyle(
-                "-fx-font-size: 24px;" + // Font size
-                        "-fx-font-family: 'Arial';" + // Font family
-                        "-fx-font-weight: bold;" + // Bold text
-                        "-fx-text-fill: white;" // Text color
-        );
-        styleButton(resumeGameButton, "red", "white");
-        styleButton(restartGameButton, "orange",  "white");
-        styleButton(settingsMenuButton, "green", "white");
-        styleButton(howToPlayButton, "yellow", "black");
-        styleButton(exitButton, "blue",  "white");
-
-        // Hover effect for buttons
-        mouseHoverGraphic(resumeGameButton, restartGameButton, settingsMenuButton, howToPlayButton, exitButton);
-
-        // VBox layout for vertical alignment
-        VBox menu = new VBox(15); // Spacing between buttons
-        menu.setAlignment(Pos.CENTER);
-        menu.setPadding(new Insets(20));
-        menu.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8);");
-        menu.getChildren().addAll(
-                pageTitle, resumeGameButton,restartGameButton, settingsMenuButton,howToPlayButton, exitButton
-        );
-
-        return menu;
-    }
+    /* CREATING PAGES */
 
     //GAME OVER PAGE CREATION
     private VBox createGameOverPage() {
@@ -312,9 +205,7 @@ public class MenuController {
 
 
         // Style Labels
-        styleLabel(moveLeftOrRightText);
-        styleLabel(orText);
-        styleLabel(moveADText);
+        styleLabel(moveLeftOrRightText, orText, moveADText);
 
         // VBox layout for vertical alignment
         VBox menu = new VBox(15); // Spacing between buttons
@@ -329,8 +220,116 @@ public class MenuController {
 
         return menu;
     }
+    /*VBOX MENU CREATOR*/
+    public VBox createVBoxMenuPage(String title, String[] buttonLabels) {
+        // Create label & buttons
+        Label pageTitle = new Label(title);
+        // Style Label
+        pageTitle.setStyle(
+                "-fx-font-size: 24px;" + // Font size
+                        "-fx-font-family: 'Arial';" + // Font family
+                        "-fx-font-weight: bold;" + // Bold text
+                        "-fx-text-fill: white;" // Text color
+        );
 
-    /*buttons Styling & Effects methods*/
+        // Define colors for buttons based on position
+        String[] colors = {"red", "orange", "green", "yellow", "blue", "indigo", "cyan", "violet"};
+
+        // VBox layout for vertical alignment
+        VBox menu = new VBox(15); // Spacing between buttons
+        menu.setAlignment(Pos.CENTER);
+        menu.setPadding(new Insets(20));
+        menu.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8);");
+
+        for (int i = 0; i < buttonLabels.length; i++) {
+            String buttonLabel = buttonLabels[i];
+            Button button = new Button(buttonLabel);
+            if (colors[i].equals("yellow")) {
+                styleButton(button, colors[i], "black");
+            }
+            else {
+                styleButton(button, colors[i], "white");
+            }
+            button.setOnAction(e -> SoundController.menuClickSound());
+            mouseHoverGraphic(button);
+            button.setOnAction(getButtonAction(buttonLabel));
+
+            // Add the button to the menu
+            menu.getChildren().add(button);
+        }
+        // Add the title to the top of the menu
+        menu.getChildren().add(0, pageTitle);
+
+        return menu;
+    }
+
+    /*BUTTON ACTIONS*/
+
+    // button event handler
+    private EventHandler<ActionEvent> getButtonAction(String buttonLabel) {
+        Map<String, EventHandler<ActionEvent>> buttonActions = Map.ofEntries(
+                Map.entry("Start Game", e -> {
+                    resumeGame();
+                    hideMenus();
+                    showTutorialScreen();
+                    gameStarted = true;
+                }),
+                Map.entry("Resume Game", e -> {
+                    resumeGame();
+                    pauseButton.setVisible(true);
+                    hideMenus();
+                }),
+                Map.entry("Restart Game", e -> {
+                    System.out.println("Restart button pressed");
+                    checkForGameEnded();
+                    restartGame();
+                    hideMenus();
+                    showTutorialScreen();
+                }),
+                Map.entry("Settings", e -> {
+                    showSettingsMenu();
+                }),
+                Map.entry("How To Play", e -> {
+                    System.out.println("How To Play button clicked");
+                    // Add "How To Play" functionality here
+                }),
+                Map.entry("Score History", e -> {
+                    System.out.println("Score History button clicked");
+                    // Add "score history" functionality here
+                }),
+                Map.entry("Exit", e -> {
+                    System.exit(0); // Exit the application
+                }),
+                Map.entry("Difficulty", e -> {
+                    System.out.println("Difficulty button clicked");
+                    // Add "Difficulty" functionality here
+                }),
+                Map.entry("Sound", e -> {
+                    System.out.println("Sound button clicked");
+                    // Add "Sound" functionality here
+                }),
+                Map.entry("Sensitivity", e -> {
+                    System.out.println("Sensitivity button clicked");
+                    // Add "Sensitivity" functionality here
+                }),
+                Map.entry("Back", e -> {
+                    if (gameStarted) {
+                        showPauseMenu();
+                    } else {
+                        showStartMenu();
+                    }
+                })
+        );
+        // Return the matching action or a default one
+        return buttonActions.getOrDefault(buttonLabel, e ->
+                System.out.println("No action assigned for: " + buttonLabel)
+        );
+    }
+
+
+
+    /*BUTTONS & LABELS STYLING*/
+
     // Helper method to style buttons
     private void styleButton(Button button, String color, String textColor) {
         button.setStyle(
@@ -347,17 +346,19 @@ public class MenuController {
         button.setPrefWidth(200); // Set uniform width for buttons
     }
     //Helper method to style labels
-    public void styleLabel(Label label) {
-        label.setStyle(
-                "-fx-font-family: 'Arial';"+ // Font family
-                "-fx-font-size: 18px;" +      // Font size
-                "-fx-font-weight: bold;" + // Bold text
-                "-fx-padding: 0 0 0 0;" +// Top, Right, Bottom, Left padding
-                "-fx-text-fill: rgba(255, 255, 255,0.7) ;"+ // Text color
-                "-fx-alignment: center;" // Center text
+    public void styleLabel(Label... labels) {
+        for (Label label : labels) {
+            label.setStyle(
+                    "-fx-font-family: 'Arial';"+ // Font family
+                            "-fx-font-size: 18px;" +      // Font size
+                            "-fx-font-weight: bold;" + // Bold text
+                            "-fx-padding: 0 0 0 0;" +// Top, Right, Bottom, Left padding
+                            "-fx-text-fill: rgba(255, 255, 255,0.7) ;"+ // Text color
+                            "-fx-alignment: center;" // Center text
 
-        );
-        label.setPrefWidth(200); // Set uniform width for buttons
+            );
+            label.setPrefWidth(200); // Set uniform width for buttons
+        }
     }
 
     // Helper method to add effect on buttons, when hovered over
@@ -396,19 +397,15 @@ public class MenuController {
     }
 
     /*GAME MENU LOGIC*/
-    // returns the pause button, so it can be accessed easily from other classes
-    public Button getPauseButton(){
-        return pauseButton;
-    }
-
     public void resumeGame() {
         gamePaused = false;
-        getPauseButton().setVisible(true);
+        gameEnded = false;
+        pauseButton.setVisible(true);
     }
 
     public void pauseGame() {
         gamePaused = true;
-        getPauseButton().setVisible(false);
+        pauseButton.setVisible(false);
         showPauseMenu(); // Show the pause menu
 
     }
@@ -416,21 +413,18 @@ public class MenuController {
         gamePaused = false;
         gameEnded = false;
         gameLoop.restartGame(); // Reinitialize the game loop
-        getPauseButton().setVisible(true);
+        pauseButton.setVisible(true);
     }
 
     //helper method to set gameEnded to true/false
     public void checkForGameEnded() {
 
     }
-    public void removeTutorial(){
-        hideMenus();
-    }
 
     public void gamePausedCheck() {
         if (gamePaused) {
             resumeGame();
-            getPauseButton().setVisible(true);
+            pauseButton.setVisible(true);
             hideMenus();
         } else {
             pauseGame();

@@ -71,6 +71,7 @@ public class BreakoutGraphical extends Application {
         windowY = (int) (screenHeight * 0.9);
         windowX = (int) (windowY * (7.0/9.0));
 
+
         //Create StackPane to layer menu scenes on top of Game scene
         StackPane root = new StackPane();
 
@@ -124,9 +125,14 @@ public class BreakoutGraphical extends Application {
             long previousTime = 0;
 
             public void handle(long currentNanoTime) {
-
                 // Check if the game has ended
-                if (menuController.gameEnded) {
+                if (gameLoop.gameEnded) {
+                    menuController.gameEnded = true;
+
+                    menuController.showGameOverPage();
+                    return;
+                }
+                if (gameIterations > 1 && !menuController.gameStarted) {
                     return;
                 }
                 // Check if the game is paused

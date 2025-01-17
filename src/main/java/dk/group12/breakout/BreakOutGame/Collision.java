@@ -7,10 +7,9 @@ import java.util.List;
 public class Collision {
     public static List<GameState.Ball> ballList;
 
-    public static void collisionCheck(GameState gameState){
+    public static void otherCollisionCheck(GameState gameState){
         ballList = gameState.ballList;
 
-        List<CollisionElement> collisionElements = gameState.collisionElements;
         List<PowerUpHandler.PowerUp> fallingPowerUps = gameState.powerUpHandler.fallingPowerUps;
 
         for (PowerUpHandler.PowerUp powerUp : fallingPowerUps) {
@@ -19,32 +18,38 @@ public class Collision {
             }
         }
 
+    }
+
+    public static void ballCollisionCheck(GameState gameState, GameState.Ball ball){
+        List<CollisionElement> collisionElements = gameState.collisionElements;
+
         for (CollisionElement object : collisionElements) {
-            for (GameState.Ball ball : ballList) {
-                if (isCollidingWithObject(object, ball)) {
-                    if (object instanceof GameState.Platform) {
-                        // we want a direction vector that changes the angle of the ball
-                        // depending on where it hits the platform
-                        double midPoint = object.x + object.width / 2;
-                        double normal = (ball.x - midPoint) / (object.width / 2);
-                        ball.direction = new Vec2(normal, -1, ball.direction.getScalar());
+            if (isCollidingWithObject(object, ball)) {
+                if (object instanceof GameState.Platform) {
+                    // we want a direction vector that changes the angle of the ball
+                    // depending on where it hits the platform
+                    double midPoint = object.x + object.width / 2;
+                    double ballMid = ball.x + ball.radius;
+                    double normal = (ballMid - midPoint) / (object.width / 2);
+                    ball.direction = new Vec2(normal, -1, ball.direction.getScalar());
 
-                    } else {
-                        handleCollisionWithObject(object, ball);
-
-                        // we want to update the block hp and score if the object is a block in our cluster
-                        if (object instanceof GameState.Block) {
-                            ((GameState.Block) object).hp--;
-                            gameState.scoreTracker.addScore(1);
-                        }
-
+                } else {
+                    handleCollisionWithObject(object, ball);
+                    // we want to update the block hp and score if the object is a block in our cluster
+                    if (object instanceof GameState.Block) {
+                        ((GameState.Block) object).hp--;
+                        gameState.scoreTracker.addScore(1);
                     }
-                    SoundController.playPing();
-                    // we break the loop here because we only want to handle one collision at each frame
-                    return;
+
                 }
+                SoundController.playPing();
+                // we break the loop here because we only want to handle one collision at each frame
+                return;
             }
+
         }
+
+
     }
 
     private static void handleCollisionWithObject(CollisionElement object, GameState.Ball ball) {
@@ -136,6 +141,4 @@ public class Collision {
         Point2D pb = p1.add(v.multiply(b));
         return ballCenter.subtract(pb).magnitude() <= ball.radius;
     }
-
-
 }

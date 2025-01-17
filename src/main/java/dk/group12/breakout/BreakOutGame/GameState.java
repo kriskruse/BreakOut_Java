@@ -16,6 +16,7 @@ public class GameState {
     public CollisionElement rightWall;
     public boolean gameRunning = false;
     public boolean gameEnded = false;
+    public double ballSpeed;
     private int lives;
     private final int gameWidth;
     private final int gameHeight;
@@ -38,8 +39,13 @@ public class GameState {
         platform = new Platform(platformX, platformY, platformWidth, platformHeight);
 
         topWall = new CollisionElement(0, 20, gameWidth, 10);
-        leftWall = new CollisionElement(-100, 0, 100, gameHeight);
-        rightWall = new CollisionElement(gameWidth, 0, 100, gameHeight);
+        leftWall = new CollisionElement(-100, -gameHeight, 100, gameHeight * 2);
+        rightWall = new CollisionElement(gameWidth, -gameHeight, 100, gameHeight * 2);
+
+
+        // ball speed is proportional to the game height
+        ballSpeed = (gameHeight / 200.) * (1 + scoreTracker.getScore() / 600.);
+
 
         // we want to add the ball right on top of the platform
         ballList = new ArrayList<>();
@@ -81,16 +87,16 @@ public class GameState {
 
     // Reset the ball and platform after losing a life
     public void resetBallAndPlatform() {
-        platform.x = (gameWidth - platform.width) / 2;  // Reset platform to center
-        ballList.get(0).resetPosition();  // Reset ball to original position
+        platform.x = (gameWidth - platform.width) / 2;
+        ballList.get(0).resetPosition();
     }
 
     public void update() {
-        Collision.collisionCheck(this);
+        Collision.otherCollisionCheck(this);
         removeDestroyedBlocks();
 
         for (Ball ball : ballList) {
-            ball.move();
+            ball.move(this);
         }
 
         powerUpHandler.movePowerUps();
@@ -174,11 +180,6 @@ public class GameState {
         }
     }
 
-    public void spawnNewBlockCluster(int n, int m) {
-        int clusterHeight = (int) (gameHeight * 0.25);
-        blockCluster = new BlockCluster(n, m, gameWidth, clusterHeight);
-        collisionElements.addAll(flattenBlockCluster(blockCluster));
-    }
 
     public enum powerUpType {
         NONE,
@@ -207,9 +208,13 @@ public class GameState {
         }
 
 
-        public void move() {
-            this.x += direction.getX() * direction.getScalar();
-            this.y += direction.getY() * direction.getScalar();
+        public void move(GameState gameState) {
+            for (double i = 0; i < 10; i++) {
+                this.x += (direction.getX() * direction.getScalar()) / 10;
+                this.y += (direction.getY() * direction.getScalar()) / 10;
+                Collision.ballCollisionCheck(gameState, this);
+                removeDestroyedBlocks();
+            }
         }
     }
 
@@ -217,7 +222,7 @@ public class GameState {
         Ball newBall = new Ball(platform.x + platform.width / 2 - ballList.get(0).radius,
                 platform.y - ballList.get(0).radius * 2,
                 ballList.get(0).radius);
-        newBall.direction = new Vec2((randomGenerator.nextDouble() - 0.5) * 2, -1, 4);
+        newBall.direction = new Vec2((randomGenerator.nextDouble() - 0.5) * 2, -1, ballSpeed);
         ballList.add(newBall);
     }
 
