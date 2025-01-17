@@ -16,9 +16,7 @@ public class GameState {
     public CollisionElement rightWall;
     public boolean gameRunning = false;
     public boolean gameEnded = false;
-    public double initialBallSpeed;
-    public double ballSpeedIncrement;
-    public double currentBallSpeed;
+    public double ballSpeed;
     private int lives;
     private final int gameWidth;
     private final int gameHeight;
@@ -46,7 +44,7 @@ public class GameState {
 
 
         // ball speed is proportional to the game height
-        currentBallSpeed = (gameHeight / 200.) * (1 + scoreTracker.getScore() / 600.);
+        ballSpeed = (gameHeight / 200.) * (1 + scoreTracker.getScore() / 600.);
 
 
         // we want to add the ball right on top of the platform
@@ -79,7 +77,7 @@ public class GameState {
 
     public void startGame() {
         gameRunning = true;
-        ballList.get(0).direction = new Vec2((randomGenerator.nextDouble() - 0.5) * 2, -1, currentBallSpeed);
+        ballList.get(0).direction = new Vec2((randomGenerator.nextDouble() - 0.5) * 2, -1, ballSpeed);
     }
     public void endGame() {
         ballList.get(0).direction = new Vec2(0, -1, 0);
@@ -89,8 +87,8 @@ public class GameState {
 
     // Reset the ball and platform after losing a life
     public void resetBallAndPlatform() {
-        platform.x = (gameWidth - platform.width) / 2;  // Reset platform to center
-        ballList.get(0).resetPosition();  // Reset ball to original position
+        platform.x = (gameWidth - platform.width) / 2;
+        ballList.get(0).resetPosition();
     }
 
     public void update() {
@@ -225,7 +223,7 @@ public class GameState {
         Ball newBall = new Ball(platform.x + platform.width / 2 - ballList.get(0).radius,
                 platform.y - ballList.get(0).radius * 2,
                 ballList.get(0).radius);
-        newBall.direction = new Vec2((randomGenerator.nextDouble() - 0.5) * 2, -1, currentBallSpeed);
+        newBall.direction = new Vec2((randomGenerator.nextDouble() - 0.5) * 2, -1, ballSpeed);
         ballList.add(newBall);
     }
 
