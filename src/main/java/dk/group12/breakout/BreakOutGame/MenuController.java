@@ -47,6 +47,7 @@ public class MenuController {
         overlayPane.getChildren().add(createPauseButton());
         root.getChildren().add(overlayPane);
         createMenus();
+
     }
     //Pause button creation
     private Button createPauseButton() {
@@ -202,9 +203,7 @@ public class MenuController {
 
 
         // Style Labels
-        styleLabel(moveLeftOrRightText);
-        styleLabel(orText);
-        styleLabel(moveADText);
+        styleLabel(moveLeftOrRightText, orText, moveADText);
 
         // VBox layout for vertical alignment
         VBox menu = new VBox(15); // Spacing between buttons
@@ -262,7 +261,7 @@ public class MenuController {
         return menu;
     }
 
-    /*BUTTONS & LABELS STYLING*/
+    /*BUTTON ACTIONS*/
 
     // button event handler
     private EventHandler<ActionEvent> getButtonAction(String buttonLabel) {
@@ -321,6 +320,8 @@ public class MenuController {
         return buttonActions.getOrDefault(buttonLabel, e -> System.out.println("No action assigned for: " + buttonLabel));
     }
 
+    /*BUTTONS & LABELS STYLING*/
+
     // Helper method to style buttons
     private void styleButton(Button button, String color, String textColor) {
         button.setStyle(
@@ -337,17 +338,19 @@ public class MenuController {
         button.setPrefWidth(200); // Set uniform width for buttons
     }
     //Helper method to style labels
-    public void styleLabel(Label label) {
-        label.setStyle(
-                "-fx-font-family: 'Arial';"+ // Font family
-                "-fx-font-size: 18px;" +      // Font size
-                "-fx-font-weight: bold;" + // Bold text
-                "-fx-padding: 0 0 0 0;" +// Top, Right, Bottom, Left padding
-                "-fx-text-fill: rgba(255, 255, 255,0.7) ;"+ // Text color
-                "-fx-alignment: center;" // Center text
+    public void styleLabel(Label... labels) {
+        for (Label label : labels) {
+            label.setStyle(
+                    "-fx-font-family: 'Arial';"+ // Font family
+                            "-fx-font-size: 18px;" +      // Font size
+                            "-fx-font-weight: bold;" + // Bold text
+                            "-fx-padding: 0 0 0 0;" +// Top, Right, Bottom, Left padding
+                            "-fx-text-fill: rgba(255, 255, 255,0.7) ;"+ // Text color
+                            "-fx-alignment: center;" // Center text
 
-        );
-        label.setPrefWidth(200); // Set uniform width for buttons
+            );
+            label.setPrefWidth(200); // Set uniform width for buttons
+        }
     }
 
     // Helper method to add effect on buttons, when hovered over
