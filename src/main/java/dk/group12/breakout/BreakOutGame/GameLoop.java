@@ -52,6 +52,7 @@ public class GameLoop {
     }
 
     public void restartGame() {
+        gameEnded = false;
         gameState = new GameState(n, m, gameWidth, gameHeight, lives, new ScoreTracker());
     }
 }

@@ -282,6 +282,7 @@ public class MenuController {
                     checkForGameEnded();
                     restartGame();
                     hideMenus();
+                    showTutorialScreen();
                 },
 
                 "Settings", e -> {
@@ -391,6 +392,7 @@ public class MenuController {
     /*GAME MENU LOGIC*/
     public void resumeGame() {
         gamePaused = false;
+        gameEnded = false;
         pauseButton.setVisible(true);
     }
 
