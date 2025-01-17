@@ -12,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.animation.ScaleTransition;
 import javafx.util.Duration;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class MenuController {
@@ -69,7 +70,7 @@ public class MenuController {
 
     //Creation of different menus
     private void createMenus() {
-        startMenu = createVBoxMenuPage("Main Menu", new String[]{"Start Game", "Settings", "How To Play", "Exit"});
+        startMenu = createVBoxMenuPage("Main Menu", new String[]{"Start Game", "Settings", "How To Play", "Score History", "Exit"});
         pauseMenu = createVBoxMenuPage("Pause Menu", new String[]{"Resume Game", "Restart Game", "Settings", "How To Play", "Exit"});
         gameOverPage = createGameOverPage();
         tutorialScreen = createTutorialScreen();
@@ -135,6 +136,7 @@ public class MenuController {
         pauseMenu.setVisible(isPauseMenuVisible);
         gameOverPage.setVisible(isGameOverPageVisible);
         tutorialScreen.setVisible(isTutorialScreenVisible);
+
     }
     public void hideMenus() {
         startMenu.setVisible(false);
@@ -231,7 +233,7 @@ public class MenuController {
         );
 
         // Define colors for buttons based on position
-        String[] colors = {"red", "orange", "green", "yellow", "blue", "indigo", "violet"};
+        String[] colors = {"red", "orange", "green", "yellow", "blue", "indigo", "cyan", "violet"};
 
         // VBox layout for vertical alignment
         VBox menu = new VBox(15); // Spacing between buttons
@@ -265,61 +267,66 @@ public class MenuController {
 
     // button event handler
     private EventHandler<ActionEvent> getButtonAction(String buttonLabel) {
-        Map<String, EventHandler<ActionEvent>> buttonActions = Map.of(
-                "Start Game", e -> {
+        Map<String, EventHandler<ActionEvent>> buttonActions = Map.ofEntries(
+                Map.entry("Start Game", e -> {
                     resumeGame();
                     hideMenus();
                     showTutorialScreen();
                     gameStarted = true;
-                },
-                "Resume Game", e -> {
+                }),
+                Map.entry("Resume Game", e -> {
                     resumeGame();
                     pauseButton.setVisible(true);
                     hideMenus();
-                },
-                "Restart Game", e -> {
+                }),
+                Map.entry("Restart Game", e -> {
                     System.out.println("Restart button pressed");
                     checkForGameEnded();
                     restartGame();
                     hideMenus();
                     showTutorialScreen();
-                },
-
-                "Settings", e -> {
+                }),
+                Map.entry("Settings", e -> {
                     showSettingsMenu();
-                },
-                "How To Play", e -> {
+                }),
+                Map.entry("How To Play", e -> {
                     System.out.println("How To Play button clicked");
                     // Add "How To Play" functionality here
-                },
-                "Exit", e -> {
+                }),
+                Map.entry("Score History", e -> {
+                    System.out.println("Score History button clicked");
+                    // Add "score history" functionality here
+                }),
+                Map.entry("Exit", e -> {
                     System.exit(0); // Exit the application
-                },
-
-                "Difficulty", e -> {
+                }),
+                Map.entry("Difficulty", e -> {
                     System.out.println("Difficulty button clicked");
                     // Add "Difficulty" functionality here
-                },
-                "Sound", e -> {
+                }),
+                Map.entry("Sound", e -> {
                     System.out.println("Sound button clicked");
                     // Add "Sound" functionality here
-                },
-                "Sensitivity", e -> {
+                }),
+                Map.entry("Sensitivity", e -> {
                     System.out.println("Sensitivity button clicked");
                     // Add "Sensitivity" functionality here
-                },
-                "Back", e -> {
+                }),
+                Map.entry("Back", e -> {
                     if (gameStarted) {
                         showPauseMenu();
                     } else {
                         showStartMenu();
                     }
-                }
+                })
         );
-
         // Return the matching action or a default one
-        return buttonActions.getOrDefault(buttonLabel, e -> System.out.println("No action assigned for: " + buttonLabel));
+        return buttonActions.getOrDefault(buttonLabel, e ->
+                System.out.println("No action assigned for: " + buttonLabel)
+        );
     }
+
+
 
     /*BUTTONS & LABELS STYLING*/
 
