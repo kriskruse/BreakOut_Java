@@ -39,8 +39,8 @@ public class GameState {
         platform = new Platform(platformX, platformY, platformWidth, platformHeight);
 
         topWall = new CollisionElement(0, 20, gameWidth, 10);
-        leftWall = new CollisionElement(-100, 0, 100, gameHeight);
-        rightWall = new CollisionElement(gameWidth, 0, 100, gameHeight);
+        leftWall = new CollisionElement(-100, -gameHeight, 100, gameHeight * 2);
+        rightWall = new CollisionElement(gameWidth, -gameHeight, 100, gameHeight * 2);
 
 
         // ball speed is proportional to the game height
@@ -92,11 +92,11 @@ public class GameState {
     }
 
     public void update() {
-        Collision.collisionCheck(this);
+        Collision.otherCollisionCheck(this);
         removeDestroyedBlocks();
 
         for (Ball ball : ballList) {
-            ball.move();
+            ball.move(this);
         }
 
         powerUpHandler.movePowerUps();
@@ -180,11 +180,6 @@ public class GameState {
         }
     }
 
-    public void spawnNewBlockCluster(int n, int m) {
-        int clusterHeight = (int) (gameHeight * 0.25);
-        blockCluster = new BlockCluster(n, m, gameWidth, clusterHeight);
-        collisionElements.addAll(flattenBlockCluster(blockCluster));
-    }
 
     public enum powerUpType {
         NONE,
@@ -213,9 +208,12 @@ public class GameState {
         }
 
 
-        public void move() {
-            this.x += direction.getX() * direction.getScalar();
-            this.y += direction.getY() * direction.getScalar();
+        public void move(GameState gameState) {
+            for (double i = 0; i < 10; i++) {
+                this.x += (direction.getX() * direction.getScalar()) / 10;
+                this.y += (direction.getY() * direction.getScalar()) / 10;
+                Collision.ballCollisionCheck(gameState, this);
+            }
         }
     }
 
