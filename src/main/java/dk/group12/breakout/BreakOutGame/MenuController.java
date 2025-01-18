@@ -1,5 +1,6 @@
 package dk.group12.breakout.BreakOutGame;
 
+import dk.group12.breakout.BreakoutGraphical;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -17,6 +18,7 @@ import java.util.Map;
 
 public class MenuController {
     private final StackPane root;
+    private final SoundController soundController;
     //private final Map<String, VBox> menus = new HashMap<String, VBox>();
 
     // Menu pages
@@ -48,9 +50,10 @@ public class MenuController {
 
     private final GameLoop gameLoop;
 
-    public MenuController(StackPane root, GameLoop gameLoop) {
+    public MenuController(StackPane root, GameLoop gameLoop, SoundController soundController) {
         this.gameLoop = gameLoop;
         this.root = root;
+        this.soundController = soundController;
         overlayPane.getChildren().add(createPauseButton());
         root.getChildren().add(overlayPane);
         createMenus();
@@ -438,6 +441,21 @@ public class MenuController {
                     GameState.ballSpeedDifficultyMultiplier = 1.6;
                     gameLoop.gameState.updateBallSpeed();
 
+                }),
+                Map.entry("Off", e -> {
+                    System.out.println("Sound Off button clicked");
+                    if (SoundController.soundControl) {
+                        SoundController.soundControl = false;
+                        soundController.stopMusic();
+                    }
+
+                }),
+                Map.entry("On", e -> {
+                    System.out.println("Sound On button clicked");
+                    if (!SoundController.soundControl) {
+                        SoundController.soundControl = true;
+                        soundController.playMusic();
+                    }
                 })
         );
         // Return the matching action or a default one

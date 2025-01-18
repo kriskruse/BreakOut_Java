@@ -10,10 +10,8 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
-import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.layout.StackPane;
@@ -89,8 +87,8 @@ public class BreakoutGraphical extends Application {
 
 
         gameLoop = new GameLoop(n, m, windowX, windowY, lives);
-        menuController = new MenuController(root, gameLoop);
         soundController = new SoundController();
+        menuController = new MenuController(root, gameLoop, soundController);
 
         stage.setScene(gameScene);
         stage.setTitle("Breakout");
