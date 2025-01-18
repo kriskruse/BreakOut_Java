@@ -1,5 +1,3 @@
-
-
 package dk.group12.breakout.BreakOutGame;
 
 import javafx.event.ActionEvent;
@@ -17,6 +15,8 @@ import java.util.Map;
 
 public class MenuController {
     private final StackPane root;
+    private final SoundController soundController;
+    //private final Map<String, VBox> menus = new HashMap<String, VBox>();
 
     // Menu pages
     private VBox startMenu;
@@ -49,9 +49,10 @@ public class MenuController {
 
     private final GameLoop gameLoop;
 
-    public MenuController(StackPane root, GameLoop gameLoop) {
+    public MenuController(StackPane root, GameLoop gameLoop, SoundController soundController) {
         this.gameLoop = gameLoop;
         this.root = root;
+        this.soundController = soundController;
         overlayPane.getChildren().add(createPauseButton());
         root.getChildren().add(overlayPane);
         createMenus();
@@ -116,113 +117,6 @@ public class MenuController {
     /* MENU VISIBILITY SETTINGS */
 
 
-    /*
-    public void showStartMenu() {
-        isStartMenuVisible = true;
-        isSettingsMenuVisible = false;
-        isDifficultyMenuVisible = false;
-        isSoundMenuVisible = false;
-        isPauseMenuVisible = false;
-        isGameOverPageVisible = false;
-        isTutorialScreenVisible = false;
-        isSensitivityMenuVisible = false;
-        updateMenuVisibility();
-    }
-
-    public void showSettingsMenu() {
-        isStartMenuVisible = false;
-        isSettingsMenuVisible = true;
-        isDifficultyMenuVisible = false;
-        isSoundMenuVisible = false;
-        isPauseMenuVisible = false;
-        isGameOverPageVisible = false;
-        isTutorialScreenVisible = false;
-        isSensitivityMenuVisible = false;
-        updateMenuVisibility();
-    }
-
-    public void showPauseMenu() {
-        isStartMenuVisible = false;
-        isSettingsMenuVisible = false;
-        isDifficultyMenuVisible = false;
-        isSoundMenuVisible = false;
-        isPauseMenuVisible = true;
-        isGameOverPageVisible = false;
-        isTutorialScreenVisible = false;
-        isSensitivityMenuVisible = false;
-        updateMenuVisibility();
-    }
-    public void showGameOverPage() {
-        isStartMenuVisible = false;
-        isSettingsMenuVisible = false;
-        isDifficultyMenuVisible = false;
-        isSoundMenuVisible = false;
-        isPauseMenuVisible = false;
-        isGameOverPageVisible = true;
-        isTutorialScreenVisible = false;
-        isSensitivityMenuVisible = false;
-        updateMenuVisibility();
-    }
-    public void showTutorialScreen() {
-        isStartMenuVisible = false;
-        isSettingsMenuVisible = false;
-        isDifficultyMenuVisible = false;
-        isSoundMenuVisible = false;
-        isPauseMenuVisible = false;
-        isGameOverPageVisible = false;
-        isTutorialScreenVisible = true;
-        isSensitivityMenuVisible = false;
-        tutorialScreen.setMouseTransparent(true); // Allow mouse clicks to pass through
-        updateMenuVisibility();
-    }
-    public void showDifficultyMenu() {
-        isStartMenuVisible = false;
-        isSettingsMenuVisible = false;
-        isDifficultyMenuVisible = true;
-        isSoundMenuVisible = false;
-        isPauseMenuVisible = false;
-        isGameOverPageVisible = false;
-        isTutorialScreenVisible = false;
-        isSensitivityMenuVisible = false;
-        updateMenuVisibility();
-    }
-    public void showSoundMenu() {
-        isStartMenuVisible = false;
-        isSettingsMenuVisible = false;
-        isDifficultyMenuVisible = false;
-        isSoundMenuVisible = true;
-        isPauseMenuVisible = false;
-        isGameOverPageVisible = false;
-        isTutorialScreenVisible = false;
-        isSensitivityMenuVisible = false;
-        updateMenuVisibility();
-    }
-    public void showSensitivityMenu() {
-        isStartMenuVisible = false;
-        isSettingsMenuVisible = false;
-        isDifficultyMenuVisible = false;
-        isSoundMenuVisible = false;
-        isPauseMenuVisible = false;
-        isGameOverPageVisible = false;
-        isTutorialScreenVisible = false;
-        isSensitivityMenuVisible = true;
-        updateMenuVisibility();
-    }
-
-
-    private void updateMenuVisibility() {
-        startMenu.setVisible(isStartMenuVisible);
-        settingsMenu.setVisible(isSettingsMenuVisible);
-        difficultyMenu.setVisible(isDifficultyMenuVisible);
-        soundMenu.setVisible(isSoundMenuVisible);
-        pauseMenu.setVisible(isPauseMenuVisible);
-        gameOverPage.setVisible(isGameOverPageVisible);
-        tutorialScreen.setVisible(isTutorialScreenVisible);
-        sensitivityMenu.setVisible(isSensitivityMenuVisible);
-
-
-    }
-    */
     private void updateMenuVisibility() {
         startMenu.setVisible(currentMenu == MenuState.START_MENU);
         settingsMenu.setVisible(currentMenu == MenuState.SETTINGS_MENU);
@@ -468,6 +362,21 @@ public class MenuController {
                     GameState.ballSpeedDifficultyMultiplier = 1.6;
                     gameLoop.gameState.updateBallSpeed();
 
+                }),
+                Map.entry("Off", e -> {
+                    System.out.println("Sound Off button clicked");
+                    if (SoundController.soundControl) {
+                        SoundController.soundControl = false;
+                        soundController.stopMusic();
+                    }
+
+                }),
+                Map.entry("On", e -> {
+                    System.out.println("Sound On button clicked");
+                    if (!SoundController.soundControl) {
+                        SoundController.soundControl = true;
+                        soundController.playMusic();
+                    }
                 })
         );
         // Return the matching action or a default one

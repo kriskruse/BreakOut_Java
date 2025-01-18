@@ -75,4 +75,8 @@ public class SoundController {
             musicPlayer.stop();
         }
     }
+
+    public void stopMusic() {
+        musicPlayer.stop();
+    }
 }
