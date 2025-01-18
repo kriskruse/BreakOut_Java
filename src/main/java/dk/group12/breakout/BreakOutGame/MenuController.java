@@ -1,3 +1,5 @@
+
+
 package dk.group12.breakout.BreakOutGame;
 
 import javafx.event.ActionEvent;
@@ -11,13 +13,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.control.Label;
 import javafx.animation.ScaleTransition;
 import javafx.util.Duration;
-
-import java.util.HashMap;
 import java.util.Map;
 
 public class MenuController {
     private final StackPane root;
-    //private final Map<String, VBox> menus = new HashMap<String, VBox>();
 
     // Menu pages
     private VBox startMenu;
@@ -28,6 +27,8 @@ public class MenuController {
     private VBox gameOverPage;
     private VBox tutorialScreen;
     private VBox sensitivityMenu;
+
+    public MenuState currentMenu;
 
     // Booleans to track menu visibility
     private boolean isStartMenuVisible = true;
@@ -88,7 +89,7 @@ public class MenuController {
         root.getChildren().addAll(startMenu, pauseMenu, gameOverPage, tutorialScreen, settingsMenu, difficultyMenu, soundMenu, sensitivityMenu);  //add other menus also
         // Upon initialization show only the start menu
         hideMenus();
-        showStartMenu();
+        showMenu(MenuState.START_MENU);
     }
 
     private Label currentDifficultyLabel;
@@ -107,7 +108,15 @@ public class MenuController {
         return menu;
     }
 
+    public void showMenu(MenuState menuState) {
+        this.currentMenu = menuState;
+        updateMenuVisibility();
+    }
+
     /* MENU VISIBILITY SETTINGS */
+
+
+    /*
     public void showStartMenu() {
         isStartMenuVisible = true;
         isSettingsMenuVisible = false;
@@ -210,7 +219,26 @@ public class MenuController {
         gameOverPage.setVisible(isGameOverPageVisible);
         tutorialScreen.setVisible(isTutorialScreenVisible);
         sensitivityMenu.setVisible(isSensitivityMenuVisible);
+
+
     }
+    */
+    private void updateMenuVisibility() {
+        startMenu.setVisible(currentMenu == MenuState.START_MENU);
+        settingsMenu.setVisible(currentMenu == MenuState.SETTINGS_MENU);
+        difficultyMenu.setVisible(currentMenu == MenuState.DIFFICULTY_MENU);
+        soundMenu.setVisible(currentMenu == MenuState.SOUND_MENU);
+        pauseMenu.setVisible(currentMenu == MenuState.PAUSE_MENU);
+        gameOverPage.setVisible(currentMenu == MenuState.GAME_OVER);
+        tutorialScreen.setVisible(currentMenu == MenuState.TUTORIAL_SCREEN);
+        sensitivityMenu.setVisible(currentMenu == MenuState.SENSITIVITY_MENU);
+
+        // Add logic to allow mouse clicks to pass through the tutorial screen
+        // Reset for other states
+        tutorialScreen.setMouseTransparent(currentMenu == MenuState.TUTORIAL_SCREEN); // Allow mouse clicks to pass through
+    }
+
+
     public void hideMenus() {
         startMenu.setVisible(false);
         settingsMenu.setVisible(false);
@@ -221,6 +249,8 @@ public class MenuController {
         tutorialScreen.setVisible(false);
         pauseButton.setVisible(true);
     }
+
+
 
     /* CREATING PAGES */
 
@@ -345,7 +375,7 @@ public class MenuController {
                 Map.entry("Start Game", e -> {
                     resumeGame();
                     hideMenus();
-                    showTutorialScreen();
+                    showMenu(MenuState.TUTORIAL_SCREEN);
                     gameStarted = true;
                 }),
                 Map.entry("Resume Game", e -> {
@@ -357,10 +387,10 @@ public class MenuController {
                     System.out.println("Restart button pressed");
                     restartGame();
                     hideMenus();
-                    showTutorialScreen();
+                    showMenu(MenuState.TUTORIAL_SCREEN);
                 }),
                 Map.entry("Settings", e -> {
-                    showSettingsMenu();
+                    showMenu(MenuState.SETTINGS_MENU);
                 }),
                 Map.entry("How To Play", e -> {
                     System.out.println("How To Play button clicked");
@@ -375,28 +405,28 @@ public class MenuController {
                 }),
                 Map.entry("Difficulty", e -> {
                     System.out.println("Difficulty button clicked");
-                    showDifficultyMenu();
+                    showMenu(MenuState.DIFFICULTY_MENU);
                 }),
                 Map.entry("Sound", e -> {
                     System.out.println("Sound button clicked");
-                    showSoundMenu();
+                    showMenu(MenuState.SOUND_MENU);
                 }),
                 Map.entry("Sensitivity", e -> {
                     System.out.println("Sensitivity button clicked");
-                    showSensitivityMenu();
+                    showMenu(MenuState.SENSITIVITY_MENU);
                 }),
                 Map.entry("Back", e -> {
-                    if (!gameStarted && isSettingsMenuVisible) {
-                        showStartMenu();
-                    } else if (gameStarted && isSettingsMenuVisible) {
-                        showPauseMenu();
-                    }
-                    if (isDifficultyMenuVisible) {
-                        showSettingsMenu();
-                    } else if (isSoundMenuVisible) {
-                        showSettingsMenu();
-                    } else if (isSensitivityMenuVisible) {
-                        showSettingsMenu();
+                    System.out.println("Back button clicked");
+                    if (!gameStarted && currentMenu == MenuState.SETTINGS_MENU) {
+                        showMenu(MenuState.START_MENU); // Navigate back to Start Menu
+                    } else if (gameStarted && currentMenu == MenuState.SETTINGS_MENU) {
+                        showMenu(MenuState.PAUSE_MENU); // Navigate back to Pause Menu
+                    } else if (currentMenu == MenuState.DIFFICULTY_MENU) {
+                        showMenu(MenuState.SETTINGS_MENU); // Navigate back to Settings Menu
+                    } else if (currentMenu == MenuState.SOUND_MENU) {
+                        showMenu(MenuState.SETTINGS_MENU); // Navigate back to Settings Menu
+                    } else if (currentMenu == MenuState.SENSITIVITY_MENU) {
+                        showMenu(MenuState.SETTINGS_MENU); // Navigate back to Settings Menu
                     }
                 }),
                 Map.entry("Easy", e -> {
@@ -526,14 +556,26 @@ public class MenuController {
     public void pauseGame() {
         gamePaused = true;
         pauseButton.setVisible(false);
-        showPauseMenu(); // Show the pause menu
+        showMenu(MenuState.PAUSE_MENU); // Show the pause menu
 
     }
     public void restartGame() {
         gamePaused = false;
         gameEnded = false;
         gameLoop.restartGame(); // Reinitialize the game loop
+        hideMenus();
+        showMenu(MenuState.TUTORIAL_SCREEN);
         pauseButton.setVisible(true);
+    }
+    public enum MenuState {
+        START_MENU,
+        SETTINGS_MENU,
+        PAUSE_MENU,
+        GAME_OVER,
+        TUTORIAL_SCREEN,
+        DIFFICULTY_MENU,
+        SOUND_MENU,
+        SENSITIVITY_MENU
     }
 }
 

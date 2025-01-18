@@ -107,9 +107,16 @@ public class BreakoutGraphical extends Application {
         //esc button to pause game
         gameScene.setOnKeyPressed(event -> {
             activeKeys.add(event.getCode().toString());
-            if (menuController.isTutorialScreenVisible) {
-                menuController.hideMenus(); // Hide the tutorial screen
+
+            // Hide tutorial screen if visible and movement keys are pressed
+            if (menuController.currentMenu == MenuController.MenuState.TUTORIAL_SCREEN) {
+                if (event.getCode() == KeyCode.A || event.getCode() == KeyCode.D ||
+                        event.getCode() == KeyCode.LEFT || event.getCode() == KeyCode.RIGHT) {
+                    menuController.hideMenus(); // Hide the tutorial screen
+                }
             }
+
+            // ESC key behavior for pause/resume/start
             if (event.getCode() == KeyCode.ESCAPE) {
                 if (menuController.gameStarted && menuController.gamePaused) {
                     menuController.resumeGame();
@@ -118,9 +125,8 @@ public class BreakoutGraphical extends Application {
                 } else if (menuController.gameStarted && !menuController.gamePaused) {
                     menuController.pauseGame();
                 } else {
-                    menuController.showStartMenu();
+                    menuController.showMenu(MenuController.MenuState.START_MENU);
                 }
-
             }
         });
         gameScene.setOnKeyReleased(event -> activeKeys.remove(event.getCode().toString()));
@@ -140,7 +146,7 @@ public class BreakoutGraphical extends Application {
                 // Check if the game has ended
                 if (gameLoop.gameEnded) {
                     menuController.gameEnded = true;
-                    menuController.showGameOverPage();
+                    menuController.showMenu(MenuController.MenuState.GAME_OVER);
                     return;
                 }
                 if (gameIterations > 1 && !menuController.gameStarted) {
