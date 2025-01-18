@@ -77,12 +77,28 @@ public class MenuController {
         gameOverPage = createGameOverPage();
         tutorialScreen = createTutorialScreen();
         settingsMenu = createVBoxMenuPage("Settings", new String[]{"Difficulty","Sound", "Sensitivity", "Back"});
-        difficultyMenu = createVBoxMenuPage("Difficulty", new String[]{"Easy", "Medium", "Hard","HARDCORE", "Back"});
+        difficultyMenu = createDifficultyMenu();
 
         root.getChildren().addAll(startMenu, pauseMenu, gameOverPage, tutorialScreen, settingsMenu, difficultyMenu);  //add other menus also
         // Upon initialization show only the start menu
         hideMenus();
         showStartMenu();
+    }
+
+    private Label currentDifficultyLabel;
+
+    // Create the difficulty menu with the current difficulty label
+    private VBox createDifficultyMenu() {
+        VBox menu = createVBoxMenuPage("Difficulty", new String[]{"Easy", "Medium", "Hard", "HARDCORE!", "Back"});
+        currentDifficultyLabel = new Label("Current Difficulty: Easy");
+        currentDifficultyLabel.setStyle(
+                "-fx-font-size: 18px;" +
+                    "-fx-font-family: 'Arial';" +
+                    "-fx-font-weight: bold;" +
+                    "-fx-text-fill: white;"
+        );
+        menu.getChildren().add(1, currentDifficultyLabel); // Add the label below the title
+        return menu;
     }
 
     /* MENU VISIBILITY SETTINGS */
@@ -340,56 +356,43 @@ public class MenuController {
                 }),
                 Map.entry("Easy", e -> {
                     System.out.println("Easy button clicked");
-                    /*
+                    currentDifficultyLabel.setText("Current Difficulty: Easy");
                     GameState.platformWidthDifficultyMultiplier = 1.0;
+                    // If the width isn't updated, the platform will remain the same size until a new gameState is created
+                    gameLoop.gameState.platform.updateWidth(gameLoop.gameState.powerUpHandler.activePowerUps);
                     GameState.ballSpeedDifficultyMultiplier = 1.0;
-                    gameStarted = true;
-                    resumeGame();
-                    hideMenus();
+                    gameLoop.gameState.updateBallSpeed();
 
-                     */
                 }),
                 Map.entry("Medium", e -> {
 
                     System.out.println("Medium button clicked");
-                     /*
+                    currentDifficultyLabel.setText("Current Difficulty: Medium");
                     GameState.platformWidthDifficultyMultiplier = 0.8;
+                    gameLoop.gameState.platform.updateWidth(gameLoop.gameState.powerUpHandler.activePowerUps);
                     GameState.ballSpeedDifficultyMultiplier = 1.2;
-                    if (gameStarted) {
-                        showPauseMenu();
-                    } else {
-                        showStartMenu();
-                    }
+                    gameLoop.gameState.updateBallSpeed();
 
-                     */
                 }),
                 Map.entry("Hard", e -> {
 
                     System.out.println("Hard button clicked");
-                     /*
+                    currentDifficultyLabel.setText("Current Difficulty: Hard");
                     GameState.platformWidthDifficultyMultiplier = 0.6;
+                    gameLoop.gameState.platform.updateWidth(gameLoop.gameState.powerUpHandler.activePowerUps);
                     GameState.ballSpeedDifficultyMultiplier = 1.4;
-                    if (gameStarted) {
-                        showPauseMenu();
-                    } else {
-                        showStartMenu();
-                    }
+                    gameLoop.gameState.updateBallSpeed();
 
-                     */
                 }),
-                Map.entry("HARDCORE", e -> {
+                Map.entry("HARDCORE!", e -> {
 
-                    System.out.println("HARDCORE button clicked");
-                    /*
+                    System.out.println("HARDCORE! button clicked");
+                    currentDifficultyLabel.setText("Current Difficulty: HARDCORE!");
                     GameState.platformWidthDifficultyMultiplier = 0.4;
+                    gameLoop.gameState.platform.updateWidth(gameLoop.gameState.powerUpHandler.activePowerUps);
                     GameState.ballSpeedDifficultyMultiplier = 1.6;
-                    if (gameStarted) {
-                        showPauseMenu();
-                    } else {
-                        showStartMenu();
-                    }
+                    gameLoop.gameState.updateBallSpeed();
 
-                     */
                 })
         );
         // Return the matching action or a default one

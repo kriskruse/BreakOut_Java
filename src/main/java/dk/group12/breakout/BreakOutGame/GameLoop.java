@@ -48,7 +48,7 @@ public class GameLoop {
 
         if (gameState.gameWon) {
             GameState oldGameState = gameState;
-            gameState = new GameState(n,m,gameWidth,gameHeight,lives, oldGameState.scoreTracker);
+            gameState = new GameState(n,m,gameWidth,gameHeight, lives, oldGameState.scoreTracker);
 
         }
 
