@@ -22,6 +22,9 @@ public class GameLoop {
         this.lives = lives;
 
         gameState = new GameState(n, m, gameWidth, gameHeight, lives, new ScoreTracker());
+
+        // Load scores from file
+        gameState.scoreHistory.loadFromFile("scores.txt");
     }
 
     public void handleInput(Set<String> activeKeys) {
@@ -53,6 +56,14 @@ public class GameLoop {
 
     public void restartGame() {
         gameEnded = false;
+
+        gameState.scoreHistory.saveToFile("scores.txt");
+
         gameState = new GameState(n, m, gameWidth, gameHeight, lives, new ScoreTracker());
+
+        gameState.scoreHistory.loadFromFile("scores.txt");
+
+        gameState.scoreHistory.printScores();
+
     }
 }

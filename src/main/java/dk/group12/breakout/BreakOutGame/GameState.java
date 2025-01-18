@@ -25,6 +25,8 @@ public class GameState {
     public Random randomGenerator = new Random(432234);
     public ScoreTracker scoreTracker; // Tracks the score
     public boolean gameWon = false;
+    public ScoreHistory scoreHistory;
+
 
 
     public GameState(int n, int m, int gameWidth, int gameHeight, int lives, ScoreTracker scoreTracker) {
@@ -32,6 +34,7 @@ public class GameState {
         this.gameWidth = gameWidth;
         this.lives = lives;
         this.scoreTracker = scoreTracker;
+        this.scoreHistory = new ScoreHistory();
         int platformWidth = gameWidth / 6;
         int platformX = (gameWidth - platformWidth) / 2;
         int platformHeight = 10;
@@ -80,9 +83,21 @@ public class GameState {
         ballList.get(0).direction = new Vec2((randomGenerator.nextDouble() - 0.5) * 2, -1, ballSpeed);
     }
     public void endGame() {
+        // if gameEnded is called several times, we only want to end the game once.
+        if (gameEnded) {
+            return;
+        }
+
         ballList.get(0).direction = new Vec2(0, -1, 0);
         gameRunning = false;
         gameEnded = true;
+
+        // get the score and add it to the history
+        int finalScore = scoreTracker.getScore();
+        scoreHistory.addScore(finalScore);
+
+        scoreHistory.saveToFile("scores.txt");
+        scoreHistory.printScores();
     }
 
     // Reset the ball and platform after losing a life

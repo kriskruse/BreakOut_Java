@@ -58,6 +58,8 @@ public class BreakoutGraphical extends Application {
         n = arg1;
         m = arg2;
         lives = 1;
+
+
         launch();
     }
 
