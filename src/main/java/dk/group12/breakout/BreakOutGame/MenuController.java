@@ -341,8 +341,8 @@ public class MenuController {
                 Map.entry("Easy", e -> {
                     System.out.println("Easy button clicked");
                     /*
-                    gameLoop.gameState.platformWidth = gameLoop.gameState.platformWidth*1;
-                    gameLoop.gameState.ballSpeed = gameLoop.gameState.ballSpeed*1;
+                    GameState.platformWidthDifficultyMultiplier = 1.0;
+                    GameState.ballSpeedDifficultyMultiplier = 1.0;
                     gameStarted = true;
                     resumeGame();
                     hideMenus();
@@ -353,8 +353,8 @@ public class MenuController {
 
                     System.out.println("Medium button clicked");
                      /*
-                    gameLoop.gameState.platformWidth = gameLoop.gameState.platformWidth*0.8;
-                    gameLoop.gameState.ballSpeed = gameLoop.gameState.ballSpeed*1.2;
+                    GameState.platformWidthDifficultyMultiplier = 0.8;
+                    GameState.ballSpeedDifficultyMultiplier = 1.2;
                     if (gameStarted) {
                         showPauseMenu();
                     } else {
@@ -367,8 +367,8 @@ public class MenuController {
 
                     System.out.println("Hard button clicked");
                      /*
-                    gameLoop.gameState.platformWidth = gameLoop.gameState.platformWidth*0.6;
-                    gameLoop.gameState.ballSpeed = gameLoop.gameState.ballSpeed*1.4;
+                    GameState.platformWidthDifficultyMultiplier = 0.6;
+                    GameState.ballSpeedDifficultyMultiplier = 1.4;
                     if (gameStarted) {
                         showPauseMenu();
                     } else {
@@ -381,8 +381,8 @@ public class MenuController {
 
                     System.out.println("HARDCORE button clicked");
                     /*
-                    gameLoop.gameState.platformWidth = gameLoop.gameState.platformWidth*0.4;
-                    gameLoop.gameState.ballSpeed = gameLoop.gameState.ballSpeed*1.6;
+                    GameState.platformWidthDifficultyMultiplier = 0.4;
+                    GameState.ballSpeedDifficultyMultiplier = 1.6;
                     if (gameStarted) {
                         showPauseMenu();
                     } else {

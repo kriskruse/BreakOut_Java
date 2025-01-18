@@ -17,6 +17,8 @@ public class GameState {
     public boolean gameRunning = false;
     public boolean gameEnded = false;
     public double ballSpeed;
+    public double ballSpeedDifficultyMultiplier = 1.0;
+    public double platformWidthDifficultyMultiplier = 1.0;
     private int lives;
     private final int gameWidth;
     private final int gameHeight;
@@ -35,7 +37,7 @@ public class GameState {
         this.lives = lives;
         this.scoreTracker = scoreTracker;
         this.scoreHistory = new ScoreHistory();
-        int platformWidth = gameWidth / 6;
+        int platformWidth = (int) ((gameWidth / 6) * platformWidthDifficultyMultiplier);
         int platformX = (gameWidth - platformWidth) / 2;
         int platformHeight = 10;
         int platformY = (int) (gameHeight - platformHeight - gameHeight * 0.05);
@@ -47,7 +49,7 @@ public class GameState {
 
 
         // ball speed is proportional to the game height
-        ballSpeed = (gameHeight / 200.) * (1 + scoreTracker.getScore() / 600.);
+        ballSpeed = ((gameHeight / 200.) * (1 + scoreTracker.getScore() / 600.)) * ballSpeedDifficultyMultiplier;
 
 
         // we want to add the ball right on top of the platform

@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static dk.group12.breakout.BreakOutGame.GameState.*;
-
 public class PowerUpHandler {
     public List<PowerUp> fallingPowerUps = new ArrayList<>();
     public final Map<GameState.powerUpType, PowerUp> activePowerUps = new HashMap<>();
