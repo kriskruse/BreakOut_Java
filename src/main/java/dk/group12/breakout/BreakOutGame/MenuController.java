@@ -23,20 +23,24 @@ public class MenuController {
     private VBox startMenu;
     private VBox settingsMenu;
     private VBox difficultyMenu;
+    private VBox soundMenu;
     private VBox pauseMenu;
     private VBox gameOverPage;
     private VBox tutorialScreen;
+    private VBox sensitivityMenu;
 
     // Booleans to track menu visibility
     private boolean isStartMenuVisible = true;
     private boolean isSettingsMenuVisible = false;
     private boolean isDifficultyMenuVisible = false;
+    private boolean isSoundMenuVisible = false;
     private boolean isPauseMenuVisible = false;
     private boolean isGameOverPageVisible = false;
-    private boolean isTutorialScreenVisible = false;
+    public boolean isTutorialScreenVisible = false;
+    private boolean isSensitivityMenuVisible = false;
 
     //game start pause end controls
-    private Button pauseButton;
+    public Button pauseButton;
     private Pane overlayPane = new Pane();
     public boolean gameStarted = false;
     public boolean gamePaused = false;
@@ -78,8 +82,10 @@ public class MenuController {
         tutorialScreen = createTutorialScreen();
         settingsMenu = createVBoxMenuPage("Settings", new String[]{"Difficulty","Sound", "Sensitivity", "Back"});
         difficultyMenu = createDifficultyMenu();
+        soundMenu = createVBoxMenuPage("Sound", new String[]{"On", "Off", "Back"});
+        sensitivityMenu = createVBoxMenuPage("Sensitivity", new String[]{"Low", "Medium", "High", "Back"});
 
-        root.getChildren().addAll(startMenu, pauseMenu, gameOverPage, tutorialScreen, settingsMenu, difficultyMenu);  //add other menus also
+        root.getChildren().addAll(startMenu, pauseMenu, gameOverPage, tutorialScreen, settingsMenu, difficultyMenu, soundMenu, sensitivityMenu);  //add other menus also
         // Upon initialization show only the start menu
         hideMenus();
         showStartMenu();
@@ -106,9 +112,11 @@ public class MenuController {
         isStartMenuVisible = true;
         isSettingsMenuVisible = false;
         isDifficultyMenuVisible = false;
+        isSoundMenuVisible = false;
         isPauseMenuVisible = false;
         isGameOverPageVisible = false;
         isTutorialScreenVisible = false;
+        isSensitivityMenuVisible = false;
         updateMenuVisibility();
     }
 
@@ -116,9 +124,11 @@ public class MenuController {
         isStartMenuVisible = false;
         isSettingsMenuVisible = true;
         isDifficultyMenuVisible = false;
+        isSoundMenuVisible = false;
         isPauseMenuVisible = false;
         isGameOverPageVisible = false;
         isTutorialScreenVisible = false;
+        isSensitivityMenuVisible = false;
         updateMenuVisibility();
     }
 
@@ -126,27 +136,33 @@ public class MenuController {
         isStartMenuVisible = false;
         isSettingsMenuVisible = false;
         isDifficultyMenuVisible = false;
+        isSoundMenuVisible = false;
         isPauseMenuVisible = true;
         isGameOverPageVisible = false;
         isTutorialScreenVisible = false;
+        isSensitivityMenuVisible = false;
         updateMenuVisibility();
     }
     public void showGameOverPage() {
         isStartMenuVisible = false;
         isSettingsMenuVisible = false;
         isDifficultyMenuVisible = false;
+        isSoundMenuVisible = false;
         isPauseMenuVisible = false;
         isGameOverPageVisible = true;
         isTutorialScreenVisible = false;
+        isSensitivityMenuVisible = false;
         updateMenuVisibility();
     }
     public void showTutorialScreen() {
         isStartMenuVisible = false;
         isSettingsMenuVisible = false;
         isDifficultyMenuVisible = false;
+        isSoundMenuVisible = false;
         isPauseMenuVisible = false;
         isGameOverPageVisible = false;
         isTutorialScreenVisible = true;
+        isSensitivityMenuVisible = false;
         tutorialScreen.setMouseTransparent(true); // Allow mouse clicks to pass through
         updateMenuVisibility();
     }
@@ -154,28 +170,52 @@ public class MenuController {
         isStartMenuVisible = false;
         isSettingsMenuVisible = false;
         isDifficultyMenuVisible = true;
+        isSoundMenuVisible = false;
         isPauseMenuVisible = false;
         isGameOverPageVisible = false;
         isTutorialScreenVisible = false;
+        isSensitivityMenuVisible = false;
         updateMenuVisibility();
     }
-    public boolean isTutorialScreenVisible() {
-        return isTutorialScreenVisible;
+    public void showSoundMenu() {
+        isStartMenuVisible = false;
+        isSettingsMenuVisible = false;
+        isDifficultyMenuVisible = false;
+        isSoundMenuVisible = true;
+        isPauseMenuVisible = false;
+        isGameOverPageVisible = false;
+        isTutorialScreenVisible = false;
+        isSensitivityMenuVisible = false;
+        updateMenuVisibility();
     }
+    public void showSensitivityMenu() {
+        isStartMenuVisible = false;
+        isSettingsMenuVisible = false;
+        isDifficultyMenuVisible = false;
+        isSoundMenuVisible = false;
+        isPauseMenuVisible = false;
+        isGameOverPageVisible = false;
+        isTutorialScreenVisible = false;
+        isSensitivityMenuVisible = true;
+        updateMenuVisibility();
+    }
+
 
     private void updateMenuVisibility() {
         startMenu.setVisible(isStartMenuVisible);
         settingsMenu.setVisible(isSettingsMenuVisible);
+        difficultyMenu.setVisible(isDifficultyMenuVisible);
+        soundMenu.setVisible(isSoundMenuVisible);
         pauseMenu.setVisible(isPauseMenuVisible);
         gameOverPage.setVisible(isGameOverPageVisible);
         tutorialScreen.setVisible(isTutorialScreenVisible);
-        difficultyMenu.setVisible(isDifficultyMenuVisible);
-
+        sensitivityMenu.setVisible(isSensitivityMenuVisible);
     }
     public void hideMenus() {
         startMenu.setVisible(false);
         settingsMenu.setVisible(false);
         difficultyMenu.setVisible(false);
+        soundMenu.setVisible(false);
         pauseMenu.setVisible(false);
         gameOverPage.setVisible(false);
         tutorialScreen.setVisible(false);
@@ -193,7 +233,6 @@ public class MenuController {
         Button restartGameButton = new Button("Restart Game");
         restartGameButton.setOnAction(e -> {
             System.out.println("Restart button pressed");
-            checkForGameEnded();
             restartGame();
             hideMenus();
         });
@@ -316,7 +355,6 @@ public class MenuController {
                 }),
                 Map.entry("Restart Game", e -> {
                     System.out.println("Restart button pressed");
-                    checkForGameEnded();
                     restartGame();
                     hideMenus();
                     showTutorialScreen();
@@ -341,17 +379,24 @@ public class MenuController {
                 }),
                 Map.entry("Sound", e -> {
                     System.out.println("Sound button clicked");
-                    // Add "Sound" functionality here
+                    showSoundMenu();
                 }),
                 Map.entry("Sensitivity", e -> {
                     System.out.println("Sensitivity button clicked");
-                    // Add "Sensitivity" functionality here
+                    showSensitivityMenu();
                 }),
                 Map.entry("Back", e -> {
-                    if (gameStarted) {
-                        showPauseMenu();
-                    } else {
+                    if (!gameStarted && isSettingsMenuVisible) {
                         showStartMenu();
+                    } else if (gameStarted && isSettingsMenuVisible) {
+                        showPauseMenu();
+                    }
+                    if (isDifficultyMenuVisible) {
+                        showSettingsMenu();
+                    } else if (isSoundMenuVisible) {
+                        showSettingsMenu();
+                    } else if (isSensitivityMenuVisible) {
+                        showSettingsMenu();
                     }
                 }),
                 Map.entry("Easy", e -> {
@@ -489,21 +534,6 @@ public class MenuController {
         gameEnded = false;
         gameLoop.restartGame(); // Reinitialize the game loop
         pauseButton.setVisible(true);
-    }
-
-    //helper method to set gameEnded to true/false
-    public void checkForGameEnded() {
-
-    }
-
-    public void gamePausedCheck() {
-        if (gamePaused) {
-            resumeGame();
-            pauseButton.setVisible(true);
-            hideMenus();
-        } else {
-            pauseGame();
-        }
     }
 }
 

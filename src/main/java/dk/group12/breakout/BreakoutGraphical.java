@@ -107,11 +107,20 @@ public class BreakoutGraphical extends Application {
         //esc button to pause game
         gameScene.setOnKeyPressed(event -> {
             activeKeys.add(event.getCode().toString());
-            if (menuController.isTutorialScreenVisible()) {
+            if (menuController.isTutorialScreenVisible) {
                 menuController.hideMenus(); // Hide the tutorial screen
             }
             if (event.getCode() == KeyCode.ESCAPE) {
-                menuController.gamePausedCheck();
+                if (menuController.gameStarted && menuController.gamePaused) {
+                    menuController.resumeGame();
+                    menuController.pauseButton.setVisible(true);
+                    menuController.hideMenus();
+                } else if (menuController.gameStarted && !menuController.gamePaused) {
+                    menuController.pauseGame();
+                } else {
+                    menuController.showStartMenu();
+                }
+
             }
         });
         gameScene.setOnKeyReleased(event -> activeKeys.remove(event.getCode().toString()));
@@ -155,7 +164,6 @@ public class BreakoutGraphical extends Application {
 
                     gameLoop.handleInput(activeKeys);
                     gameLoop.update();
-                    menuController.checkForGameEnded();
                     previousTime = currentNanoTime;
                     // This is here to clear the screen from the previous frame
                     graphicsContext.clearRect(0, 0, windowX, windowY);
