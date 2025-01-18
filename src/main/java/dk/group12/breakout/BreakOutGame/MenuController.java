@@ -22,6 +22,7 @@ public class MenuController {
     // Menu pages
     private VBox startMenu;
     private VBox settingsMenu;
+    private VBox difficultyMenu;
     private VBox pauseMenu;
     private VBox gameOverPage;
     private VBox tutorialScreen;
@@ -29,6 +30,7 @@ public class MenuController {
     // Booleans to track menu visibility
     private boolean isStartMenuVisible = true;
     private boolean isSettingsMenuVisible = false;
+    private boolean isDifficultyMenuVisible = false;
     private boolean isPauseMenuVisible = false;
     private boolean isGameOverPageVisible = false;
     private boolean isTutorialScreenVisible = false;
@@ -75,8 +77,9 @@ public class MenuController {
         gameOverPage = createGameOverPage();
         tutorialScreen = createTutorialScreen();
         settingsMenu = createVBoxMenuPage("Settings", new String[]{"Difficulty","Sound", "Sensitivity", "Back"});
+        difficultyMenu = createVBoxMenuPage("Difficulty", new String[]{"Easy", "Medium", "Hard","HARDCORE", "Back"});
 
-        root.getChildren().addAll(startMenu, pauseMenu, gameOverPage, tutorialScreen, settingsMenu);  //add other menus also
+        root.getChildren().addAll(startMenu, pauseMenu, gameOverPage, tutorialScreen, settingsMenu, difficultyMenu);  //add other menus also
         // Upon initialization show only the start menu
         hideMenus();
         showStartMenu();
@@ -86,6 +89,7 @@ public class MenuController {
     public void showStartMenu() {
         isStartMenuVisible = true;
         isSettingsMenuVisible = false;
+        isDifficultyMenuVisible = false;
         isPauseMenuVisible = false;
         isGameOverPageVisible = false;
         isTutorialScreenVisible = false;
@@ -95,6 +99,7 @@ public class MenuController {
     public void showSettingsMenu() {
         isStartMenuVisible = false;
         isSettingsMenuVisible = true;
+        isDifficultyMenuVisible = false;
         isPauseMenuVisible = false;
         isGameOverPageVisible = false;
         isTutorialScreenVisible = false;
@@ -104,6 +109,7 @@ public class MenuController {
     public void showPauseMenu() {
         isStartMenuVisible = false;
         isSettingsMenuVisible = false;
+        isDifficultyMenuVisible = false;
         isPauseMenuVisible = true;
         isGameOverPageVisible = false;
         isTutorialScreenVisible = false;
@@ -112,6 +118,7 @@ public class MenuController {
     public void showGameOverPage() {
         isStartMenuVisible = false;
         isSettingsMenuVisible = false;
+        isDifficultyMenuVisible = false;
         isPauseMenuVisible = false;
         isGameOverPageVisible = true;
         isTutorialScreenVisible = false;
@@ -120,10 +127,20 @@ public class MenuController {
     public void showTutorialScreen() {
         isStartMenuVisible = false;
         isSettingsMenuVisible = false;
+        isDifficultyMenuVisible = false;
         isPauseMenuVisible = false;
         isGameOverPageVisible = false;
         isTutorialScreenVisible = true;
         tutorialScreen.setMouseTransparent(true); // Allow mouse clicks to pass through
+        updateMenuVisibility();
+    }
+    public void showDifficultyMenu() {
+        isStartMenuVisible = false;
+        isSettingsMenuVisible = false;
+        isDifficultyMenuVisible = true;
+        isPauseMenuVisible = false;
+        isGameOverPageVisible = false;
+        isTutorialScreenVisible = false;
         updateMenuVisibility();
     }
     public boolean isTutorialScreenVisible() {
@@ -136,11 +153,13 @@ public class MenuController {
         pauseMenu.setVisible(isPauseMenuVisible);
         gameOverPage.setVisible(isGameOverPageVisible);
         tutorialScreen.setVisible(isTutorialScreenVisible);
+        difficultyMenu.setVisible(isDifficultyMenuVisible);
 
     }
     public void hideMenus() {
         startMenu.setVisible(false);
         settingsMenu.setVisible(false);
+        difficultyMenu.setVisible(false);
         pauseMenu.setVisible(false);
         gameOverPage.setVisible(false);
         tutorialScreen.setVisible(false);
@@ -302,7 +321,7 @@ public class MenuController {
                 }),
                 Map.entry("Difficulty", e -> {
                     System.out.println("Difficulty button clicked");
-                    // Add "Difficulty" functionality here
+                    showDifficultyMenu();
                 }),
                 Map.entry("Sound", e -> {
                     System.out.println("Sound button clicked");
@@ -318,6 +337,59 @@ public class MenuController {
                     } else {
                         showStartMenu();
                     }
+                }),
+                Map.entry("Easy", e -> {
+                    System.out.println("Easy button clicked");
+                    /*
+                    gameLoop.gameState.platformWidth = gameLoop.gameState.platformWidth*1;
+                    gameLoop.gameState.ballSpeed = gameLoop.gameState.ballSpeed*1;
+                    gameStarted = true;
+                    resumeGame();
+                    hideMenus();
+
+                     */
+                }),
+                Map.entry("Medium", e -> {
+
+                    System.out.println("Medium button clicked");
+                     /*
+                    gameLoop.gameState.platformWidth = gameLoop.gameState.platformWidth*0.8;
+                    gameLoop.gameState.ballSpeed = gameLoop.gameState.ballSpeed*1.2;
+                    if (gameStarted) {
+                        showPauseMenu();
+                    } else {
+                        showStartMenu();
+                    }
+
+                     */
+                }),
+                Map.entry("Hard", e -> {
+
+                    System.out.println("Hard button clicked");
+                     /*
+                    gameLoop.gameState.platformWidth = gameLoop.gameState.platformWidth*0.6;
+                    gameLoop.gameState.ballSpeed = gameLoop.gameState.ballSpeed*1.4;
+                    if (gameStarted) {
+                        showPauseMenu();
+                    } else {
+                        showStartMenu();
+                    }
+
+                     */
+                }),
+                Map.entry("HARDCORE", e -> {
+
+                    System.out.println("HARDCORE button clicked");
+                    /*
+                    gameLoop.gameState.platformWidth = gameLoop.gameState.platformWidth*0.4;
+                    gameLoop.gameState.ballSpeed = gameLoop.gameState.ballSpeed*1.6;
+                    if (gameStarted) {
+                        showPauseMenu();
+                    } else {
+                        showStartMenu();
+                    }
+
+                     */
                 })
         );
         // Return the matching action or a default one

@@ -87,6 +87,7 @@ public class BreakoutGraphical extends Application {
 
         Scene gameScene = getScene(root);
 
+
         gameLoop = new GameLoop(n, m, windowX, windowY, lives);
         menuController = new MenuController(root, gameLoop);
         soundController = new SoundController();
@@ -130,7 +131,6 @@ public class BreakoutGraphical extends Application {
                 // Check if the game has ended
                 if (gameLoop.gameEnded) {
                     menuController.gameEnded = true;
-
                     menuController.showGameOverPage();
                     return;
                 }
