@@ -43,6 +43,15 @@ public class ScoreHistory {
 
     public void loadFromFile(String fileName) {
         scores.clear();
+
+        if (!new File(fileName).exists()) {
+            try {
+                new File(fileName).createNewFile();
+            } catch (IOException e) {
+                System.err.println("Failed to create new file: " + e.getMessage());
+            }
+        }
+
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = reader.readLine()) != null) {
