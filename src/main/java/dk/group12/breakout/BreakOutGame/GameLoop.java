@@ -13,7 +13,7 @@ public class GameLoop {
     public final int gameWidth;
     public final int gameHeight;
     public final int lives;
-    public static int playerMovementSpeed = 7;
+    public static int playerMovementSpeed = 8;
 
     public GameLoop(int n, int m, int gameWidth, int gameHeight, int lives) {
         this.n = n;

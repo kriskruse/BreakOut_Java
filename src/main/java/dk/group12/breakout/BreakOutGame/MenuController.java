@@ -384,15 +384,15 @@ public class MenuController {
                 }),
                 Map.entry("Normal", e -> {
                     System.out.println("Medium Sensitivity button clicked");
-                    GameLoop.playerMovementSpeed = 7;
+                    GameLoop.playerMovementSpeed = 8;
                 }),
                 Map.entry("High", e -> {
                     System.out.println("High Sensitivity button clicked");
-                    GameLoop.playerMovementSpeed = 11;
+                    GameLoop.playerMovementSpeed = 13;
                 }),
                 Map.entry("Very High", e -> {
                     System.out.println("Very High Sensitivity button clicked");
-                    GameLoop.playerMovementSpeed = 15;
+                    GameLoop.playerMovementSpeed = 18;
                 })
         );
         // Return the matching action or a default one
