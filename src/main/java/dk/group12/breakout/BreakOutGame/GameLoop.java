@@ -12,6 +12,7 @@ public class GameLoop {
     public final int gameWidth;
     public final int gameHeight;
     public final int lives;
+    public static int playerMovementSpeed = 8;
 
     public GameLoop(int n, int m, int gameWidth, int gameHeight, int lives) {
         this.n = n;
@@ -35,10 +36,10 @@ public class GameLoop {
         }
 
         if (activeKeys.contains("A") || activeKeys.contains("LEFT")) {
-            gameState.platform.move(-7);
+            gameState.platform.move(-playerMovementSpeed);
         }
         if (activeKeys.contains("D") || activeKeys.contains("RIGHT")) {
-            gameState.platform.move(7);
+            gameState.platform.move(playerMovementSpeed);
         }
     }
 
@@ -47,7 +48,7 @@ public class GameLoop {
 
         if (gameState.gameWon) {
             GameState oldGameState = gameState;
-            gameState = new GameState(n,m,gameWidth,gameHeight,lives, oldGameState.scoreTracker);
+            gameState = new GameState(n,m,gameWidth,gameHeight, lives, oldGameState.scoreTracker);
 
         }
 

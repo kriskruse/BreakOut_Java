@@ -11,31 +11,28 @@ import javafx.scene.layout.VBox;
 import javafx.scene.control.Label;
 import javafx.animation.ScaleTransition;
 import javafx.util.Duration;
-
 import java.util.Map;
 
 public class MenuController {
     private final StackPane root;
+    private final SoundController soundController;
     //private final Map<String, VBox> menus = new HashMap<String, VBox>();
 
     // Menu pages
     private VBox startMenu;
     private VBox settingsMenu;
     private VBox difficultyMenu;
+    private VBox soundMenu;
     private VBox pauseMenu;
     private VBox gameOverPage;
     private VBox tutorialScreen;
+    private VBox sensitivityMenu;
+    private VBox howToPlayMenu;
 
-    // Booleans to track menu visibility
-    private boolean isStartMenuVisible = true;
-    private boolean isSettingsMenuVisible = false;
-    private boolean isDifficultyMenuVisible = false;
-    private boolean isPauseMenuVisible = false;
-    private boolean isGameOverPageVisible = false;
-    private boolean isTutorialScreenVisible = false;
+    public MenuState currentMenu;
 
     //game start pause end controls
-    private Button pauseButton;
+    public Button pauseButton;
     private Pane overlayPane = new Pane();
     public boolean gameStarted = false;
     public boolean gamePaused = false;
@@ -43,9 +40,10 @@ public class MenuController {
 
     private final GameLoop gameLoop;
 
-    public MenuController(StackPane root, GameLoop gameLoop) {
+    public MenuController(StackPane root, GameLoop gameLoop, SoundController soundController) {
         this.gameLoop = gameLoop;
         this.root = root;
+        this.soundController = soundController;
         overlayPane.getChildren().add(createPauseButton());
         root.getChildren().add(overlayPane);
         createMenus();
@@ -76,96 +74,105 @@ public class MenuController {
         gameOverPage = createGameOverPage();
         tutorialScreen = createTutorialScreen();
         settingsMenu = createVBoxMenuPage("Settings", new String[]{"Difficulty","Sound", "Sensitivity", "Back"});
-        difficultyMenu = createVBoxMenuPage("Difficulty", new String[]{"Easy", "Medium", "Hard","HARDCORE", "Back"});
+        difficultyMenu = createDifficultyMenu();
+        soundMenu = createVBoxMenuPage("Sound", new String[]{"On", "Off", "Back"});
+        sensitivityMenu = createVBoxMenuPage("Sensitivity", new String[]{"Low", "Normal", "High", "Very High", "Back"});        howToPlayMenu = createHowToPlayMenu();
+        howToPlayMenu = createHowToPlayMenu();
 
-        root.getChildren().addAll(startMenu, pauseMenu, gameOverPage, tutorialScreen, settingsMenu, difficultyMenu);  //add other menus also
+        root.getChildren().addAll(startMenu, pauseMenu, gameOverPage, tutorialScreen,
+                settingsMenu, difficultyMenu, soundMenu, sensitivityMenu, howToPlayMenu);  //add other menus also
         // Upon initialization show only the start menu
         hideMenus();
-        showStartMenu();
+        showMenu(MenuState.START_MENU);
+    }
+
+    public void showMenu(MenuState menuState) {
+        this.currentMenu = menuState;
+        updateMenuVisibility();
     }
 
     /* MENU VISIBILITY SETTINGS */
-    public void showStartMenu() {
-        isStartMenuVisible = true;
-        isSettingsMenuVisible = false;
-        isDifficultyMenuVisible = false;
-        isPauseMenuVisible = false;
-        isGameOverPageVisible = false;
-        isTutorialScreenVisible = false;
-        updateMenuVisibility();
-    }
 
-    public void showSettingsMenu() {
-        isStartMenuVisible = false;
-        isSettingsMenuVisible = true;
-        isDifficultyMenuVisible = false;
-        isPauseMenuVisible = false;
-        isGameOverPageVisible = false;
-        isTutorialScreenVisible = false;
-        updateMenuVisibility();
-    }
-
-    public void showPauseMenu() {
-        isStartMenuVisible = false;
-        isSettingsMenuVisible = false;
-        isDifficultyMenuVisible = false;
-        isPauseMenuVisible = true;
-        isGameOverPageVisible = false;
-        isTutorialScreenVisible = false;
-        updateMenuVisibility();
-    }
-    public void showGameOverPage() {
-        isStartMenuVisible = false;
-        isSettingsMenuVisible = false;
-        isDifficultyMenuVisible = false;
-        isPauseMenuVisible = false;
-        isGameOverPageVisible = true;
-        isTutorialScreenVisible = false;
-        updateMenuVisibility();
-    }
-    public void showTutorialScreen() {
-        isStartMenuVisible = false;
-        isSettingsMenuVisible = false;
-        isDifficultyMenuVisible = false;
-        isPauseMenuVisible = false;
-        isGameOverPageVisible = false;
-        isTutorialScreenVisible = true;
-        tutorialScreen.setMouseTransparent(true); // Allow mouse clicks to pass through
-        updateMenuVisibility();
-    }
-    public void showDifficultyMenu() {
-        isStartMenuVisible = false;
-        isSettingsMenuVisible = false;
-        isDifficultyMenuVisible = true;
-        isPauseMenuVisible = false;
-        isGameOverPageVisible = false;
-        isTutorialScreenVisible = false;
-        updateMenuVisibility();
-    }
-    public boolean isTutorialScreenVisible() {
-        return isTutorialScreenVisible;
-    }
 
     private void updateMenuVisibility() {
-        startMenu.setVisible(isStartMenuVisible);
-        settingsMenu.setVisible(isSettingsMenuVisible);
-        pauseMenu.setVisible(isPauseMenuVisible);
-        gameOverPage.setVisible(isGameOverPageVisible);
-        tutorialScreen.setVisible(isTutorialScreenVisible);
-        difficultyMenu.setVisible(isDifficultyMenuVisible);
+        startMenu.setVisible(currentMenu == MenuState.START_MENU);
+        settingsMenu.setVisible(currentMenu == MenuState.SETTINGS_MENU);
+        difficultyMenu.setVisible(currentMenu == MenuState.DIFFICULTY_MENU);
+        soundMenu.setVisible(currentMenu == MenuState.SOUND_MENU);
+        pauseMenu.setVisible(currentMenu == MenuState.PAUSE_MENU);
+        gameOverPage.setVisible(currentMenu == MenuState.GAME_OVER);
+        tutorialScreen.setVisible(currentMenu == MenuState.TUTORIAL_SCREEN);
+        sensitivityMenu.setVisible(currentMenu == MenuState.SENSITIVITY_MENU);
+        howToPlayMenu.setVisible(currentMenu == MenuState.HOW_TO_PLAY);
 
+        tutorialScreen.setMouseTransparent(currentMenu == MenuState.TUTORIAL_SCREEN); // Allow mouse hover & clicks to pass through
     }
+
+
     public void hideMenus() {
         startMenu.setVisible(false);
         settingsMenu.setVisible(false);
         difficultyMenu.setVisible(false);
+        soundMenu.setVisible(false);
         pauseMenu.setVisible(false);
         gameOverPage.setVisible(false);
         tutorialScreen.setVisible(false);
+        sensitivityMenu.setVisible(false);
+        howToPlayMenu.setVisible(false);
         pauseButton.setVisible(true);
     }
 
+
+
     /* CREATING PAGES */
+
+    private Label currentDifficultyLabel;
+
+    // Create the difficulty menu with the current difficulty label
+    private VBox createDifficultyMenu() {
+        VBox menu = createVBoxMenuPage("Difficulty", new String[]{"Easy", "Medium", "Hard", "HARDCORE!", "Back"});
+        currentDifficultyLabel = new Label("Current Difficulty: Easy");
+        currentDifficultyLabel.setStyle(
+                "-fx-font-size: 18px;" +
+                        "-fx-font-family: 'Arial';" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-text-fill: white;"
+        );
+        menu.getChildren().add(1, currentDifficultyLabel); // Add the label below the title
+        return menu;
+    }
+    //HOW TO PLAY MENU CREATION
+    private VBox createHowToPlayMenu() {
+        VBox howToPlayMenu = createVBoxMenuPage("How To Play", new String[]{"Back"});
+        howToPlayMenu.getChildren().add(
+                1, new Label("How To Play:" +
+                        "\n\n" +
+                        "1. Use the A/D or LEFT/RIGHT keys to move the platform." +
+                        "\n\n" +
+                        "2. Break the blocks by hitting them with the ball." +
+                        "\n\n" +
+                        "3. Catch the power-ups to get an advantage." +
+                        "\n\n" +
+                        "4. Don't let the ball fall below the platform." +
+                        "\n\n" +
+                        "5. The game gets harder as you move on" +
+                        "\n\n" +
+                        "6. Beat the best score of yourself and friends" +
+                        "\n\n" +
+                        "7. Have fun!"
+                ) {{
+                    setStyle(
+                            "-fx-font-weight: bold;" +              // Bold font
+                                    "-fx-text-fill: white;" +       // White text color
+                                    "-fx-font-family: 'Arial';" +  // Optional: Specify font family
+                                    "-fx-font-size: 16px;"+         // Optional: Adjust font size
+                                    "-fx-alignment: center;"      // Center text
+                    );
+                    setWrapText(true); // Enable text wrapping
+                }}
+        );
+        return howToPlayMenu;
+    }
 
     //GAME OVER PAGE CREATION
     private VBox createGameOverPage() {
@@ -176,7 +183,6 @@ public class MenuController {
         Button restartGameButton = new Button("Restart Game");
         restartGameButton.setOnAction(e -> {
             System.out.println("Restart button pressed");
-            checkForGameEnded();
             restartGame();
             hideMenus();
         });
@@ -281,39 +287,6 @@ public class MenuController {
         return menu;
     }
 
-    // Creating a score history page
-    private VBox createScoreHistoryDisplay() {
-        VBox scoreHistoryBox = new VBox(10); // Spacing between scores
-        scoreHistoryBox.setAlignment(Pos.CENTER);
-        scoreHistoryBox.setPadding(new Insets(20));
-        scoreHistoryBox.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8);");
-
-        Label historyLabel = new Label("Score History");
-        historyLabel.setStyle(
-                "-fx-font-size: 24px;" +
-                        "-fx-font-family: 'Arial';" +
-                        "-fx-font-weight: bold;" +
-                        "-fx-text-fill: white;"
-        );
-
-        scoreHistoryBox.getChildren().add(historyLabel);
-
-        // Get scores from GameLoop's scoreHistory
-        for (int i = 0; i < gameLoop.gameState.scoreHistory.getScores().size(); i++) {
-            int score = gameLoop.gameState.scoreHistory.getScores().get(i);
-            Label scoreLabel = new Label("Game " + (i + 1) + ": " + score + " points");
-            scoreLabel.setStyle(
-                    "-fx-font-size: 18px;" +
-                            "-fx-text-fill: white;"
-            );
-
-            scoreHistoryBox.getChildren().add(scoreLabel); // Add each score
-        }
-
-        return scoreHistoryBox;
-    }
-
-
     /*BUTTON ACTIONS*/
 
     // button event handler
@@ -322,7 +295,7 @@ public class MenuController {
                 Map.entry("Start Game", e -> {
                     resumeGame();
                     hideMenus();
-                    showTutorialScreen();
+                    showMenu(MenuState.TUTORIAL_SCREEN);
                     gameStarted = true;
                 }),
                 Map.entry("Resume Game", e -> {
@@ -332,130 +305,120 @@ public class MenuController {
                 }),
                 Map.entry("Restart Game", e -> {
                     System.out.println("Restart button pressed");
-                    checkForGameEnded();
                     restartGame();
                     hideMenus();
-                    showTutorialScreen();
+                    showMenu(MenuState.TUTORIAL_SCREEN);
                 }),
-                Map.entry("Settings", e -> {
-                    showSettingsMenu();
-                }),
+                Map.entry("Settings", e -> showMenu(MenuState.SETTINGS_MENU)),
                 Map.entry("How To Play", e -> {
                     System.out.println("How To Play button clicked");
-                    // Add "How To Play" functionality here
+                    showMenu(MenuState.HOW_TO_PLAY);
                 }),
                 Map.entry("Score History", e -> {
                     System.out.println("Score History button clicked");
-
-                    VBox scoreHistoryDisplay = createScoreHistoryDisplay(); // Create the display
-                    root.getChildren().add(scoreHistoryDisplay); // Add to the root pane
-
-                    // Add a back button to close the score history page
-                    Button backButton = new Button("Back");
-                    backButton.setStyle(
-                            "-fx-font-size: 18px;" +
-                                    "-fx-font-weight: bold;" +
-                                    "-fx-text-fill: white;" +
-                                    "-fx-background-color: red;"
-                    );
-                    backButton.setOnAction(event -> {
-                        root.getChildren().remove(scoreHistoryDisplay);
-                    });
-                    mouseHoverGraphic(backButton);
-
-                    //Add a delete button to delete the score history
-                    Button deleteButton = new Button("Delete History");
-                    deleteButton.setStyle(
-                            "-fx-font-size: 18px;" +
-                                    "-fx-font-weight: bold;" +
-                                    "-fx-text-fill: white;" +
-                                    "-fx-background-color: red;"
-                    );
-
-                    deleteButton.setOnAction(event -> {
-                        gameLoop.gameState.scoreHistory.clearHistory(); // Clear the history
-                        gameLoop.gameState.scoreHistory.saveToFile("scores.txt"); // Save the empty history
-                        System.out.println("Score history cleared!");
-                    });
-                    mouseHoverGraphic(deleteButton);
-
-                    scoreHistoryDisplay.getChildren().addAll(backButton, deleteButton); // Add the back- and delete button
-
+                    // Add "score history" functionality here
                 }),
                 Map.entry("Exit", e -> {
                     System.exit(0); // Exit the application
                 }),
                 Map.entry("Difficulty", e -> {
                     System.out.println("Difficulty button clicked");
-                    showDifficultyMenu();
+                    showMenu(MenuState.DIFFICULTY_MENU);
                 }),
                 Map.entry("Sound", e -> {
                     System.out.println("Sound button clicked");
-                    // Add "Sound" functionality here
+                    showMenu(MenuState.SOUND_MENU);
                 }),
                 Map.entry("Sensitivity", e -> {
                     System.out.println("Sensitivity button clicked");
-                    // Add "Sensitivity" functionality here
+                    showMenu(MenuState.SENSITIVITY_MENU);
                 }),
                 Map.entry("Back", e -> {
-                    if (gameStarted) {
-                        showPauseMenu();
-                    } else {
-                        showStartMenu();
+                    System.out.println("Back button clicked");
+                    if (!gameStarted && currentMenu == MenuState.SETTINGS_MENU) {
+                        showMenu(MenuState.START_MENU); // Navigate back to Start Menu
+                    } else if (gameStarted && currentMenu == MenuState.SETTINGS_MENU) {
+                        showMenu(MenuState.PAUSE_MENU); // Navigate back to Pause Menu
+                    } else if (currentMenu == MenuState.DIFFICULTY_MENU) {
+                        showMenu(MenuState.SETTINGS_MENU); // Navigate back to Settings Menu
+                    } else if (currentMenu == MenuState.SOUND_MENU) {
+                        showMenu(MenuState.SETTINGS_MENU); // Navigate back to Settings Menu
+                    } else if (currentMenu == MenuState.SENSITIVITY_MENU) {
+                        showMenu(MenuState.SETTINGS_MENU); // Navigate back to Settings Menu
+                    } else if (currentMenu == MenuState.HOW_TO_PLAY) {
+                        showMenu(MenuState.START_MENU); // Navigate back to Start Menu
                     }
                 }),
                 Map.entry("Easy", e -> {
                     System.out.println("Easy button clicked");
-                    /*
-                    gameLoop.gameState.platformWidth = gameLoop.gameState.platformWidth*1;
-                    gameLoop.gameState.ballSpeed = gameLoop.gameState.ballSpeed*1;
-                    gameStarted = true;
-                    resumeGame();
-                    hideMenus();
+                    currentDifficultyLabel.setText("Current Difficulty: Easy");
+                    GameState.platformWidthDifficultyMultiplier = 1.0;
+                    // If the width isn't updated, the platform will remain the same size until a new gameState is created
+                    gameLoop.gameState.platform.updateWidth(gameLoop.gameState.powerUpHandler.activePowerUps);
+                    GameState.ballSpeedDifficultyMultiplier = 1.0;
+                    gameLoop.gameState.updateBallSpeed();
 
-                     */
                 }),
                 Map.entry("Medium", e -> {
 
                     System.out.println("Medium button clicked");
-                     /*
-                    gameLoop.gameState.platformWidth = gameLoop.gameState.platformWidth*0.8;
-                    gameLoop.gameState.ballSpeed = gameLoop.gameState.ballSpeed*1.2;
-                    if (gameStarted) {
-                        showPauseMenu();
-                    } else {
-                        showStartMenu();
-                    }
+                    currentDifficultyLabel.setText("Current Difficulty: Medium");
+                    GameState.platformWidthDifficultyMultiplier = 0.8;
+                    gameLoop.gameState.platform.updateWidth(gameLoop.gameState.powerUpHandler.activePowerUps);
+                    GameState.ballSpeedDifficultyMultiplier = 1.2;
+                    gameLoop.gameState.updateBallSpeed();
 
-                     */
                 }),
                 Map.entry("Hard", e -> {
 
                     System.out.println("Hard button clicked");
-                     /*
-                    gameLoop.gameState.platformWidth = gameLoop.gameState.platformWidth*0.6;
-                    gameLoop.gameState.ballSpeed = gameLoop.gameState.ballSpeed*1.4;
-                    if (gameStarted) {
-                        showPauseMenu();
-                    } else {
-                        showStartMenu();
-                    }
+                    currentDifficultyLabel.setText("Current Difficulty: Hard");
+                    GameState.platformWidthDifficultyMultiplier = 0.6;
+                    gameLoop.gameState.platform.updateWidth(gameLoop.gameState.powerUpHandler.activePowerUps);
+                    GameState.ballSpeedDifficultyMultiplier = 1.4;
+                    gameLoop.gameState.updateBallSpeed();
 
-                     */
                 }),
-                Map.entry("HARDCORE", e -> {
+                Map.entry("HARDCORE!", e -> {
 
-                    System.out.println("HARDCORE button clicked");
-                    /*
-                    gameLoop.gameState.platformWidth = gameLoop.gameState.platformWidth*0.4;
-                    gameLoop.gameState.ballSpeed = gameLoop.gameState.ballSpeed*1.6;
-                    if (gameStarted) {
-                        showPauseMenu();
-                    } else {
-                        showStartMenu();
+                    System.out.println("HARDCORE! button clicked");
+                    currentDifficultyLabel.setText("Current Difficulty: HARDCORE!");
+                    GameState.platformWidthDifficultyMultiplier = 0.4;
+                    gameLoop.gameState.platform.updateWidth(gameLoop.gameState.powerUpHandler.activePowerUps);
+                    GameState.ballSpeedDifficultyMultiplier = 1.6;
+                    gameLoop.gameState.updateBallSpeed();
+
+                }),
+                Map.entry("Off", e -> {
+                    System.out.println("Sound Off button clicked");
+                    if (SoundController.soundControl) {
+                        SoundController.soundControl = false;
+                        soundController.stopMusic();
                     }
 
-                     */
+                }),
+                Map.entry("On", e -> {
+                    System.out.println("Sound On button clicked");
+                    if (!SoundController.soundControl) {
+                        SoundController.soundControl = true;
+                        soundController.playMusic();
+                    }
+                }),
+                Map.entry("Low", e -> {
+                    System.out.println("Low Sensitivity button clicked");
+                    GameLoop.playerMovementSpeed = 5;
+                }),
+                Map.entry("Normal", e -> {
+                    System.out.println("Medium Sensitivity button clicked");
+                    GameLoop.playerMovementSpeed = 8;
+                }),
+                Map.entry("High", e -> {
+                    System.out.println("High Sensitivity button clicked");
+                    GameLoop.playerMovementSpeed = 13;
+                }),
+                Map.entry("Very High", e -> {
+                    System.out.println("Very High Sensitivity button clicked");
+                    GameLoop.playerMovementSpeed = 18;
                 })
         );
         // Return the matching action or a default one
@@ -544,29 +507,27 @@ public class MenuController {
     public void pauseGame() {
         gamePaused = true;
         pauseButton.setVisible(false);
-        showPauseMenu(); // Show the pause menu
+        showMenu(MenuState.PAUSE_MENU); // Show the pause menu
 
     }
     public void restartGame() {
         gamePaused = false;
         gameEnded = false;
         gameLoop.restartGame(); // Reinitialize the game loop
+        hideMenus();
+        showMenu(MenuState.TUTORIAL_SCREEN);
         pauseButton.setVisible(true);
     }
-
-    //helper method to set gameEnded to true/false
-    public void checkForGameEnded() {
-
-    }
-
-    public void gamePausedCheck() {
-        if (gamePaused) {
-            resumeGame();
-            pauseButton.setVisible(true);
-            hideMenus();
-        } else {
-            pauseGame();
-        }
+    public enum MenuState {
+        START_MENU,
+        SETTINGS_MENU,
+        PAUSE_MENU,
+        GAME_OVER,
+        TUTORIAL_SCREEN,
+        DIFFICULTY_MENU,
+        SOUND_MENU,
+        SENSITIVITY_MENU,
+        HOW_TO_PLAY
     }
 }
 

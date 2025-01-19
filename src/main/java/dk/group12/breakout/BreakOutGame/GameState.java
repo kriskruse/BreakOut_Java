@@ -2,10 +2,7 @@ package dk.group12.breakout.BreakOutGame;
 
 import javafx.geometry.Point2D;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class GameState {
     public Platform platform;
@@ -17,6 +14,8 @@ public class GameState {
     public boolean gameRunning = false;
     public boolean gameEnded = false;
     public double ballSpeed;
+    public static double ballSpeedDifficultyMultiplier = 1.0;
+    public static double platformWidthDifficultyMultiplier = 1.0;
     private int lives;
     private final int gameWidth;
     private final int gameHeight;
@@ -35,7 +34,7 @@ public class GameState {
         this.lives = lives;
         this.scoreTracker = scoreTracker;
         this.scoreHistory = new ScoreHistory();
-        int platformWidth = gameWidth / 6;
+        int platformWidth = (int) ((gameWidth / 6.) * platformWidthDifficultyMultiplier);
         int platformX = (gameWidth - platformWidth) / 2;
         int platformHeight = 10;
         int platformY = (int) (gameHeight - platformHeight - gameHeight * 0.05);
@@ -47,7 +46,7 @@ public class GameState {
 
 
         // ball speed is proportional to the game height
-        ballSpeed = (gameHeight / 200.) * (1 + scoreTracker.getScore() / 600.);
+        ballSpeed = ((gameHeight / 200.) * (1 + scoreTracker.getScore() / 600.)) * ballSpeedDifficultyMultiplier;
 
 
         // we want to add the ball right on top of the platform
@@ -242,6 +241,13 @@ public class GameState {
         ballList.add(newBall);
     }
 
+    public void updateBallSpeed() {
+        ballSpeed = ((gameHeight / 200.) * (1 + scoreTracker.getScore() / 600.)) * ballSpeedDifficultyMultiplier;
+        for (Ball ball : ballList) {
+            ball.direction.setScalar(ballSpeed);
+        }
+    }
+
     public class Platform extends CollisionElement {
         public Platform(int x, int y, int width, int height) {
             super(x, y, width, height);
@@ -252,6 +258,16 @@ public class GameState {
 
             if (this.x < leftWall.x + leftWall.width) this.x = leftWall.x + leftWall.width;
             if (this.x + this.width > rightWall.x) this.x = rightWall.x - this.width;
+        }
+
+        public void updateWidth(Map<powerUpType, PowerUpHandler.PowerUp> activePowerUps) {
+            double midPoint = this.x + this.width / 2;
+            if (activePowerUps.containsKey(powerUpType.WIDEN_PLATFORM)) {
+                this.width = (int) ((gameWidth / 6.) * platformWidthDifficultyMultiplier * 1.5);
+            } else {
+                this.width = (int) ((gameWidth / 6.) * platformWidthDifficultyMultiplier);
+            }
+            this.x = (int) (midPoint - this.width / 2);
         }
     }
 }

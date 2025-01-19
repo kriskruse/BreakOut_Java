@@ -10,7 +10,6 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
@@ -31,8 +30,6 @@ public class BreakoutGraphical extends Application {
     private SoundController soundController;
     private GraphicsContext graphicsContext;
     private MenuController menuController;
-    private Label highScoreLabel;
-
 
     private int gameIterations = 0; // Tracks the number of iterations
 
@@ -90,8 +87,8 @@ public class BreakoutGraphical extends Application {
 
 
         gameLoop = new GameLoop(n, m, windowX, windowY, lives);
-        menuController = new MenuController(root, gameLoop);
         soundController = new SoundController();
+        menuController = new MenuController(root, gameLoop, soundController);
 
         stage.setScene(gameScene);
         stage.setTitle("Breakout");
@@ -108,11 +105,26 @@ public class BreakoutGraphical extends Application {
         //esc button to pause game
         gameScene.setOnKeyPressed(event -> {
             activeKeys.add(event.getCode().toString());
-            if (menuController.isTutorialScreenVisible()) {
-                menuController.hideMenus(); // Hide the tutorial screen
+
+            // Hide tutorial screen if visible and movement keys are pressed
+            if (menuController.currentMenu == MenuController.MenuState.TUTORIAL_SCREEN) {
+                if (event.getCode() == KeyCode.A || event.getCode() == KeyCode.D ||
+                        event.getCode() == KeyCode.LEFT || event.getCode() == KeyCode.RIGHT) {
+                    menuController.hideMenus(); // Hide the tutorial screen
+                }
             }
+
+            // ESC key behavior for pause/resume/start
             if (event.getCode() == KeyCode.ESCAPE) {
-                menuController.gamePausedCheck();
+                if (menuController.gameStarted && menuController.gamePaused) {
+                    menuController.resumeGame();
+                    menuController.pauseButton.setVisible(true);
+                    menuController.hideMenus();
+                } else if (menuController.gameStarted && !menuController.gamePaused) {
+                    menuController.pauseGame();
+                } else {
+                    menuController.showMenu(MenuController.MenuState.START_MENU);
+                }
             }
         });
         gameScene.setOnKeyReleased(event -> activeKeys.remove(event.getCode().toString()));
@@ -132,7 +144,7 @@ public class BreakoutGraphical extends Application {
                 // Check if the game has ended
                 if (gameLoop.gameEnded) {
                     menuController.gameEnded = true;
-                    menuController.showGameOverPage();
+                    menuController.showMenu(MenuController.MenuState.GAME_OVER);
                     return;
                 }
                 if (gameIterations > 1 && !menuController.gameStarted) {
@@ -156,7 +168,6 @@ public class BreakoutGraphical extends Application {
 
                     gameLoop.handleInput(activeKeys);
                     gameLoop.update();
-                    menuController.checkForGameEnded();
                     previousTime = currentNanoTime;
                     // This is here to clear the screen from the previous frame
                     graphicsContext.clearRect(0, 0, windowX, windowY);
@@ -170,7 +181,6 @@ public class BreakoutGraphical extends Application {
                     drawFallingPowerUps(graphicsContext);
                     drawActivePowerUps(graphicsContext);
                     drawScore(graphicsContext);
-                    drawHighScore(graphicsContext);
                 }
 
                 if ((currentNanoTime - lastTime) >= 1000000000) {
@@ -323,22 +333,13 @@ public class BreakoutGraphical extends Application {
     }
 
     private void drawScore(GraphicsContext gc) {
+
         gc.setFill(Color.WHITE);
         gc.setFont(javafx.scene.text.Font.font("Arial", javafx.scene.text.FontWeight.BOLD, 35));
 
         double centerX = (double) windowX / 2;
 
         gc.fillText("Score: " + gameLoop.gameState.scoreTracker.getScore(), centerX-70, 70);
-    }
-
-    private void drawHighScore(GraphicsContext gc) {
-        gc.setFill(Color.WHITE);
-        gc.setFont(javafx.scene.text.Font.font("Arial", javafx.scene.text.FontWeight.BOLD, 15));
-
-        double spacex = windowX - 125;
-        double spacey = windowY - 10;
-
-        gc.fillText("High Score: " + gameLoop.gameState.scoreHistory.getHighScore(), spacex, spacey);
     }
 
 

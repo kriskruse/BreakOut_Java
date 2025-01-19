@@ -2,7 +2,7 @@ package dk.group12.breakout.BreakOutGame;
 
 public class Vec2 {
     private double x, y;
-    private final double scalar;
+    private double scalar;
 
     public Vec2(double x, double y, double scalar) {
         set(x, y);
@@ -36,5 +36,9 @@ public class Vec2 {
         }
         this.x = x / length;
         this.y = y / length;
+    }
+
+    public void setScalar(double ballSpeed) {
+        this.scalar = ballSpeed;
     }
 }
