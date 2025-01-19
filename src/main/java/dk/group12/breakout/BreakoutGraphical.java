@@ -123,7 +123,7 @@ public class BreakoutGraphical extends Application {
                     menuController.resumeGame();
                     menuController.pauseButton.setVisible(true);
                     menuController.hideMenus();
-                } else if (menuController.gameStarted && !menuController.gamePaused) {
+                } else if (menuController.gameStarted) {
                     menuController.pauseGame();
                 } else {
                     menuController.showMenu(MenuController.MenuState.START_MENU);
