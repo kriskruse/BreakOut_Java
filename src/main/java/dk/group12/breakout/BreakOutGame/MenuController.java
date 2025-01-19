@@ -27,18 +27,9 @@ public class MenuController {
     private VBox gameOverPage;
     private VBox tutorialScreen;
     private VBox sensitivityMenu;
+    private VBox howToPlayMenu;
 
     public MenuState currentMenu;
-
-    // Booleans to track menu visibility
-    private boolean isStartMenuVisible = true;
-    private boolean isSettingsMenuVisible = false;
-    private boolean isDifficultyMenuVisible = false;
-    private boolean isSoundMenuVisible = false;
-    private boolean isPauseMenuVisible = false;
-    private boolean isGameOverPageVisible = false;
-    public boolean isTutorialScreenVisible = false;
-    private boolean isSensitivityMenuVisible = false;
 
     //game start pause end controls
     public Button pauseButton;
@@ -86,28 +77,16 @@ public class MenuController {
         difficultyMenu = createDifficultyMenu();
         soundMenu = createVBoxMenuPage("Sound", new String[]{"On", "Off", "Back"});
         sensitivityMenu = createVBoxMenuPage("Sensitivity", new String[]{"Low", "Medium", "High", "Very High", "Back"});
+        howToPlayMenu = createHowToPlayMenu();
 
-        root.getChildren().addAll(startMenu, pauseMenu, gameOverPage, tutorialScreen, settingsMenu, difficultyMenu, soundMenu, sensitivityMenu);  //add other menus also
+        root.getChildren().addAll(startMenu, pauseMenu, gameOverPage, tutorialScreen,
+                settingsMenu, difficultyMenu, soundMenu, sensitivityMenu, howToPlayMenu);  //add other menus also
         // Upon initialization show only the start menu
         hideMenus();
         showMenu(MenuState.START_MENU);
     }
 
-    private Label currentDifficultyLabel;
 
-    // Create the difficulty menu with the current difficulty label
-    private VBox createDifficultyMenu() {
-        VBox menu = createVBoxMenuPage("Difficulty", new String[]{"Easy", "Medium", "Hard", "HARDCORE!", "Back"});
-        currentDifficultyLabel = new Label("Current Difficulty: Easy");
-        currentDifficultyLabel.setStyle(
-                "-fx-font-size: 18px;" +
-                    "-fx-font-family: 'Arial';" +
-                    "-fx-font-weight: bold;" +
-                    "-fx-text-fill: white;"
-        );
-        menu.getChildren().add(1, currentDifficultyLabel); // Add the label below the title
-        return menu;
-    }
 
     public void showMenu(MenuState menuState) {
         this.currentMenu = menuState;
@@ -126,10 +105,9 @@ public class MenuController {
         gameOverPage.setVisible(currentMenu == MenuState.GAME_OVER);
         tutorialScreen.setVisible(currentMenu == MenuState.TUTORIAL_SCREEN);
         sensitivityMenu.setVisible(currentMenu == MenuState.SENSITIVITY_MENU);
+        howToPlayMenu.setVisible(currentMenu == MenuState.HOW_TO_PLAY);
 
-        // Add logic to allow mouse clicks to pass through the tutorial screen
-        // Reset for other states
-        tutorialScreen.setMouseTransparent(currentMenu == MenuState.TUTORIAL_SCREEN); // Allow mouse clicks to pass through
+        tutorialScreen.setMouseTransparent(currentMenu == MenuState.TUTORIAL_SCREEN); // Allow mouse hover & clicks to pass through
     }
 
 
@@ -141,12 +119,62 @@ public class MenuController {
         pauseMenu.setVisible(false);
         gameOverPage.setVisible(false);
         tutorialScreen.setVisible(false);
+        sensitivityMenu.setVisible(false);
+        howToPlayMenu.setVisible(false);
         pauseButton.setVisible(true);
     }
 
 
 
     /* CREATING PAGES */
+
+    private Label currentDifficultyLabel;
+
+    // Create the difficulty menu with the current difficulty label
+    private VBox createDifficultyMenu() {
+        VBox menu = createVBoxMenuPage("Difficulty", new String[]{"Easy", "Medium", "Hard", "HARDCORE!", "Back"});
+        currentDifficultyLabel = new Label("Current Difficulty: Easy");
+        currentDifficultyLabel.setStyle(
+                "-fx-font-size: 18px;" +
+                        "-fx-font-family: 'Arial';" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-text-fill: white;"
+        );
+        menu.getChildren().add(1, currentDifficultyLabel); // Add the label below the title
+        return menu;
+    }
+    //HOW TO PLAY MENU CREATION
+    private VBox createHowToPlayMenu() {
+        VBox howToPlayMenu = createVBoxMenuPage("How To Play", new String[]{"Back"});
+        howToPlayMenu.getChildren().add(
+                1, new Label("How To Play:" +
+                        "\n\n" +
+                        "1. Use the A/D or LEFT/RIGHT keys to move the platform." +
+                        "\n\n" +
+                        "2. Break the blocks by hitting them with the ball." +
+                        "\n\n" +
+                        "3. Catch the power-ups to get an advantage." +
+                        "\n\n" +
+                        "4. Don't let the ball fall below the platform." +
+                        "\n\n" +
+                        "5. The game gets harder as you move on" +
+                        "\n\n" +
+                        "6. Beat the best score of yourself and friends" +
+                        "\n\n" +
+                        "7. Have fun!"
+                ) {{
+                    setStyle(
+                            "-fx-font-weight: bold;" +              // Bold font
+                                    "-fx-text-fill: white;" +       // White text color
+                                    "-fx-font-family: 'Arial';" +  // Optional: Specify font family
+                                    "-fx-font-size: 16px;"+         // Optional: Adjust font size
+                                    "-fx-alignment: center;"      // Center text
+                    );
+                    setWrapText(true); // Enable text wrapping
+                }}
+        );
+        return howToPlayMenu;
+    }
 
     //GAME OVER PAGE CREATION
     private VBox createGameOverPage() {
@@ -288,7 +316,7 @@ public class MenuController {
                 }),
                 Map.entry("How To Play", e -> {
                     System.out.println("How To Play button clicked");
-                    // Add "How To Play" functionality here
+                    showMenu(MenuState.HOW_TO_PLAY);
                 }),
                 Map.entry("Score History", e -> {
                     System.out.println("Score History button clicked");
@@ -321,6 +349,8 @@ public class MenuController {
                         showMenu(MenuState.SETTINGS_MENU); // Navigate back to Settings Menu
                     } else if (currentMenu == MenuState.SENSITIVITY_MENU) {
                         showMenu(MenuState.SETTINGS_MENU); // Navigate back to Settings Menu
+                    } else if (currentMenu == MenuState.HOW_TO_PLAY) {
+                        showMenu(MenuState.START_MENU); // Navigate back to Start Menu
                     }
                 }),
                 Map.entry("Easy", e -> {
@@ -500,7 +530,8 @@ public class MenuController {
         TUTORIAL_SCREEN,
         DIFFICULTY_MENU,
         SOUND_MENU,
-        SENSITIVITY_MENU
+        SENSITIVITY_MENU,
+        HOW_TO_PLAY
     }
 }
 
