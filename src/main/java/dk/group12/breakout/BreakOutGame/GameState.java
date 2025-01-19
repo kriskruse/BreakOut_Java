@@ -97,6 +97,7 @@ public class GameState {
         scoreHistory.addScore(finalScore);
 
         scoreHistory.saveToFile("scores.txt");
+
         scoreHistory.printScores();
     }
 

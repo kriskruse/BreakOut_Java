@@ -6,7 +6,6 @@ import java.util.Set;
 
 public class GameLoop {
     public GameState gameState;
-
     public boolean gameEnded = false;
     public final int n;
     public final int m;
