@@ -14,11 +14,23 @@ import javafx.util.Duration;
 import java.util.Map;
 
 public class MenuController {
+
+    public enum MenuState {
+        START_MENU,
+        SETTINGS_MENU,
+        PAUSE_MENU,
+        GAME_OVER,
+        TUTORIAL_SCREEN,
+        DIFFICULTY_MENU,
+        SOUND_MENU,
+        SENSITIVITY_MENU,
+        HOW_TO_PLAY
+    }
+    public MenuState currentMenu;
     private final StackPane root;
     private final SoundController soundController;
-    //private final Map<String, VBox> menus = new HashMap<String, VBox>();
 
-    // Menu pages
+    //menu pages
     private VBox startMenu;
     private VBox settingsMenu;
     private VBox difficultyMenu;
@@ -29,17 +41,16 @@ public class MenuController {
     private VBox sensitivityMenu;
     private VBox howToPlayMenu;
 
-    public MenuState currentMenu;
-
     //game start pause end controls
     public Button pauseButton;
-    private Pane overlayPane = new Pane();
+    private final Pane overlayPane = new Pane();
     public boolean gameStarted = false;
     public boolean gamePaused = false;
     public boolean gameEnded = false;
 
     private final GameLoop gameLoop;
 
+    //menu controller constructor
     public MenuController(StackPane root, GameLoop gameLoop, SoundController soundController) {
         this.gameLoop = gameLoop;
         this.root = root;
@@ -49,7 +60,45 @@ public class MenuController {
         createMenus();
 
     }
-    //Pause button creation
+
+    /* MENU VISIBILITY SETTINGS */
+
+    // Shows the specified menu and hides all others
+    public void showMenu(MenuState menuState) {
+        this.currentMenu = menuState;
+        updateMenuVisibility();
+    }
+    // Updates the visibility of the menus based on the current menu state
+    private void updateMenuVisibility() {
+        startMenu.setVisible(currentMenu == MenuState.START_MENU);
+        settingsMenu.setVisible(currentMenu == MenuState.SETTINGS_MENU);
+        difficultyMenu.setVisible(currentMenu == MenuState.DIFFICULTY_MENU);
+        soundMenu.setVisible(currentMenu == MenuState.SOUND_MENU);
+        pauseMenu.setVisible(currentMenu == MenuState.PAUSE_MENU);
+        gameOverPage.setVisible(currentMenu == MenuState.GAME_OVER);
+        tutorialScreen.setVisible(currentMenu == MenuState.TUTORIAL_SCREEN);
+        sensitivityMenu.setVisible(currentMenu == MenuState.SENSITIVITY_MENU);
+        howToPlayMenu.setVisible(currentMenu == MenuState.HOW_TO_PLAY);
+
+        tutorialScreen.setMouseTransparent(currentMenu == MenuState.TUTORIAL_SCREEN); // Allow mouse hover & clicks to pass through
+    }
+    // Hides all menus except the pause button
+    public void hideMenus() {
+        startMenu.setVisible(false);
+        settingsMenu.setVisible(false);
+        difficultyMenu.setVisible(false);
+        soundMenu.setVisible(false);
+        pauseMenu.setVisible(false);
+        gameOverPage.setVisible(false);
+        tutorialScreen.setVisible(false);
+        sensitivityMenu.setVisible(false);
+        howToPlayMenu.setVisible(false);
+        pauseButton.setVisible(true);
+    }
+
+    /* INITIALIZATION OF PAGES */
+    
+    //Initializes the pause button
     private Button createPauseButton() {
         pauseButton = new Button("Pause");
         pauseButton.setLayoutX(gameLoop.gameWidth-60);
@@ -67,7 +116,7 @@ public class MenuController {
         return pauseButton;
     }
 
-    //Creation of different menus
+    // Initializes all menu panes and adds them to the root container.
     private void createMenus() {
         startMenu = createVBoxMenuPage("Main Menu", new String[]{"Start Game", "Settings", "How To Play", "Score History", "Exit"});
         pauseMenu = createVBoxMenuPage("Pause Menu", new String[]{"Resume Game", "Restart Game", "Settings", "How To Play", "Exit"});
@@ -86,51 +135,8 @@ public class MenuController {
         showMenu(MenuState.START_MENU);
     }
 
-
-
-    public void showMenu(MenuState menuState) {
-        this.currentMenu = menuState;
-        updateMenuVisibility();
-    }
-
-    /* MENU VISIBILITY SETTINGS */
-
-
-    private void updateMenuVisibility() {
-        startMenu.setVisible(currentMenu == MenuState.START_MENU);
-        settingsMenu.setVisible(currentMenu == MenuState.SETTINGS_MENU);
-        difficultyMenu.setVisible(currentMenu == MenuState.DIFFICULTY_MENU);
-        soundMenu.setVisible(currentMenu == MenuState.SOUND_MENU);
-        pauseMenu.setVisible(currentMenu == MenuState.PAUSE_MENU);
-        gameOverPage.setVisible(currentMenu == MenuState.GAME_OVER);
-        tutorialScreen.setVisible(currentMenu == MenuState.TUTORIAL_SCREEN);
-        sensitivityMenu.setVisible(currentMenu == MenuState.SENSITIVITY_MENU);
-        howToPlayMenu.setVisible(currentMenu == MenuState.HOW_TO_PLAY);
-
-        tutorialScreen.setMouseTransparent(currentMenu == MenuState.TUTORIAL_SCREEN); // Allow mouse hover & clicks to pass through
-    }
-
-
-    public void hideMenus() {
-        startMenu.setVisible(false);
-        settingsMenu.setVisible(false);
-        difficultyMenu.setVisible(false);
-        soundMenu.setVisible(false);
-        pauseMenu.setVisible(false);
-        gameOverPage.setVisible(false);
-        tutorialScreen.setVisible(false);
-        sensitivityMenu.setVisible(false);
-        howToPlayMenu.setVisible(false);
-        pauseButton.setVisible(true);
-    }
-
-
-
-    /* CREATING PAGES */
-
+    // initializes the difficulty menu with the current difficulty label
     private Label currentDifficultyLabel;
-
-    // Create the difficulty menu with the current difficulty label
     private VBox createDifficultyMenu() {
         VBox menu = createVBoxMenuPage("Difficulty", new String[]{"Easy", "Medium", "Hard", "HARDCORE!", "Back"});
         currentDifficultyLabel = new Label("Current Difficulty: Easy");
@@ -143,7 +149,7 @@ public class MenuController {
         menu.getChildren().add(1, currentDifficultyLabel); // Add the label below the title
         return menu;
     }
-    //HOW TO PLAY MENU CREATION
+    //CREATE HOW TO PLAY MENU
     private VBox createHowToPlayMenu() {
         VBox howToPlayMenu = createVBoxMenuPage("How To Play", new String[]{"Back"});
         howToPlayMenu.getChildren().add(
@@ -176,7 +182,7 @@ public class MenuController {
         return howToPlayMenu;
     }
 
-    //GAME OVER PAGE CREATION
+    //GAME OVER PAGE INITIALIZATION
     private VBox createGameOverPage() {
         // Create label & buttons
         Label pageTitle = new Label("Game Over");
@@ -221,7 +227,7 @@ public class MenuController {
         return menu;
     }
 
-    // TUTORIAL PAGE CREATION
+    // TUTORIAL PAGE INITIALIZATION
     public VBox createTutorialScreen() {
         // Create label & buttons
 
@@ -246,7 +252,7 @@ public class MenuController {
 
         return menu;
     }
-    /*VBOX MENU CREATOR*/
+    //VBOX MENU TEMPLATE INITIALIZER
     public VBox createVBoxMenuPage(String title, String[] buttonLabels) {
         // Create label & buttons
         Label pageTitle = new Label(title);
@@ -522,16 +528,6 @@ public class MenuController {
         showMenu(MenuState.TUTORIAL_SCREEN);
         pauseButton.setVisible(true);
     }
-    public enum MenuState {
-        START_MENU,
-        SETTINGS_MENU,
-        PAUSE_MENU,
-        GAME_OVER,
-        TUTORIAL_SCREEN,
-        DIFFICULTY_MENU,
-        SOUND_MENU,
-        SENSITIVITY_MENU,
-        HOW_TO_PLAY
-    }
+
 }
 
