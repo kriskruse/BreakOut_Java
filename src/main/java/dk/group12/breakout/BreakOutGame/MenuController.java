@@ -7,6 +7,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Label;
 import javafx.animation.ScaleTransition;
@@ -24,7 +25,8 @@ public class MenuController {
         DIFFICULTY_MENU,
         SOUND_MENU,
         SENSITIVITY_MENU,
-        HOW_TO_PLAY
+        HOW_TO_PLAY,
+        SCORE_HISTORY
     }
     public MenuState currentMenu;
     private final StackPane root;
@@ -40,6 +42,7 @@ public class MenuController {
     private VBox tutorialScreen;
     private VBox sensitivityMenu;
     private VBox howToPlayMenu;
+    private VBox scoreHistoryPage;
 
     //game start pause end controls
     public Button pauseButton;
@@ -79,6 +82,7 @@ public class MenuController {
         tutorialScreen.setVisible(currentMenu == MenuState.TUTORIAL_SCREEN);
         sensitivityMenu.setVisible(currentMenu == MenuState.SENSITIVITY_MENU);
         howToPlayMenu.setVisible(currentMenu == MenuState.HOW_TO_PLAY);
+        scoreHistoryPage.setVisible(currentMenu == MenuState.SCORE_HISTORY);
 
         tutorialScreen.setMouseTransparent(currentMenu == MenuState.TUTORIAL_SCREEN); // Allow mouse hover & clicks to pass through
     }
@@ -93,7 +97,9 @@ public class MenuController {
         tutorialScreen.setVisible(false);
         sensitivityMenu.setVisible(false);
         howToPlayMenu.setVisible(false);
+        scoreHistoryPage.setVisible(false);
         pauseButton.setVisible(true);
+
     }
 
     /* INITIALIZATION OF PAGES */
@@ -119,7 +125,7 @@ public class MenuController {
     // Initializes all menu panes and adds them to the root container.
     private void createMenus() {
         startMenu = createVBoxMenuPage("Main Menu", new String[]{"Start Game", "Settings", "How To Play", "Score History", "Exit"});
-        pauseMenu = createVBoxMenuPage("Pause Menu", new String[]{"Resume Game", "Restart Game", "Settings", "How To Play", "Exit"});
+        pauseMenu = createVBoxMenuPage("Pause Menu", new String[]{"Resume Game", "Restart Game", "Settings", "How To Play","Score History", "Exit"});
         gameOverPage = createGameOverPage();
         tutorialScreen = createTutorialScreen();
         settingsMenu = createVBoxMenuPage("Settings", new String[]{"Difficulty","Sound", "Sensitivity", "Back"});
@@ -127,9 +133,10 @@ public class MenuController {
         soundMenu = createVBoxMenuPage("Sound", new String[]{"On", "Off", "Back"});
         sensitivityMenu = createVBoxMenuPage("Sensitivity", new String[]{"Low", "Normal", "High", "Very High", "Back"});        howToPlayMenu = createHowToPlayMenu();
         howToPlayMenu = createHowToPlayMenu();
+        scoreHistoryPage = createScoreHistoryDisplay();
 
         root.getChildren().addAll(startMenu, pauseMenu, gameOverPage, tutorialScreen,
-                settingsMenu, difficultyMenu, soundMenu, sensitivityMenu, howToPlayMenu);  //add other menus also
+                settingsMenu, difficultyMenu, soundMenu, sensitivityMenu, howToPlayMenu, scoreHistoryPage);  //add other menus also
         // Upon initialization show only the start menu
         hideMenus();
         showMenu(MenuState.START_MENU);
@@ -295,24 +302,25 @@ public class MenuController {
         return menu;
     }
 
-    // Creating a score history page
+    // Creates a score history page with a ScrollPane and title
     private VBox createScoreHistoryDisplay() {
-        VBox scoreHistoryBox = new VBox(10); // Spacing between scores
-        scoreHistoryBox.setAlignment(Pos.CENTER);
-        scoreHistoryBox.setPadding(new Insets(20));
-        scoreHistoryBox.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8);");
-
-        Label historyLabel = new Label("Score History");
-        historyLabel.setStyle(
+        // Title for the Score History page
+        Label titleLabel = new Label("Score History");
+        titleLabel.setStyle(
                 "-fx-font-size: 24px;" +
                         "-fx-font-family: 'Arial';" +
                         "-fx-font-weight: bold;" +
-                        "-fx-text-fill: white;"
+                        "-fx-text-fill: white;" +
+                        "-fx-padding: 10 0 20 0;" // Adds spacing below the title
         );
 
-        scoreHistoryBox.getChildren().add(historyLabel);
+        // Content for the ScrollPane
+        VBox scoreHistoryContent = new VBox(10); // Vertical spacing between items
+        scoreHistoryContent.setAlignment(Pos.TOP_CENTER);
+        scoreHistoryContent.setPadding(new Insets(10));
+        scoreHistoryContent.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8);");
 
-        // Get scores from GameLoop's scoreHistory
+        // Add score history items
         for (int i = 0; i < gameLoop.gameState.scoreHistory.getScores().size(); i++) {
             int score = gameLoop.gameState.scoreHistory.getScores().get(i);
             Label scoreLabel = new Label("Game " + (i + 1) + ": " + score + " points");
@@ -320,9 +328,51 @@ public class MenuController {
                     "-fx-font-size: 18px;" +
                             "-fx-text-fill: white;"
             );
-
-            scoreHistoryBox.getChildren().add(scoreLabel); // Add each score
+            scoreHistoryContent.getChildren().add(scoreLabel);
         }
+
+        // Wrap the content in a ScrollPane
+        ScrollPane scrollPane = new ScrollPane(scoreHistoryContent);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPrefViewportHeight(300); // Limit visible height
+        scrollPane.setStyle(
+                "-fx-background: rgba(0, 0, 0, 0.8);" +
+                        "-fx-border-color: transparent;"
+        );
+
+        // Back Button
+        Button backButton = new Button("Back");
+        backButton.setStyle(
+                "-fx-font-size: 18px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-text-fill: white;" +
+                        "-fx-background-color: red;"
+        );
+        backButton.setOnAction(event -> showMenu(MenuState.START_MENU));
+        mouseHoverGraphic(backButton);
+
+        // Delete History Button
+        Button deleteButton = new Button("Delete History");
+        deleteButton.setStyle(
+                "-fx-font-size: 18px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-text-fill: white;" +
+                        "-fx-background-color: red;"
+        );
+        deleteButton.setOnAction(event -> {
+            gameLoop.gameState.scoreHistory.clearHistory();
+            gameLoop.gameState.scoreHistory.saveToFile("scores.txt");
+            scoreHistoryContent.getChildren().clear();
+            System.out.println("Score history cleared!");
+        });
+        mouseHoverGraphic(deleteButton);
+
+        // Layout for the entire Score History page
+        VBox scoreHistoryBox = new VBox(15);
+        scoreHistoryBox.setAlignment(Pos.TOP_CENTER);
+        scoreHistoryBox.setPadding(new Insets(20));
+        scoreHistoryBox.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8);");
+        scoreHistoryBox.getChildren().addAll(titleLabel, scrollPane, backButton, deleteButton);
 
         return scoreHistoryBox;
     }
@@ -356,41 +406,7 @@ public class MenuController {
                 }),
                 Map.entry("Score History", e -> {
                     System.out.println("Score History button clicked");
-
-                    VBox scoreHistoryDisplay = createScoreHistoryDisplay(); // Create the display
-                    root.getChildren().add(scoreHistoryDisplay); // Add to the root pane
-
-                    // Add a back button to close the score history page
-                    Button backButton = new Button("Back");
-                    backButton.setStyle(
-                            "-fx-font-size: 18px;" +
-                                    "-fx-font-weight: bold;" +
-                                    "-fx-text-fill: white;" +
-                                    "-fx-background-color: red;"
-                    );
-                    backButton.setOnAction(event -> {
-                        root.getChildren().remove(scoreHistoryDisplay);
-                    });
-                    mouseHoverGraphic(backButton);
-
-                    //Add a delete button to delete the score history
-                    Button deleteButton = new Button("Delete History");
-                    deleteButton.setStyle(
-                            "-fx-font-size: 18px;" +
-                                    "-fx-font-weight: bold;" +
-                                    "-fx-text-fill: white;" +
-                                    "-fx-background-color: red;"
-                    );
-
-                    deleteButton.setOnAction(event -> {
-                        gameLoop.gameState.scoreHistory.clearHistory(); // Clear the history
-                        gameLoop.gameState.scoreHistory.saveToFile("scores.txt"); // Save the empty history
-                        System.out.println("Score history cleared!");
-                    });
-                    mouseHoverGraphic(deleteButton);
-
-                    scoreHistoryDisplay.getChildren().addAll(backButton, deleteButton); // Add the back- and delete button
-
+                    showMenu(MenuState.SCORE_HISTORY);
 
                 }),
                 Map.entry("Exit", e -> {
