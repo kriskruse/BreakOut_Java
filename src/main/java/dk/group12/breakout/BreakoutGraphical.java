@@ -1,9 +1,5 @@
 package dk.group12.breakout;
 
-import dk.group12.breakout.BreakOutGame.CollisionElement;
-import dk.group12.breakout.BreakOutGame.GameLoop;
-import dk.group12.breakout.BreakOutGame.GameState;
-import dk.group12.breakout.BreakOutGame.MenuController;
 import dk.group12.breakout.BreakOutGame.*;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -12,12 +8,11 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import javafx.scene.layout.StackPane;
 import org.jetbrains.annotations.NotNull;
-
 
 import java.util.HashSet;
 import java.util.Set;
@@ -52,7 +47,7 @@ public class BreakoutGraphical extends Application {
         try {
             arg1 = Integer.parseInt(args[0]);
             arg2 = Integer.parseInt(args[1]);
-        //    arg3 = Integer.parseInt(args[2]);
+            //    arg3 = Integer.parseInt(args[2]);
         } catch (Exception e) {
             System.out.println("Default to 8x8, use 2 arguments to change the size of the game board.");
         }
@@ -72,7 +67,7 @@ public class BreakoutGraphical extends Application {
 
         int screenHeight = (int) Screen.getPrimary().getVisualBounds().getHeight();
         windowY = (int) (screenHeight * 0.9);
-        windowX = (int) (windowY * (7.0/9.0));
+        windowX = (int) (windowY * (7.0 / 9.0));
 
 
         //Create StackPane to layer menu scenes on top of Game scene
@@ -136,7 +131,7 @@ public class BreakoutGraphical extends Application {
 
 
     /* GAME LOOP RUNNER*/
-    public void runGameLoop(){
+    public void runGameLoop() {
         // Animation loop running at ≈ 60 FPS
         new AnimationTimer() {
             private long lastTime = System.nanoTime();
@@ -219,6 +214,7 @@ public class BreakoutGraphical extends Application {
             );
         }
     }
+
     private void drawStaticElements(GraphicsContext gc) {
         gc.setFill(Color.LIGHTGREY);
         CollisionElement topWall = gameLoop.gameState.topWall;
@@ -254,11 +250,14 @@ public class BreakoutGraphical extends Application {
     private void drawFallingPowerUps(GraphicsContext gc) {
         for (PowerUpHandler.PowerUp powerUp : gameLoop.gameState.powerUpHandler.fallingPowerUps) {
             if (powerUp.type == GameState.powerUpType.WIDEN_PLATFORM) {
-                gc.setFill(widenPlatformColor); }
+                gc.setFill(widenPlatformColor);
+            }
             if (powerUp.type == GameState.powerUpType.ENLARGE_BALL) {
-                gc.setFill(enlargeBallColor); }
+                gc.setFill(enlargeBallColor);
+            }
             if (powerUp.type == GameState.powerUpType.MULTIBALL) {
-                gc.setFill(multiballColor); }
+                gc.setFill(multiballColor);
+            }
             gc.fillOval(powerUp.x, powerUp.y, powerUp.width, powerUp.height);
         }
     }
@@ -343,7 +342,7 @@ public class BreakoutGraphical extends Application {
 
         double centerX = (double) windowX / 2;
 
-        gc.fillText("Score: " + gameLoop.gameState.scoreTracker.getScore(), centerX-70, 70);
+        gc.fillText("Score: " + gameLoop.gameState.scoreTracker.getScore(), centerX - 70, 70);
     }
 
     private void drawHighScore(GraphicsContext gc) {

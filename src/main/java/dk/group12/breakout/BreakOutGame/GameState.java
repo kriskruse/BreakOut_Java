@@ -27,7 +27,6 @@ public class GameState {
     public ScoreHistory scoreHistory;
 
 
-
     public GameState(int n, int m, int gameWidth, int gameHeight, int lives, ScoreTracker scoreTracker) {
         this.gameHeight = gameHeight;
         this.gameWidth = gameWidth;
@@ -51,7 +50,7 @@ public class GameState {
 
         // we want to add the ball right on top of the platform
         ballList = new ArrayList<>();
-        double radius = 0.015*((double) (gameWidth + gameHeight) / 2);
+        double radius = 0.015 * ((double) (gameWidth + gameHeight) / 2);
         double x = platform.x + platform.width / 2 - radius;
         double y = platform.y - radius * 2;
         ballList.add(new Ball(x, y - 1, radius));
@@ -81,6 +80,7 @@ public class GameState {
         gameRunning = true;
         ballList.get(0).direction = new Vec2((randomGenerator.nextDouble() - 0.5) * 2, -1, ballSpeed);
     }
+
     public void endGame() {
         // if gameEnded is called several times, we only want to end the game once.
         if (gameEnded) {
@@ -170,7 +170,7 @@ public class GameState {
 
     public class BlockCluster {
         public Block[][] cluster;
-        int width,height;
+        int width, height;
         int spacing;
         final double spacingOffset = 0.01;
 
@@ -188,7 +188,7 @@ public class GameState {
                 int verticalOffset = (int) ((gameHeight - top) * 0.15);
                 double y = top + verticalOffset + (i * (height + spacing)) + spacing; // Add vertical spacing
                 for (int j = 0; j < m; j++) {
-                    double x = (leftWall.x + leftWall.width) + spacing + (j * (width + spacing)) ; // Add horizontal spacing
+                    double x = (leftWall.x + leftWall.width) + spacing + (j * (width + spacing)); // Add horizontal spacing
                     cluster[i][j] = new Block(x, y, width, height);
                 }
             }
@@ -212,7 +212,7 @@ public class GameState {
         public Ball(double x, double y, double radius) {
             super(x, y, radius * 2, radius * 2);
             this.originalPosition = new Point2D(x, y);
-            this.radius=radius;
+            this.radius = radius;
             direction = new Vec2(0, -1, 0);
         }
 

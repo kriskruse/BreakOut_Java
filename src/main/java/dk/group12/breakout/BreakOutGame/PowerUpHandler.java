@@ -159,7 +159,9 @@ public class PowerUpHandler {
         }
 
         public boolean hasExpired() {
-            if (!isPickedUp || duration == 0) { return false; }
+            if (!isPickedUp || duration == 0) {
+                return false;
+            }
             return (System.currentTimeMillis() - startTime) >= duration;
         }
 

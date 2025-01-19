@@ -1,17 +1,18 @@
 package dk.group12.breakout.BreakOutGame;
 
+import javafx.animation.ScaleTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.control.Label;
-import javafx.animation.ScaleTransition;
 import javafx.util.Duration;
+
 import java.util.Map;
 
 public class MenuController {
@@ -28,6 +29,7 @@ public class MenuController {
         HOW_TO_PLAY,
         SCORE_HISTORY
     }
+
     public MenuState currentMenu;
     private final StackPane root;
     private final SoundController soundController;
@@ -71,6 +73,7 @@ public class MenuController {
         this.currentMenu = menuState;
         updateMenuVisibility();
     }
+
     // Updates the visibility of the menus based on the current menu state
     private void updateMenuVisibility() {
         startMenu.setVisible(currentMenu == MenuState.START_MENU);
@@ -86,6 +89,7 @@ public class MenuController {
 
         tutorialScreen.setMouseTransparent(currentMenu == MenuState.TUTORIAL_SCREEN); // Allow mouse hover & clicks to pass through
     }
+
     // Hides all menus except the pause button
     public void hideMenus() {
         startMenu.setVisible(false);
@@ -107,15 +111,15 @@ public class MenuController {
     //Initializes the pause button
     private Button createPauseButton() {
         pauseButton = new Button("Pause");
-        pauseButton.setLayoutX(gameLoop.gameWidth-60);
+        pauseButton.setLayoutX(gameLoop.gameWidth - 60);
         pauseButton.setLayoutY(1);
         pauseButton.setOnAction(e -> pauseGame());
         pauseButton.setVisible(false);
         pauseButton.setStyle(
-                "-fx-background-color: rgba(0,0,0,0);"+
-                        "-fx-font-weight: bold;"+
-                        "-fx-text-fill: white;"+
-                        "-fx-font-family: 'Arial';"+
+                "-fx-background-color: rgba(0,0,0,0);" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-text-fill: white;" +
+                        "-fx-font-family: 'Arial';" +
                         "-fx-padding: 0 0 10 0;"
         );
         mouseHoverGraphic(pauseButton);
@@ -125,13 +129,14 @@ public class MenuController {
     // Initializes all menu panes and adds them to the root container.
     private void createMenus() {
         startMenu = createVBoxMenuPage("Main Menu", new String[]{"Start Game", "Settings", "How To Play", "Score History", "Exit"});
-        pauseMenu = createVBoxMenuPage("Pause Menu", new String[]{"Resume Game", "Restart Game", "Settings", "How To Play","Score History", "Exit"});
+        pauseMenu = createVBoxMenuPage("Pause Menu", new String[]{"Resume Game", "Restart Game", "Settings", "How To Play", "Score History", "Exit"});
         gameOverPage = createGameOverPage();
         tutorialScreen = createTutorialScreen();
-        settingsMenu = createVBoxMenuPage("Settings", new String[]{"Difficulty","Sound", "Sensitivity", "Back"});
+        settingsMenu = createVBoxMenuPage("Settings", new String[]{"Difficulty", "Sound", "Sensitivity", "Back"});
         difficultyMenu = createDifficultyMenu();
         soundMenu = createVBoxMenuPage("Sound", new String[]{"On", "Off", "Back"});
-        sensitivityMenu = createVBoxMenuPage("Sensitivity", new String[]{"Low", "Normal", "High", "Very High", "Back"});        howToPlayMenu = createHowToPlayMenu();
+        sensitivityMenu = createVBoxMenuPage("Sensitivity", new String[]{"Low", "Normal", "High", "Very High", "Back"});
+        howToPlayMenu = createHowToPlayMenu();
         howToPlayMenu = createHowToPlayMenu();
         scoreHistoryPage = createScoreHistoryDisplay();
 
@@ -144,6 +149,7 @@ public class MenuController {
 
     // initializes the difficulty menu with the current difficulty label
     private Label currentDifficultyLabel;
+
     private VBox createDifficultyMenu() {
         VBox menu = createVBoxMenuPage("Difficulty", new String[]{"Easy", "Medium", "Hard", "HARDCORE!", "Back"});
         currentDifficultyLabel = new Label("Current Difficulty: Easy");
@@ -156,6 +162,7 @@ public class MenuController {
         menu.getChildren().add(1, currentDifficultyLabel); // Add the label below the title
         return menu;
     }
+
     //CREATE HOW TO PLAY MENU
     private VBox createHowToPlayMenu() {
         VBox howToPlayMenu = createVBoxMenuPage("How To Play", new String[]{"Back"});
@@ -180,7 +187,7 @@ public class MenuController {
                             "-fx-font-weight: bold;" +              // Bold font
                                     "-fx-text-fill: white;" +       // White text color
                                     "-fx-font-family: 'Arial';" +  // Optional: Specify font family
-                                    "-fx-font-size: 16px;"+         // Optional: Adjust font size
+                                    "-fx-font-size: 16px;" +         // Optional: Adjust font size
                                     "-fx-alignment: center;"      // Center text
                     );
                     setWrapText(true); // Enable text wrapping
@@ -204,7 +211,7 @@ public class MenuController {
 
         //exit game button
         Button exitButton = new Button("Exit");
-        exitButton.setOnAction(event ->{
+        exitButton.setOnAction(event -> {
             System.out.println("Exit button pressed");
             System.exit(0);
         }); // Exit the application
@@ -216,11 +223,11 @@ public class MenuController {
                         "-fx-font-weight: bold;" + // Bold text
                         "-fx-text-fill: red;" // Text color
         );
-        styleButton(restartGameButton, "rgba(0,0,0,0)",  "white");
-        styleButton(exitButton, "rgba(0,0,0,0)",  "white");
+        styleButton(restartGameButton, "rgba(0,0,0,0)", "white");
+        styleButton(exitButton, "rgba(0,0,0,0)", "white");
 
         // Hover effect for buttons
-        mouseHoverGraphic(restartGameButton,exitButton);
+        mouseHoverGraphic(restartGameButton, exitButton);
 
         // VBox layout for vertical alignment
         VBox menu = new VBox(15); // Spacing between buttons
@@ -249,7 +256,7 @@ public class MenuController {
         // VBox layout for vertical alignment
         VBox menu = new VBox(15); // Spacing between buttons
         menu.setAlignment(Pos.BOTTOM_CENTER);
-        StackPane.setMargin(menu,new Insets(0, 0, 150, 0)); // Adjust the bottom padding
+        StackPane.setMargin(menu, new Insets(0, 0, 150, 0)); // Adjust the bottom padding
         menu.setStyle("-fx-background-color: rgba(0, 0, 0, 0);");
         menu.getChildren().addAll(
                 moveLeftOrRightText, orText, moveADText
@@ -259,6 +266,7 @@ public class MenuController {
 
         return menu;
     }
+
     //VBOX MENU TEMPLATE INITIALIZER
     public VBox createVBoxMenuPage(String title, String[] buttonLabels) {
         // Create label & buttons
@@ -285,8 +293,7 @@ public class MenuController {
             Button button = new Button(buttonLabel);
             if (colors[i].equals("yellow")) {
                 styleButton(button, colors[i], "black");
-            }
-            else {
+            } else {
                 styleButton(button, colors[i], "white");
             }
             button.setOnAction(e -> SoundController.menuClickSound());
@@ -428,8 +435,8 @@ public class MenuController {
                     System.out.println("Back button clicked");
                     if (!gameStarted &&
                             (currentMenu == MenuState.SETTINGS_MENU
-                            || currentMenu == MenuState.HOW_TO_PLAY
-                            || currentMenu == MenuState.SCORE_HISTORY)
+                                    || currentMenu == MenuState.HOW_TO_PLAY
+                                    || currentMenu == MenuState.SCORE_HISTORY)
                     ) {
                         showMenu(MenuState.START_MENU); // Navigate back to Start Menu
                     } else if (gameStarted &&
@@ -532,26 +539,26 @@ public class MenuController {
     private void styleButton(Button button, String color, String textColor) {
         button.setStyle(
                 "-fx-background-color: " + color + ";" +  // Button color
-                "-fx-font-family: 'Arial';"+ // Font family
-                "-fx-font-size: 18px;" +      // Font size
-                "-fx-font-weight: bold;" + // Bold text
-                "-fx-padding: 10 0 10 0;" +// Top, Right, Bottom, Left padding
-                "-fx-text-fill: " + textColor + ";" // Text color
-
+                        "-fx-font-family: 'Arial';" + // Font family
+                        "-fx-font-size: 18px;" +      // Font size
+                        "-fx-font-weight: bold;" + // Bold text
+                        "-fx-padding: 10 0 10 0;" +// Top, Right, Bottom, Left padding
+                        "-fx-text-fill: " + textColor + ";" // Text color
 
 
         );
         button.setPrefWidth(200); // Set uniform width for buttons
     }
+
     //Helper method to style labels
     public void styleLabel(Label... labels) {
         for (Label label : labels) {
             label.setStyle(
-                    "-fx-font-family: 'Arial';"+ // Font family
+                    "-fx-font-family: 'Arial';" + // Font family
                             "-fx-font-size: 18px;" +      // Font size
                             "-fx-font-weight: bold;" + // Bold text
                             "-fx-padding: 0 0 0 0;" +// Top, Right, Bottom, Left padding
-                            "-fx-text-fill: rgba(255, 255, 255,0.7) ;"+ // Text color
+                            "-fx-text-fill: rgba(255, 255, 255,0.7) ;" + // Text color
                             "-fx-alignment: center;" // Center text
 
             );
@@ -567,7 +574,7 @@ public class MenuController {
             button.setOnMouseEntered(event -> {
                 button.setScaleX(1.1); // Increase size horizontally
                 button.setScaleY(1.1); // Increase size vertically
-                button.setStyle(originalStyle+"-fx-cursor: hand;"); // Revert to original style + hand cursor
+                button.setStyle(originalStyle + "-fx-cursor: hand;"); // Revert to original style + hand cursor
                 SoundController.menuHoverSound();
             });
 
@@ -580,8 +587,9 @@ public class MenuController {
         }
 
     }
+
     //
-    public void moveLeftOrRightGraphics(Label... labels){
+    public void moveLeftOrRightGraphics(Label... labels) {
         for (Label label : labels) {
             ScaleTransition scaleTransition = new ScaleTransition(Duration.seconds(1.5), label);
             scaleTransition.setFromX(0.9);
@@ -607,6 +615,7 @@ public class MenuController {
         showMenu(MenuState.PAUSE_MENU); // Show the pause menu
 
     }
+
     public void restartGame() {
         gamePaused = false;
         gameEnded = false;

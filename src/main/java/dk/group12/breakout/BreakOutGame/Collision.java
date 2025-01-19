@@ -1,4 +1,5 @@
 package dk.group12.breakout.BreakOutGame;
+
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 
@@ -7,7 +8,7 @@ import java.util.List;
 public class Collision {
     public static List<GameState.Ball> ballList;
 
-    public static void otherCollisionCheck(GameState gameState){
+    public static void otherCollisionCheck(GameState gameState) {
         ballList = gameState.ballList;
 
         List<PowerUpHandler.PowerUp> fallingPowerUps = gameState.powerUpHandler.fallingPowerUps;
@@ -20,7 +21,7 @@ public class Collision {
 
     }
 
-    public static void ballCollisionCheck(GameState gameState, GameState.Ball ball){
+    public static void ballCollisionCheck(GameState gameState, GameState.Ball ball) {
         List<CollisionElement> collisionElements = gameState.collisionElements;
 
         for (CollisionElement object : collisionElements) {
@@ -92,8 +93,7 @@ public class Collision {
         // Bounding box of the ball
         if (collidingObject instanceof GameState.Ball) {
             return intersectCircleRectangle((GameState.Ball) collidingObject, object);
-        }
-        else {
+        } else {
             collidingObjectLeft = collidingObject.x;
             collidingObjectTop = collidingObject.y;
             collidingObjectRight = collidingObject.x + collidingObject.width;

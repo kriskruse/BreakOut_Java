@@ -3,13 +3,12 @@ package dk.group12.breakout.BreakOutGame;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
-import java.io.File;
 import java.util.Objects;
 
 public class SoundController {
     private static MediaPlayer musicPlayer;
 
-    private static final Media clickSound =  new Media(Objects.requireNonNull(
+    private static final Media clickSound = new Media(Objects.requireNonNull(
             SoundController.class.getResource(
                     "/dk/group12/breakout/BreakOutGame/sounds/ui/click.mp3")).toString());
 
@@ -23,16 +22,16 @@ public class SoundController {
         for (int i = 0; i < bounceSounds.length; i++) {
             bounceSounds[i] = new Media(
                     Objects.requireNonNull(
-                            this.getClass().getResource(
-                                    "/dk/group12/breakout/BreakOutGame/sounds/bounce" + (i + 1) + ".wav"))
+                                    this.getClass().getResource(
+                                            "/dk/group12/breakout/BreakOutGame/sounds/bounce" + (i + 1) + ".wav"))
                             .toString());
 
         }
         for (int i = 0; i < hoverSounds.length; i++) {
             hoverSounds[i] = new Media(
                     Objects.requireNonNull(
-                            this.getClass().getResource(
-                                    "/dk/group12/breakout/BreakOutGame/sounds/ui/hover" + (i + 1) + ".wav"))
+                                    this.getClass().getResource(
+                                            "/dk/group12/breakout/BreakOutGame/sounds/ui/hover" + (i + 1) + ".wav"))
                             .toString());
         }
 
@@ -46,6 +45,7 @@ public class SoundController {
         musicPlayer.setVolume(0.1);
 
     }
+
     public static void playPing() {
         if (soundControl) {
             MediaPlayer bouncePlayer = new MediaPlayer(bounceSounds[(int) (Math.random() * 5)]);
@@ -72,7 +72,7 @@ public class SoundController {
     public void playMusic() {
         if (soundControl) {
             musicPlayer.play();
-        }else {
+        } else {
             musicPlayer.stop();
         }
     }
