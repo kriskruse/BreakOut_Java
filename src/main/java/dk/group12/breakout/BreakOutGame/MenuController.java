@@ -97,7 +97,7 @@ public class MenuController {
     }
 
     /* INITIALIZATION OF PAGES */
-    
+
     //Initializes the pause button
     private Button createPauseButton() {
         pauseButton = new Button("Pause");
@@ -125,7 +125,7 @@ public class MenuController {
         settingsMenu = createVBoxMenuPage("Settings", new String[]{"Difficulty","Sound", "Sensitivity", "Back"});
         difficultyMenu = createDifficultyMenu();
         soundMenu = createVBoxMenuPage("Sound", new String[]{"On", "Off", "Back"});
-        sensitivityMenu = createVBoxMenuPage("Sensitivity", new String[]{"Low", "Medium", "High", "Very High", "Back"});
+        sensitivityMenu = createVBoxMenuPage("Sensitivity", new String[]{"Low", "Normal", "High", "Very High", "Back"});        howToPlayMenu = createHowToPlayMenu();
         howToPlayMenu = createHowToPlayMenu();
 
         root.getChildren().addAll(startMenu, pauseMenu, gameOverPage, tutorialScreen,
@@ -295,6 +295,38 @@ public class MenuController {
         return menu;
     }
 
+    // Creating a score history page
+    private VBox createScoreHistoryDisplay() {
+        VBox scoreHistoryBox = new VBox(10); // Spacing between scores
+        scoreHistoryBox.setAlignment(Pos.CENTER);
+        scoreHistoryBox.setPadding(new Insets(20));
+        scoreHistoryBox.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8);");
+
+        Label historyLabel = new Label("Score History");
+        historyLabel.setStyle(
+                "-fx-font-size: 24px;" +
+                        "-fx-font-family: 'Arial';" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-text-fill: white;"
+        );
+
+        scoreHistoryBox.getChildren().add(historyLabel);
+
+        // Get scores from GameLoop's scoreHistory
+        for (int i = 0; i < gameLoop.gameState.scoreHistory.getScores().size(); i++) {
+            int score = gameLoop.gameState.scoreHistory.getScores().get(i);
+            Label scoreLabel = new Label("Game " + (i + 1) + ": " + score + " points");
+            scoreLabel.setStyle(
+                    "-fx-font-size: 18px;" +
+                            "-fx-text-fill: white;"
+            );
+
+            scoreHistoryBox.getChildren().add(scoreLabel); // Add each score
+        }
+
+        return scoreHistoryBox;
+    }
+
     /*BUTTON ACTIONS*/
 
     // button event handler
@@ -317,16 +349,49 @@ public class MenuController {
                     hideMenus();
                     showMenu(MenuState.TUTORIAL_SCREEN);
                 }),
-                Map.entry("Settings", e -> {
-                    showMenu(MenuState.SETTINGS_MENU);
-                }),
+                Map.entry("Settings", e -> showMenu(MenuState.SETTINGS_MENU)),
                 Map.entry("How To Play", e -> {
                     System.out.println("How To Play button clicked");
                     showMenu(MenuState.HOW_TO_PLAY);
                 }),
                 Map.entry("Score History", e -> {
                     System.out.println("Score History button clicked");
-                    // Add "score history" functionality here
+
+                    VBox scoreHistoryDisplay = createScoreHistoryDisplay(); // Create the display
+                    root.getChildren().add(scoreHistoryDisplay); // Add to the root pane
+
+                    // Add a back button to close the score history page
+                    Button backButton = new Button("Back");
+                    backButton.setStyle(
+                            "-fx-font-size: 18px;" +
+                                    "-fx-font-weight: bold;" +
+                                    "-fx-text-fill: white;" +
+                                    "-fx-background-color: red;"
+                    );
+                    backButton.setOnAction(event -> {
+                        root.getChildren().remove(scoreHistoryDisplay);
+                    });
+                    mouseHoverGraphic(backButton);
+
+                    //Add a delete button to delete the score history
+                    Button deleteButton = new Button("Delete History");
+                    deleteButton.setStyle(
+                            "-fx-font-size: 18px;" +
+                                    "-fx-font-weight: bold;" +
+                                    "-fx-text-fill: white;" +
+                                    "-fx-background-color: red;"
+                    );
+
+                    deleteButton.setOnAction(event -> {
+                        gameLoop.gameState.scoreHistory.clearHistory(); // Clear the history
+                        gameLoop.gameState.scoreHistory.saveToFile("scores.txt"); // Save the empty history
+                        System.out.println("Score history cleared!");
+                    });
+                    mouseHoverGraphic(deleteButton);
+
+                    scoreHistoryDisplay.getChildren().addAll(backButton, deleteButton); // Add the back- and delete button
+
+
                 }),
                 Map.entry("Exit", e -> {
                     System.exit(0); // Exit the application

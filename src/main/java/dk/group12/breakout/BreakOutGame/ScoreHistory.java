@@ -2,6 +2,7 @@ package dk.group12.breakout.BreakOutGame;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ScoreHistory {
@@ -22,7 +23,6 @@ public class ScoreHistory {
     public void clearHistory() {
         scores.clear(); // clear the history
     }
-
 
     public void printScores() { // Method to print out the scores in the terminal
         System.out.println("Score History:");
@@ -57,6 +57,14 @@ public class ScoreHistory {
         } catch (NumberFormatException e) {
             System.err.println("Invalid score format in file: " + e.getMessage());
         }
+    }
+
+    // Method to get the highest score
+    public int getHighScore(){
+        if (scores.isEmpty()) {
+            return 0; // Return 0 if there are no scores
+        }
+        return Collections.max(scores); // return the highest score
     }
 
 }
