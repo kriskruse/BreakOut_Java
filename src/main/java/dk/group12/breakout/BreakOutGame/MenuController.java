@@ -85,7 +85,7 @@ public class MenuController {
         settingsMenu = createVBoxMenuPage("Settings", new String[]{"Difficulty","Sound", "Sensitivity", "Back"});
         difficultyMenu = createDifficultyMenu();
         soundMenu = createVBoxMenuPage("Sound", new String[]{"On", "Off", "Back"});
-        sensitivityMenu = createVBoxMenuPage("Sensitivity", new String[]{"Low", "Medium", "High", "Very High", "Back"});
+        sensitivityMenu = createVBoxMenuPage("Sensitivity", new String[]{"Low", "Normal", "High", "Very High", "Back"});
 
         root.getChildren().addAll(startMenu, pauseMenu, gameOverPage, tutorialScreen, settingsMenu, difficultyMenu, soundMenu, sensitivityMenu);  //add other menus also
         // Upon initialization show only the start menu
@@ -283,9 +283,7 @@ public class MenuController {
                     hideMenus();
                     showMenu(MenuState.TUTORIAL_SCREEN);
                 }),
-                Map.entry("Settings", e -> {
-                    showMenu(MenuState.SETTINGS_MENU);
-                }),
+                Map.entry("Settings", e -> showMenu(MenuState.SETTINGS_MENU)),
                 Map.entry("How To Play", e -> {
                     System.out.println("How To Play button clicked");
                     // Add "How To Play" functionality here
