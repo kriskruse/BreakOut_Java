@@ -85,7 +85,7 @@ public class MenuController {
         settingsMenu = createVBoxMenuPage("Settings", new String[]{"Difficulty","Sound", "Sensitivity", "Back"});
         difficultyMenu = createDifficultyMenu();
         soundMenu = createVBoxMenuPage("Sound", new String[]{"On", "Off", "Back"});
-        sensitivityMenu = createVBoxMenuPage("Sensitivity", new String[]{"Low", "Medium", "High", "Back"});
+        sensitivityMenu = createVBoxMenuPage("Sensitivity", new String[]{"Low", "Medium", "High", "Very High", "Back"});
 
         root.getChildren().addAll(startMenu, pauseMenu, gameOverPage, tutorialScreen, settingsMenu, difficultyMenu, soundMenu, sensitivityMenu);  //add other menus also
         // Upon initialization show only the start menu
@@ -377,6 +377,22 @@ public class MenuController {
                         SoundController.soundControl = true;
                         soundController.playMusic();
                     }
+                }),
+                Map.entry("Low", e -> {
+                    System.out.println("Low Sensitivity button clicked");
+                    GameLoop.playerMovementSpeed = 5;
+                }),
+                Map.entry("Normal", e -> {
+                    System.out.println("Medium Sensitivity button clicked");
+                    GameLoop.playerMovementSpeed = 7;
+                }),
+                Map.entry("High", e -> {
+                    System.out.println("High Sensitivity button clicked");
+                    GameLoop.playerMovementSpeed = 11;
+                }),
+                Map.entry("Very High", e -> {
+                    System.out.println("Very High Sensitivity button clicked");
+                    GameLoop.playerMovementSpeed = 15;
                 })
         );
         // Return the matching action or a default one
