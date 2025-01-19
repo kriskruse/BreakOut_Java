@@ -348,7 +348,7 @@ public class MenuController {
                         "-fx-text-fill: white;" +
                         "-fx-background-color: red;"
         );
-        backButton.setOnAction(event -> showMenu(MenuState.START_MENU));
+        backButton.setOnAction(getButtonAction("Back"));
         mouseHoverGraphic(backButton);
 
         // Delete History Button
@@ -426,9 +426,17 @@ public class MenuController {
                 }),
                 Map.entry("Back", e -> {
                     System.out.println("Back button clicked");
-                    if (!gameStarted && currentMenu == MenuState.SETTINGS_MENU) {
+                    if (!gameStarted &&
+                            (currentMenu == MenuState.SETTINGS_MENU
+                            || currentMenu == MenuState.HOW_TO_PLAY
+                            || currentMenu == MenuState.SCORE_HISTORY)
+                    ) {
                         showMenu(MenuState.START_MENU); // Navigate back to Start Menu
-                    } else if (gameStarted && currentMenu == MenuState.SETTINGS_MENU) {
+                    } else if (gameStarted &&
+                            (currentMenu == MenuState.SETTINGS_MENU
+                                    || currentMenu == MenuState.HOW_TO_PLAY
+                                    || currentMenu == MenuState.SCORE_HISTORY)
+                    ) {
                         showMenu(MenuState.PAUSE_MENU); // Navigate back to Pause Menu
                     } else if (currentMenu == MenuState.DIFFICULTY_MENU) {
                         showMenu(MenuState.SETTINGS_MENU); // Navigate back to Settings Menu
@@ -436,8 +444,6 @@ public class MenuController {
                         showMenu(MenuState.SETTINGS_MENU); // Navigate back to Settings Menu
                     } else if (currentMenu == MenuState.SENSITIVITY_MENU) {
                         showMenu(MenuState.SETTINGS_MENU); // Navigate back to Settings Menu
-                    } else if (currentMenu == MenuState.HOW_TO_PLAY) {
-                        showMenu(MenuState.START_MENU); // Navigate back to Start Menu
                     }
                 }),
                 Map.entry("Easy", e -> {
