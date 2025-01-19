@@ -16,6 +16,7 @@ public class Vec2 {
     public double getY() {
         return y;
     }
+
     public double getScalar() {
         return scalar;
     }

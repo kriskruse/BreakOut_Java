@@ -4,7 +4,7 @@ public class ScoreTracker {
     private int score;
 
     public ScoreTracker() {
-        this.score=0;
+        this.score = 0;
     }
 
     public void addScore(int points) {

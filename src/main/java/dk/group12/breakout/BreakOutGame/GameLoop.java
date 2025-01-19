@@ -1,7 +1,5 @@
 package dk.group12.breakout.BreakOutGame;
 
-import javafx.scene.control.Menu;
-
 import java.util.Set;
 
 public class GameLoop {
@@ -48,7 +46,7 @@ public class GameLoop {
 
         if (gameState.gameWon) {
             GameState oldGameState = gameState;
-            gameState = new GameState(n,m,gameWidth,gameHeight, lives, oldGameState.scoreTracker);
+            gameState = new GameState(n, m, gameWidth, gameHeight, lives, oldGameState.scoreTracker);
 
         }
 
