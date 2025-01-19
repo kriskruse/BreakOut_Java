@@ -10,12 +10,14 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.layout.StackPane;
 import org.jetbrains.annotations.NotNull;
+
 
 import java.util.HashSet;
 import java.util.Set;
@@ -30,6 +32,7 @@ public class BreakoutGraphical extends Application {
     private SoundController soundController;
     private GraphicsContext graphicsContext;
     private MenuController menuController;
+    private Label highScoreLabel;
 
     private int gameIterations = 0; // Tracks the number of iterations
 
@@ -181,6 +184,7 @@ public class BreakoutGraphical extends Application {
                     drawFallingPowerUps(graphicsContext);
                     drawActivePowerUps(graphicsContext);
                     drawScore(graphicsContext);
+                    drawHighScore(graphicsContext);
                 }
 
                 if ((currentNanoTime - lastTime) >= 1000000000) {
@@ -340,6 +344,16 @@ public class BreakoutGraphical extends Application {
         double centerX = (double) windowX / 2;
 
         gc.fillText("Score: " + gameLoop.gameState.scoreTracker.getScore(), centerX-70, 70);
+    }
+
+    private void drawHighScore(GraphicsContext gc) {
+        gc.setFill(Color.WHITE);
+        gc.setFont(javafx.scene.text.Font.font("Arial", javafx.scene.text.FontWeight.BOLD, 15));
+
+        double spacex = windowX - 125;
+        double spacey = windowY - 10;
+
+        gc.fillText("High Score: " + gameLoop.gameState.scoreHistory.getHighScore(), spacex, spacey);
     }
 
 
