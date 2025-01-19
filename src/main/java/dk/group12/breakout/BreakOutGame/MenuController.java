@@ -316,7 +316,7 @@ public class MenuController {
 
         // Content for the ScrollPane
         VBox scoreHistoryContent = new VBox(10); // Vertical spacing between items
-        scoreHistoryContent.setAlignment(Pos.TOP_CENTER);
+        scoreHistoryContent.setAlignment(Pos.CENTER);
         scoreHistoryContent.setPadding(new Insets(10));
         scoreHistoryContent.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8);");
 
@@ -369,7 +369,7 @@ public class MenuController {
 
         // Layout for the entire Score History page
         VBox scoreHistoryBox = new VBox(15);
-        scoreHistoryBox.setAlignment(Pos.TOP_CENTER);
+        scoreHistoryBox.setAlignment(Pos.CENTER);
         scoreHistoryBox.setPadding(new Insets(20));
         scoreHistoryBox.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8);");
         scoreHistoryBox.getChildren().addAll(titleLabel, scrollPane, backButton, deleteButton);
