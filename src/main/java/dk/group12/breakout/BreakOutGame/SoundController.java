@@ -1,45 +1,46 @@
 package dk.group12.breakout.BreakOutGame;
 
-import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
 import java.io.File;
+import java.util.Objects;
 
 public class SoundController {
     private static MediaPlayer musicPlayer;
 
-    private static final String musicFile = "src/main/resources/dk/group12/breakout/sounds/music.mp3";
-    private static final String[] bounceFiles = {
-            "src/main/resources/dk/group12/breakout/sounds/bounce1.wav",
-            "src/main/resources/dk/group12/breakout/sounds/bounce2.wav",
-            "src/main/resources/dk/group12/breakout/sounds/bounce3.wav",
-            "src/main/resources/dk/group12/breakout/sounds/bounce4.wav",
-            "src/main/resources/dk/group12/breakout/sounds/bounce5.wav"};
-    private static final String[] hoverFiles = {
-            "src/main/resources/dk/group12/breakout/sounds/ui/hover1.wav",
-            "src/main/resources/dk/group12/breakout/sounds/ui/hover2.wav"
-    };
+    private static final Media clickSound =  new Media(Objects.requireNonNull(
+            SoundController.class.getResource(
+                    "/dk/group12/breakout/BreakOutGame/sounds/ui/click.mp3")).toString());
 
-    private static final Media clickSound = new Media(
-            new File("src/main/resources/dk/group12/breakout/sounds/ui/click.mp3").toURI().toString());
-
-    private static final Media[] bounceSounds = new Media[bounceFiles.length];
-    private static final Media[] hoverSounds = new Media[hoverFiles.length];
+    private static final Media[] bounceSounds = new Media[5];
+    private static final Media[] hoverSounds = new Media[2];
 
     public static boolean soundControl = true;
 
     public SoundController() {
 
-        for (int i = 0; i < bounceFiles.length; i++) {
-            bounceSounds[i] = new Media(new File(bounceFiles[i]).toURI().toString());
+        for (int i = 0; i < bounceSounds.length; i++) {
+            bounceSounds[i] = new Media(
+                    Objects.requireNonNull(
+                            this.getClass().getResource(
+                                    "/dk/group12/breakout/BreakOutGame/sounds/bounce" + (i + 1) + ".wav"))
+                            .toString());
+
         }
-        for (int i = 0; i < hoverFiles.length; i++) {
-            hoverSounds[i] = new Media(new File(hoverFiles[i]).toURI().toString());
+        for (int i = 0; i < hoverSounds.length; i++) {
+            hoverSounds[i] = new Media(
+                    Objects.requireNonNull(
+                            this.getClass().getResource(
+                                    "/dk/group12/breakout/BreakOutGame/sounds/ui/hover" + (i + 1) + ".wav"))
+                            .toString());
         }
 
 
-        Media musicSound = new Media(new File(musicFile).toURI().toString());
+        String musicFile = Objects.requireNonNull(
+                this.getClass().getResource("/dk/group12/breakout/BreakOutGame/sounds/music.mp3")).toString();
+
+        Media musicSound = new Media(musicFile);
         musicPlayer = new MediaPlayer(musicSound);
         musicPlayer.setCycleCount(MediaPlayer.INDEFINITE);
         musicPlayer.setVolume(0.1);
